@@ -1,0 +1,1 @@
+# CLI dependencies — add packages as lab tooling is implemented
