@@ -1,0 +1,73 @@
+# CyberPivot — Cursor Rules
+
+## Project
+CyberPivot — open source cybersecurity learning platform.
+Read PRD.md and CLAUDE.md before making any decisions.
+
+## Stack
+- Next.js 14 App Router
+- TypeScript (strict)
+- Tailwind CSS + shadcn/ui
+- Supabase
+- pnpm only
+
+## Non-Negotiables
+- TypeScript everywhere — no .js files, no `any` types
+- pnpm only — never suggest npm or yarn commands
+- Dark mode first on all components
+- shadcn/ui for UI components before building custom
+- Server components by default, client components only when required
+- RLS enabled on all Supabase tables
+- Zod for validation, React Hook Form for forms
+- Mobile responsive on everything
+
+## Code Style
+- PascalCase for components and types
+- camelCase for functions and variables
+- kebab-case for file names
+- Absolute imports with @ alias always
+- Explicit return types on all functions
+- No unused imports or variables
+
+## Component Rules
+- Keep components small and focused — one responsibility
+- Extract repeated UI into reusable components
+- Put client components in their own files with 'use client' at top
+- Co-locate component-specific types in the same file
+- Use loading.tsx and error.tsx for every route segment
+
+## Content Rules
+- Module content lives in /content as MDX files
+- Scenarios always before theory
+- Tools introduced hands-on before explanation
+- Every module ends with a cabinet artifact
+
+## When Adding Features
+- Check V1 scope in PRD.md first — don't build V2 features
+- Check if a shadcn/ui component exists before building custom
+- Check if a library already in package.json solves the problem
+- Write the TypeScript types before writing the implementation
+
+## Supabase
+- Use typed client from @/lib/supabase
+- Never use service role key client-side
+- Always check RLS policies when adding new tables
+- Keep migrations in /supabase/migrations
+
+## Performance
+- Use Next.js Image component for all images
+- Static generation (SSG) for all content pages
+- Dynamic only when truly needed (dashboard, auth pages)
+- Keep bundle size in check — no heavy libraries for simple tasks
+
+## File Structure Reminder
+```
+app/           → Next.js routes
+components/    → Shared components
+content/       → MDX module files
+lib/           → Utilities
+hooks/         → Custom hooks
+types/         → TypeScript types
+cli/           → Python CLI companion
+supabase/      → DB config and migrations
+```
