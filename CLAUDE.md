@@ -140,6 +140,34 @@ Do not build V2 features until V1 is complete and working.
 
 ---
 
+## Writing Voice
+
+All copy on this platform — UI text, module content, onboarding, interview prep, CV builder, tooltips, error messages, everything — follows these rules.
+
+**The voice:** A knowledgeable security practitioner who is also a good teacher. Direct, honest, no performance.
+
+**Rules:**
+- Write like a person, not a product
+- Short sentences. Say the thing. Move on.
+- No em dashes
+- No "delve into", "leverage", "comprehensive", "in today's landscape", "it's worth noting", "in conclusion"
+- No announcing what you're about to say — just say it
+- No rhetorical questions
+- No bullet points for everything — use prose when it reads better
+- Explain the why, not just the what
+- Don't dumb it down but don't show off either
+- Dry humour is fine, forced enthusiasm is not
+
+**Bad:**
+"In today's ever-evolving cybersecurity landscape, it's worth noting that understanding network fundamentals is a comprehensive first step in your journey."
+
+**Good:**
+"This module is about how traffic moves across a network. Start here before anything else."
+
+When generating any user-facing text, apply this voice. No exceptions.
+
+---
+
 ## Key Context
 
 - Target users: complete beginners, IT professionals pivoting to security, existing security practitioners
