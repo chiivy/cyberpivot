@@ -12,7 +12,14 @@ export type Q4PathKnown = "show-roles" | "help-choose";
 
 export type EntryPoint = "A" | "B" | "C" | "D";
 
-export type PathSlug = "azure" | "pentest" | "soc" | "grc" | "appsec";
+export type PathSlug =
+  | "azure"
+  | "pentest"
+  | "soc"
+  | "grc"
+  | "appsec"
+  | "api-security"
+  | "ai-security";
 
 export interface OnboardingAnswers {
   q1Background: Q1Background;
@@ -39,6 +46,7 @@ export interface OnboardingPersistedState {
 
 export interface CabinetPreviewItem {
   name: string;
+  description: string;
   unlocksInModule: string;
 }
 
@@ -48,4 +56,5 @@ export interface RecommendedRole {
   domainId: string;
   pathSlug: PathSlug;
   suggested?: boolean;
+  comingSoon?: boolean;
 }

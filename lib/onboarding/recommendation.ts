@@ -105,6 +105,13 @@ export function getRecommendedRoles(
           domainId: "cloud-infrastructure-security",
           pathSlug: "azure",
         },
+        {
+          name: "AI Security Engineer",
+          slug: "ai-security-engineer",
+          domainId: "application-product-security",
+          pathSlug: "ai-security",
+          comingSoon: true,
+        },
       ];
     case "it":
       return [
@@ -127,6 +134,13 @@ export function getRecommendedRoles(
           domainId: "offensive-security",
           pathSlug: "pentest",
         },
+        {
+          name: "AI Security Engineer",
+          slug: "ai-security-engineer",
+          domainId: "application-product-security",
+          pathSlug: "ai-security",
+          comingSoon: true,
+        },
       ];
     case "developer":
       return [
@@ -141,7 +155,14 @@ export function getRecommendedRoles(
           name: "API Security Engineer",
           slug: "api-security-engineer",
           domainId: "application-product-security",
-          pathSlug: "appsec",
+          pathSlug: "api-security",
+        },
+        {
+          name: "AI Security Engineer",
+          slug: "ai-security-engineer",
+          domainId: "application-product-security",
+          pathSlug: "ai-security",
+          comingSoon: true,
         },
         {
           name: "DevSecOps Engineer",
@@ -176,6 +197,13 @@ export function getRecommendedRoles(
           slug: "grc-analyst",
           domainId: "governance-risk-compliance",
           pathSlug: "grc",
+        },
+        {
+          name: "AI Security Engineer",
+          slug: "ai-security-engineer",
+          domainId: "application-product-security",
+          pathSlug: "ai-security",
+          comingSoon: true,
         },
       ];
   }
@@ -213,11 +241,13 @@ export function pathSlugFromRoleSlug(roleSlug: string): PathSlug | null {
   if (roleSlug.includes("grc") || roleSlug.includes("compliance")) {
     return "grc";
   }
-  if (
-    roleSlug.includes("appsec") ||
-    roleSlug.includes("api-security") ||
-    roleSlug.includes("devsecops")
-  ) {
+  if (roleSlug.includes("api-security")) {
+    return "api-security";
+  }
+  if (roleSlug.includes("ai-security")) {
+    return "ai-security";
+  }
+  if (roleSlug.includes("appsec") || roleSlug.includes("devsecops")) {
     return "appsec";
   }
   return null;

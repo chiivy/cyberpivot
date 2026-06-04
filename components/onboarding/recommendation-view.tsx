@@ -10,6 +10,7 @@ import { securityDomains } from "@/lib/homepage-data";
 import {
   domainIdToPathSlug,
   getRecommendedRoles,
+  pathSlugFromRoleSlug,
 } from "@/lib/onboarding/recommendation";
 import { readOnboardingState, writeOnboardingState } from "@/lib/onboarding/storage";
 import { cn } from "@/lib/utils";
@@ -91,21 +92,20 @@ export function RecommendationView(): React.ReactElement {
           </h2>
           <ul className="flex flex-col gap-4" role="list">
             {securityDomains.map((domain) => {
-              const pathSlug = domainIdToPathSlug(domain.id);
-              if (!pathSlug) {
+              const defaultPathSlug = domainIdToPathSlug(domain.id);
+              if (!defaultPathSlug) {
                 return null;
               }
               const v1Role = domain.roles.find((r) => r.v1);
+              const roleSlug = v1Role?.slug ?? domain.roles[0].slug;
+              const pathSlug =
+                pathSlugFromRoleSlug(roleSlug) ?? defaultPathSlug;
               return (
                 <li key={domain.id}>
                   <button
                     type="button"
                     onClick={() =>
-                      selectPath(
-                        pathSlug,
-                        domain.id,
-                        v1Role?.slug ?? domain.roles[0].slug,
-                      )
+                      selectPath(pathSlug, domain.id, roleSlug)
                     }
                     className={cn(
                       "w-full rounded-lg border border-white/10 bg-white/[0.02] p-5 text-left transition-colors",
@@ -165,6 +165,16 @@ export function RecommendationView(): React.ReactElement {
                   {role.suggested ? (
                     <span className="absolute right-4 top-4 rounded-md bg-cyan-500/20 px-2 py-0.5 text-xs font-medium text-cyan-300">
                       Best fit
+                    </span>
+                  ) : null}
+                  {role.comingSoon ? (
+                    <span
+                      className={cn(
+                        "absolute top-4 rounded-md border border-zinc-600/50 bg-zinc-800/80 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-zinc-400",
+                        role.suggested ? "right-24" : "right-4",
+                      )}
+                    >
+                      Coming soon
                     </span>
                   ) : null}
                   <h3 className="font-mono text-lg font-semibold text-foreground">

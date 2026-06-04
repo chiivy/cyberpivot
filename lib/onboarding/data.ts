@@ -1,12 +1,16 @@
 import type {
-  CabinetPreviewItem,
   OnboardingAnswers,
-  PathSlug,
   Q1Background,
   Q2Linux,
   Q3Networking,
   Q4PathKnown,
 } from "@/types/onboarding";
+
+export {
+  CABINET_BY_PATH,
+  PATH_COMING_SOON,
+  PATH_LABELS,
+} from "@/lib/onboarding/cabinet-artifacts";
 
 export interface OnboardingQuestionOption<T extends string> {
   value: T;
@@ -62,103 +66,6 @@ export const ONBOARDING_QUESTIONS: readonly [
     ],
   },
 ] as const;
-
-export const CABINET_BY_PATH: Record<PathSlug, readonly CabinetPreviewItem[]> = {
-  azure: [
-    {
-      name: "Configured Entra ID tenant",
-      unlocksInModule: "Identity & Access Management",
-    },
-    {
-      name: "Working Sentinel workspace",
-      unlocksInModule: "Microsoft Sentinel",
-    },
-    {
-      name: "Secure Score report",
-      unlocksInModule: "Defender for Cloud",
-    },
-    {
-      name: "IR runbook",
-      unlocksInModule: "Incident Response on Azure",
-    },
-    {
-      name: "Security architecture diagram",
-      unlocksInModule: "Azure Security Capstone",
-    },
-  ],
-  pentest: [
-    {
-      name: "Configured Kali environment",
-      unlocksInModule: "Reconnaissance & Enumeration",
-    },
-    {
-      name: "Custom nmap scripts",
-      unlocksInModule: "Network Scanning",
-    },
-    {
-      name: "Completed pentest report",
-      unlocksInModule: "Reporting & Communication",
-    },
-    {
-      name: "Burp Suite findings",
-      unlocksInModule: "Web Application Testing",
-    },
-  ],
-  soc: [
-    {
-      name: "Running Wazuh SIEM",
-      unlocksInModule: "SIEM Fundamentals",
-    },
-    {
-      name: "Custom detection rules",
-      unlocksInModule: "Detection Engineering",
-    },
-    {
-      name: "IR playbook collection",
-      unlocksInModule: "Incident Response",
-    },
-    {
-      name: "Completed incident report",
-      unlocksInModule: "SOC Capstone",
-    },
-  ],
-  grc: [
-    {
-      name: "Complete risk register",
-      unlocksInModule: "Risk Management",
-    },
-    {
-      name: "Policy suite",
-      unlocksInModule: "Policy & Standards",
-    },
-    {
-      name: "Gap analysis report",
-      unlocksInModule: "Compliance Frameworks",
-    },
-    {
-      name: "Audit evidence folder",
-      unlocksInModule: "Audit Preparation",
-    },
-  ],
-  appsec: [
-    {
-      name: "OWASP Top 10 assessment report",
-      unlocksInModule: "OWASP Top 10",
-    },
-    {
-      name: "API security testing collection",
-      unlocksInModule: "API Security",
-    },
-    {
-      name: "Threat model document",
-      unlocksInModule: "Threat Modeling",
-    },
-    {
-      name: "SAST and DAST findings summary",
-      unlocksInModule: "Application Security Testing",
-    },
-  ],
-};
 
 export function answersFromPartial(
   partial: Partial<OnboardingAnswers>,
