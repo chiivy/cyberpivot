@@ -38,8 +38,8 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 187 85% 53%;
+    --primary-foreground: 240 10% 4%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -50,7 +50,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --ring: 187 85% 53%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -64,5 +64,45 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .marketing-page {
+    --marketing-bg: #0a0a0f;
+    --marketing-accent: #22d3ee;
+    background-color: var(--marketing-bg);
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.04) 1px, transparent 1px),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 48px 48px, 48px 48px, 256px 256px;
+  }
+
+  .marketing-divider {
+    @apply border-t border-white/[0.08];
+  }
+
+  .marketing-section {
+    @apply marketing-divider py-12 sm:py-[4.5rem];
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .marketing-fade-in {
+      animation: marketing-fade-in 0.7s ease-out both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 25%;
+    }
+  }
+
+  @keyframes marketing-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

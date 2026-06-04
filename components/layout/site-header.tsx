@@ -1,20 +1,51 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function SiteHeader(): React.ReactElement {
+interface SiteHeaderProps {
+  marketing?: boolean;
+}
+
+export function SiteHeader({
+  marketing = false,
+}: SiteHeaderProps): React.ReactElement {
   return (
-    <header className="border-b border-border">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b backdrop-blur-md",
+        marketing
+          ? "border-white/[0.08] bg-[#0a0a0f]/80"
+          : "border-border bg-background/80",
+      )}
+    >
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <Link
+          href="/"
+          className={cn(
+            "font-mono text-lg font-semibold tracking-tight",
+            marketing ? "text-foreground hover:text-cyan-300" : "",
+          )}
+        >
           CyberPivot
         </Link>
-        <nav className="flex items-center gap-2">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Log in</Link>
+        <nav className="flex items-center gap-2" aria-label="Account">
+          <Button
+            variant="ghost"
+            asChild
+            className={marketing ? "text-zinc-300 hover:text-foreground" : ""}
+          >
+            <Link href="/login">Sign in</Link>
           </Button>
-          <Button asChild>
-            <Link href="/signup">Get started</Link>
+          <Button
+            asChild
+            className={
+              marketing
+                ? "bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
+                : ""
+            }
+          >
+            <Link href="/onboarding">Get Started</Link>
           </Button>
         </nav>
       </div>
