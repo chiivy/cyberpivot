@@ -11,7 +11,7 @@ import { readOnboardingState } from "@/lib/onboarding/storage";
 import type { OnboardingPersistedState, PathSlug } from "@/types/onboarding";
 
 const PATH_LABELS: Record<PathSlug, string> = {
-  azure: "Cloud Security Azure",
+  azure: "Azure Security Engineer",
   pentest: "Penetration Testing",
   soc: "SOC Analyst",
   grc: "GRC Analyst",

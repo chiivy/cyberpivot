@@ -100,8 +100,8 @@ export function getRecommendedRoles(
           pathSlug: "grc",
         },
         {
-          name: "Cloud Security Azure",
-          slug: "cloud-security-azure",
+          name: "Azure Security Engineer",
+          slug: "azure-security-engineer",
           domainId: "cloud-infrastructure-security",
           pathSlug: "azure",
         },
@@ -109,8 +109,8 @@ export function getRecommendedRoles(
     case "it":
       return [
         {
-          name: "Cloud Security Azure",
-          slug: "cloud-security-azure",
+          name: "Azure Security Engineer",
+          slug: "azure-security-engineer",
           domainId: "cloud-infrastructure-security",
           pathSlug: "azure",
           suggested: true,
@@ -166,8 +166,8 @@ export function getRecommendedRoles(
           pathSlug: "soc",
         },
         {
-          name: "Cloud Security Azure",
-          slug: "cloud-security-azure",
+          name: "Azure Security Engineer",
+          slug: "azure-security-engineer",
           domainId: "cloud-infrastructure-security",
           pathSlug: "azure",
         },
@@ -193,7 +193,11 @@ export function domainIdToPathSlug(domainId: string): PathSlug | null {
 }
 
 export function pathSlugFromRoleSlug(roleSlug: string): PathSlug | null {
-  if (roleSlug.includes("azure") || roleSlug.includes("cloud-security")) {
+  if (
+    roleSlug.includes("azure") ||
+    roleSlug.includes("aws-security") ||
+    roleSlug.includes("gcp-security")
+  ) {
     return "azure";
   }
   if (

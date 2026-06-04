@@ -86,7 +86,7 @@ export const securityDomains: readonly SecurityDomain[] = [
   },
   {
     id: "application-product-security",
-    name: "Application & Product Security",
+    name: "Application and Product Security",
     description: "Secure code, APIs, and pipelines before they reach production.",
     roles: [
       { name: "AppSec Engineer", slug: "appsec-engineer", v1: true },
@@ -97,12 +97,16 @@ export const securityDomains: readonly SecurityDomain[] = [
   },
   {
     id: "cloud-infrastructure-security",
-    name: "Cloud & Infrastructure Security",
+    name: "Cloud and Infrastructure Security",
     description: "Protect identity, networks, and workloads across cloud platforms.",
     roles: [
-      { name: "Cloud Security Azure", slug: "cloud-security-azure", v1: true },
-      { name: "Cloud Security AWS", slug: "cloud-security-aws", v1: false },
-      { name: "Cloud Security GCP", slug: "cloud-security-gcp", v1: false },
+      {
+        name: "Azure Security Engineer",
+        slug: "azure-security-engineer",
+        v1: true,
+      },
+      { name: "AWS Security Engineer", slug: "aws-security-engineer", v1: false },
+      { name: "GCP Security Engineer", slug: "gcp-security-engineer", v1: false },
       { name: "Network Security Engineer", slug: "network-security-engineer", v1: false },
       { name: "Identity Security Engineer", slug: "identity-security-engineer", v1: false },
       { name: "Email Security Engineer", slug: "email-security-engineer", v1: false },
@@ -110,13 +114,14 @@ export const securityDomains: readonly SecurityDomain[] = [
   },
   {
     id: "governance-risk-compliance",
-    name: "Governance, Risk & Compliance",
+    name: "Governance, Risk and Compliance",
     description: "Frameworks, risk registers, policies, and audit evidence.",
     roles: [
       { name: "GRC Analyst", slug: "grc-analyst", v1: true },
       { name: "Compliance Analyst", slug: "compliance-analyst", v1: false },
       { name: "Risk Analyst", slug: "risk-analyst", v1: false },
       { name: "Security Auditor", slug: "security-auditor", v1: false },
+      { name: "vCISO", slug: "vciso", v1: false },
     ],
   },
 ] as const;
@@ -124,8 +129,8 @@ export const securityDomains: readonly SecurityDomain[] = [
 export const cabinetArtifacts: readonly CabinetArtifact[] = [
   {
     name: "Working Microsoft Sentinel workspace",
-    role: "Cloud Security Azure",
-    domain: "Cloud & Infrastructure Security",
+    role: "Azure Security Engineer",
+    domain: "Cloud and Infrastructure Security",
   },
   {
     name: "Completed penetration test report",
@@ -140,17 +145,17 @@ export const cabinetArtifacts: readonly CabinetArtifact[] = [
   {
     name: "ISO 27001 gap analysis report",
     role: "GRC Analyst",
-    domain: "Governance, Risk & Compliance",
+    domain: "Governance, Risk and Compliance",
   },
   {
     name: "Postman API security testing collection",
     role: "API Security Engineer",
-    domain: "Application & Product Security",
+    domain: "Application and Product Security",
   },
   {
     name: "Configured Entra ID tenant with documented policies",
-    role: "Cloud Security Azure",
-    domain: "Cloud & Infrastructure Security",
+    role: "Azure Security Engineer",
+    domain: "Cloud and Infrastructure Security",
   },
 ] as const;
 
