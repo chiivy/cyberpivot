@@ -68,6 +68,15 @@
 }
 
 @layer utilities {
+  .onboarding-page {
+    --marketing-bg: #0a0a0f;
+    background-color: var(--marketing-bg);
+    background-image:
+      linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+    background-size: 48px 48px, 48px 48px;
+  }
+
   .marketing-page {
     --marketing-bg: #0a0a0f;
     --marketing-accent: #22d3ee;

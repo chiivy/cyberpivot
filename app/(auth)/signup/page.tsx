@@ -1,10 +1,12 @@
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { Suspense } from "react";
+
+import { AuthForm } from "@/components/auth/auth-form";
+import { RouteLoading } from "@/components/shared/route-loading";
 
 export default function SignupPage(): React.ReactElement {
   return (
-    <PlaceholderPage
-      title="Sign up"
-      description="Account creation and onboarding assessment will live here."
-    />
+    <Suspense fallback={<RouteLoading />}>
+      <AuthForm mode="signup" />
+    </Suspense>
   );
 }

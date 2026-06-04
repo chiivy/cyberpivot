@@ -1,10 +1,12 @@
-import { PlaceholderPage } from "@/components/shared/placeholder-page";
+import { Suspense } from "react";
+
+import { AuthForm } from "@/components/auth/auth-form";
+import { RouteLoading } from "@/components/shared/route-loading";
 
 export default function LoginPage(): React.ReactElement {
   return (
-    <PlaceholderPage
-      title="Log in"
-      description="Supabase Auth will power sign-in. Not implemented yet."
-    />
+    <Suspense fallback={<RouteLoading />}>
+      <AuthForm mode="login" />
+    </Suspense>
   );
 }

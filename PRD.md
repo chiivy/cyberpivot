@@ -1,526 +1,614 @@
-# CyberPivot — Product Requirements Document (PRD)
-**Version:** 1.0  
-**Status:** Active  
-**Last Updated:** 2026
+# CyberPivot — Product Requirements Document
+**Version:** 3.0
+**Status:** Active
+**Last Updated:** June 2026
 
 ---
 
 ## 1. Vision
 
-CyberPivot is a free, open source, lifecycle-based cybersecurity learning platform built for anyone who wants to break into or level up in cybersecurity — regardless of where they're starting from.
+CyberPivot is a free, open source cybersecurity learning platform built for anyone who wants to break into or level up in cybersecurity — regardless of where they are starting from.
 
-The core philosophy: **Start where you are.**
+Core philosophy: **Start where you are.**
 
-Not everyone begins at zero. Not everyone wants the same career. CyberPivot meets you at your current level, puts you on the right path, and walks you through building real skills, a real home lab, and a real portfolio — the kind you can show an employer.
+Not everyone begins at zero. Not everyone wants the same role. CyberPivot meets you at your current level, puts you on the right path, and walks you through building real skills using real tools — the same ones used on the job. By the time you are done you have a working home lab, a portfolio of real artifacts, and the knowledge to back it up in an interview.
 
-This is not a course platform. This is not a CTF platform. This is the structured, practical, tool-first journey that actually prepares people for cybersecurity careers.
+This is not a course platform. Not a CTF platform. Not another place to watch videos and collect badges. It is the structured, practical, tool-first journey that actually prepares people for cybersecurity careers.
 
 ---
 
-## 2. The Problem We're Solving
+## 2. The Problem We Are Solving
 
-The cybersecurity learning landscape is broken in specific ways:
-
-- **Passive learning dominates** — videos, MCQs, reading. Nobody learns security by watching.
-- **Sandboxed platforms** — TryHackMe, HackTheBox are great but not real. Skills don't transfer to real environments.
-- **No path awareness** — a GRC analyst and a pentester need completely different journeys. Most platforms treat everyone the same.
-- **No tangible output** — you finish a course with a certificate but nothing to show. No lab, no artifacts, no portfolio.
-- **Assumes your hardware** — most guides assume you have a powerful machine or specific OS. Real beginners get lost immediately.
-- **Theory before tools** — people learn what a firewall is before ever touching one. CyberPivot flips this.
+- Passive learning dominates. Videos, MCQs, reading. You do not learn security by watching.
+- Sandboxed platforms are useful but not real. Skills do not transfer cleanly to actual job environments.
+- No role awareness. A GRC analyst and a penetration tester need completely different journeys. Most platforms treat everyone the same.
+- No tangible output. You finish a course with a certificate but nothing to show. No lab, no artifacts, no portfolio.
+- Enterprise tools are invisible until day one on the job. Platforms teach open source tools only. You walk in and see CrowdStrike or Splunk for the first time.
+- Theory before tools. You learn what a firewall is before ever touching one.
+- No honest career guidance. What does the job actually pay? What do interviews look like? Which certs actually matter?
 
 ---
 
 ## 3. Core Philosophy
 
-- **Tool-first** — you touch the tool before you read theory about it
-- **Scenario-first** — every concept introduced through a real-world situation
-- **Start where you are** — three entry points based on your background
-- **Build as you learn** — every module produces a tangible artifact
-- **Honest guidance** — we tell you what certs matter, what jobs pay, what interviews actually look like
-- **Open source** — free forever, community can contribute paths and modules
+- Tool-first. You touch the tool before you read theory about it.
+- Scenario-first. Every concept introduced through a real situation using real examples — not hypothetical organisations.
+- Start where you are. Entry points based on your actual background.
+- Build as you learn. Every module produces a tangible artifact.
+- Free and enterprise. Learn on open source tools, understand the enterprise equivalents.
+- Honest. What certs matter, what jobs pay, what interviews actually look like.
+- Open source. Free forever. Community can contribute modules, paths, topics and tools.
 
 ---
 
-## 4. Target Audience
+## 4. Content Writing Standards
+
+All content on this platform — modules, intro sections, role descriptions, interview prep, CV builder, tooltips, error messages — follows these rules without exception.
+
+**Voice:** A knowledgeable security practitioner who is also a good teacher. Someone who has done the job, seen real incidents, used real tools, and can explain things to someone intelligent but new.
+
+**Real examples always:**
+- Use real incidents. WannaCry, the SolarWinds attack, the Uber breach, the NHS ransomware incident. Not "consider a hypothetical organisation."
+- Use relatable analogies before technical concepts. "A firewall is like a bouncer at a club. They check who is coming in but cannot always see what someone is carrying."
+- Treat the reader as intelligent, just new to this. Do not condescend. Do not oversimplify to the point of inaccuracy.
+
+**Writing rules:**
+- Short sentences. Say the thing. Move on.
+- No em dashes.
+- No "delve into", "leverage", "comprehensive", "in today's landscape", "it's worth noting", "in conclusion."
+- No announcing what you are about to say. Just say it.
+- No rhetorical questions.
+- Explain the why, not just the what.
+- Dry humour is fine. Forced enthusiasm is not.
+
+**Bad:** "In today's ever-evolving cybersecurity landscape, it's worth noting that understanding network fundamentals is a comprehensive first step in your journey."
+
+**Good:** "This module is about how traffic moves across a network. Start here before anything else."
+
+---
+
+## 5. Target Audience
 
 ### Entry Point A — Complete Beginner
-No IT background. Curious about cybersecurity. Doesn't know where to start.
-- Starts at absolute foundations
-- Full hand-holding with explanations of everything
-- Scenario: *"You just heard about cybersecurity as a career. Let's figure out if it's for you and how to get there."*
+No IT background. Curious about cybersecurity. Does not know where to start.
+Starts at the Introduction section then Foundation Layer.
 
 ### Entry Point B — IT Background
-Already in helpdesk, networking, sysadmin, or development. Wants to pivot into security.
-- Skips basic IT concepts
-- Light security-specific foundations refresh
-- Gets into a specialization path faster
-- Scenario: *"You've been in IT for 2 years. Here's how you translate that into a security career."*
+Already in helpdesk, networking, sysadmin, or development. Wants to move into security.
+Light foundations refresh then straight into a role path.
 
-### Entry Point C — Already in Security
-Working in security or self-studying. Wants structure, interview prep, certs, or a specific skill gap filled.
-- Skip foundations entirely
-- Jump into any path, module, or resource directly
-- Use platform for interview prep, CV builder, cert roadmap, labs
-- Scenario: *"You're a SOC Tier 1 analyst. Here's how you get to Tier 2 and beyond."*
+### Entry Point C — Developer
+Writes code, wants to move into security. AppSec, DevSecOps or AI Security natural fits.
+Skips IT fundamentals, light security orientation, directed toward application security domain.
+
+### Entry Point D — Already in Security
+Working in security or self-studying. Wants structure, specific skills, interview prep, or cert guidance.
+Skip foundations. Jump into any role, specialist module, or topic directly.
 
 ---
 
-## 5. Platform Structure
+## 6. Platform Content Structure
 
-### 5.1 Onboarding Flow
+### Level 0 — Introduction (free, ungated, no account needed)
 
-When a user first arrives they answer a short honest assessment:
+Not a path. Not gated. Anyone can read this before deciding if cybersecurity is for them.
 
-1. Do you have any IT background? (Yes / Some / No)
-2. Have you worked in tech professionally? (Yes / No)
-3. Do you understand basic networking? e.g. IP addresses, DNS (Yes / Somewhat / No)
-4. Have you used Linux before? (Yes / A little / No)
-5. Do you have a career path in mind? (Yes — show paths / Not yet — help me choose)
+**Section 1 — What is Cybersecurity**
+- The simple definition and why it is bigger than most people think
+- Why cybersecurity exists — the threat landscape in plain terms
+- Real breach statistics and real impact on real organisations and people
+- Why this is a career with genuine long-term demand
+- What cybersecurity is not — dispelling myths, hacker stereotypes, the lone genius narrative
 
-Based on answers → platform recommends an entry point and starting module. User can override at any time.
+**Section 2 — Core Concepts Everyone Must Know**
+- CIA Triad — Confidentiality, Integrity, Availability with real world examples for each
+- Authenticity and Non-repudiation — the two concepts often added to CIA
+- Threats vs Vulnerabilities vs Risk — the difference with examples
+- Assets — what we are actually protecting and why
+- Controls — preventive, detective, corrective, deterrent, compensating
+- Defence in depth — why one control is never enough
+- Least privilege — give access only to what is needed
+- Zero trust — never trust, always verify, assume breach
+- Attack surface — everything that could be targeted
+- Encryption basics — what it is, symmetric vs asymmetric, why it matters
 
----
+**Section 3 — How Attacks Actually Work**
+- The attacker mindset — how adversaries think and plan
+- The Cyber Kill Chain — all seven stages with real examples
+- MITRE ATT&CK — what it is and why the industry uses it everywhere
+- Common attack types — phishing, malware, ransomware, MITM, SQL injection, social engineering
+- Who attacks organisations — script kiddies, cybercriminals, nation states, insiders, hacktivists, each with real motivation
+- How a real breach unfolds — narrative walkthrough of a realistic attack from initial access to detection
 
-### 5.2 Foundation Layer (Entry Point A & B)
+**Section 4 — The Security Industry**
+- How security teams are structured — what roles exist and how they work together
+- Red, Blue, Purple, White, Yellow, Green, Gold teams — what each means and how they interact
+- Offensive vs defensive security — the difference in mindset and daily work
+- In-house security vs MSSP vs consultancy — the three career environments
+- How security fits into a business — why companies invest, what regulations drive it
+- Security maturity — why a startup's security looks nothing like a bank's
 
-Everyone who needs it starts here. Taught through real scenarios, not lectures.
+**Section 5 — Compliance and Regulation Overview**
+- Why compliance exists and what it actually means
+- The difference between compliance and security — you can be compliant and insecure
+- Overview of major frameworks — GDPR, HIPAA, SOX, PCI-DSS, ISO 27001, NIST CSF, SOC 2
+- Regulatory bodies — ICO, FCA, SEC, CMS, CISA — what they do and why they matter
+- How organisations get certified or audited
 
-**Module 1 — How the Internet Actually Works**
-- IP addressing, subnetting basics, DNS, HTTP/S
-- Tool: Wireshark — capture and read your first packet
-- Scenario: *"You're a new IT hire. Your manager asks you to find out why a website isn't loading."*
+**Section 6 — Career Realities**
+- What security jobs actually look like day to day — honest, not glamorised
+- Entry level realities — what junior roles actually involve
+- How people get into security — common routes, not just university degrees
+- Certifications — what they are, which matter, which are marketing
+- Salary ranges globally — honest numbers
+- Communities, conferences, and continuous learning
 
-**Module 2 — Operating Systems for Security**
-- Windows fundamentals — Active Directory basics, file permissions, registry
-- Linux fundamentals — CLI, file system, users, permissions, processes
-- Tool: Windows Sandbox, WSL2 (Windows friendly)
-- Scenario: *"A user's machine is behaving strangely. Navigate it to find out why."*
+**Section 7 — Team Structures Explained**
+- Red Team — simulating a real adversary, not just finding vulnerabilities
+- Blue Team — the defenders. SOC, IR, threat hunters
+- Purple Team — collaborative exercises where red and blue work together in real time
+- White Team — the referees in a security exercise. Rules of engagement, arbitration
+- Yellow Team — builders, developers, architects
+- Orange Team — red plus yellow. Developers learning offensive techniques
+- Green Team — blue plus yellow. Developers building security in from the start
+- Gold Team — crisis management and executive leadership during a major incident
 
-**Module 3 — Security Fundamentals**
-- CIA Triad, threat modeling, attack surface
-- Types of attacks — phishing, malware, MITM, social engineering
-- Defense concepts — least privilege, defense in depth, zero trust intro
-- Scenario: *"You're a new security analyst. Here's your first threat briefing."*
-
-**Module 4 — Networking for Security**
-- Ports and protocols, firewalls, VPNs, proxies
-- Network topology — DMZ, segmentation
-- Tool: nmap — your first network scan (on your own machine)
-- Scenario: *"Map your home network. Understand what's actually on it."*
-
-**Module 5 — Security Tools Orientation**
-- Introduction to the tooling ecosystem
-- Open source vs enterprise tools — what exists, what's used where
-- Setting up your first lab environment (Docker on Windows)
-- Scenario: *"A security team uses these tools daily. Here's what each one does and why."*
-
----
-
-### 5.3 Specialization Paths
-
-#### ☁️ Path 1 — Azure Security
-
-**Who it's for:** Cloud-focused roles, Azure administrators moving into security, anyone targeting AZ-500 or SC-200.
-
-**Tools:** Azure Free Tier, Microsoft Defender for Cloud (trial), Microsoft Sentinel (trial), Entra ID
-
-**Modules:**
-
-1. **Azure Fundamentals for Security** — Resource groups, subscriptions, management hierarchy, the shared responsibility model
-2. **Identity & Access Management** — Entra ID, users/groups/roles, MFA setup, Conditional Access policies, Privileged Identity Management (PIM)
-3. **Network Security in Azure** — NSGs, Azure Firewall, Private Endpoints, VNet peering, DDoS protection
-4. **Defender for Cloud** — Secure Score, recommendations, workload protections, alerts
-5. **Microsoft Sentinel** — Workspace setup, data connectors, analytics rules, incidents, KQL basics, playbooks
-6. **Compliance & Governance** — Azure Policy, Blueprints, regulatory compliance dashboard, RBAC deep dive
-7. **Incident Response on Azure** — End to end IR scenario using Sentinel + Defender
-8. **Capstone** — *"A startup just migrated to Azure with zero security controls. Lock it down."*
-
-**Cabinet Artifacts:**
-- Configured Entra ID tenant with documented policies
-- Working Sentinel workspace with detection rules
-- Secure Score improvement report
-- Azure security architecture diagram
-- Incident response runbook
-
-**Cert Alignment:** AZ-500, SC-200, SC-300
+**Section 8 — How CyberPivot Works**
+- The platform structure explained
+- How to use the onboarding assessment
+- How the cabinet works and why it matters
+- How to use the platform if you already have experience
+- How to contribute as an open source contributor
 
 ---
 
-#### 🔴 Path 2 — Penetration Testing
+### Level 1 — Foundation Layer
 
-**Who it's for:** Offensive security, ethical hacking, red team aspirants.
+Required for Entry Points A and B. Optional review for C and D.
 
-**Tools:** Kali Linux (WSL2 or VM), Burp Suite Community, Metasploit, nmap, Gobuster
-
-**Modules:**
-
-1. **Pentest Methodology** — Phases, rules of engagement, legal framework, report structure
-2. **Reconnaissance** — Passive recon (OSINT), active recon, footprinting, Google dorking
-3. **Scanning & Enumeration** — nmap, service enumeration, vulnerability scanning with OpenVAS
-4. **Exploitation Basics** — Metasploit framework, manual exploitation concepts, payload types
-5. **Web Application Testing** — OWASP Top 10 hands-on, Burp Suite, SQLi, XSS, IDOR
-6. **Post-Exploitation** — Privilege escalation, persistence, lateral movement concepts
-7. **Reporting** — Writing a real pentest report, executive summary vs technical findings, CVSS scoring
-8. **Capstone** — *"You've been hired for a black-box web app test. Here's your scope. Go."*
-
-**Cabinet Artifacts:**
-- Configured Kali environment (WSL2)
-- Custom nmap scan scripts
-- Burp Suite project with findings
-- Full pentest report (template + completed example)
-- Personal methodology notes
-
-**Cert Alignment:** CompTIA PenTest+, eJPT, OSCP (foundation)
+- Networking Fundamentals — TCP/IP, DNS, subnetting, how traffic moves, Wireshark hands-on
+- Linux Fundamentals — CLI, file system, users, permissions, processes, scripting basics
+- Windows and Active Directory — file permissions, registry, AD basics, Group Policy
+- Security Fundamentals — controls, cryptography, authentication, PKI, common protocols
+- Cloud Fundamentals — shared responsibility model, cloud service models, major providers overview
+- Python for Security — scripting basics, automating tasks, writing simple security tools
 
 ---
 
-#### 🛡️ Path 3 — SOC / Security Operations
+### Level 2 — Role Paths
 
-**Who it's for:** SOC analysts (Tier 1, 2, 3), incident responders, threat hunters.
+Structured journeys. Modules in a specific order. Cabinet artifacts built throughout.
 
-**Tools:** Wazuh (OSS SIEM), Splunk Free Trial, Elastic SIEM, TheHive, MISP
+#### DOMAIN 1 — Defensive Security
+People in this domain detect threats, respond to incidents, and protect environments in real time.
 
-**Modules:**
+**SOC Analyst** — V1
+Entry level to senior. Monitors alerts, triages incidents, escalates confirmed threats. Most common entry point into cybersecurity.
+Level: Entry to Mid
 
-1. **SOC Fundamentals** — How a SOC works, tiers, tools, shift life, alert fatigue reality
-2. **Log Analysis** — Windows event logs, syslog, auth logs, what to look for
-3. **SIEM Fundamentals** — Setting up Wazuh, ingesting logs, creating dashboards
-4. **Alert Triage** — Real alert scenarios, false positive vs true positive, escalation decisions
-5. **Incident Response** — IR lifecycle, playbooks, containment, eradication, recovery
-6. **Threat Hunting** — Hypothesis-driven hunting, MITRE ATT&CK framework, hunting in logs
-7. **Malware Analysis Intro** — Static vs dynamic analysis, sandboxing, IOCs
-8. **Capstone** — *"Here's 48 hours of logs from a compromised environment. Find the breach."*
+**Incident Responder** — Coming Soon
+Called when something bad has already happened. Contains damage, removes threat, recovers systems, documents everything.
+Level: Mid to Senior
 
-**Cabinet Artifacts:**
-- Running Wazuh SIEM instance
-- Custom detection rules library
-- IR playbook collection
-- Threat hunting hypothesis log
-- Incident report (completed example)
+**Threat Hunter** — Coming Soon
+Proactively looks for threats that have not triggered alerts. Hypothesis-driven, deep log analysis.
+Level: Mid to Senior
 
-**Cert Alignment:** CompTIA Security+, CySA+, BTL1, GCIH
+**EDR Analyst** — Coming Soon
+Specialises in endpoint telemetry and response. Deep expertise in CrowdStrike, SentinelOne, Microsoft Defender.
+Level: Entry to Mid
 
 ---
 
-#### 📋 Path 4 — GRC (Governance, Risk & Compliance)
+#### DOMAIN 2 — Offensive Security
+People in this domain find weaknesses before attackers do.
 
-**Who it's for:** GRC analysts, compliance officers, risk managers, auditors.
+**Vulnerability Assessment Analyst** — Coming Soon
+Scans, identifies and prioritises vulnerabilities without full exploitation. Good entry point into offensive security.
+Level: Entry to Mid
 
-**Tools:** No lab required — real templates, real frameworks, real documents
+**Penetration Tester** — V1
+Authorised attacks on systems, networks and applications. Delivers a formal report of findings.
+Level: Mid to Senior
 
-**Modules:**
+**Red Teamer** — Coming Soon
+Simulates a full adversary campaign. Stealth, persistence, lateral movement, objective achievement. Requires solid pentest experience first.
+Level: Senior
 
-1. **GRC Fundamentals** — What GRC is, why it exists, how it fits the business
-2. **Frameworks Deep Dive** — NIST CSF, ISO 27001, SOC 2, CIS Controls, GDPR overview
-3. **Risk Management** — Risk identification, assessment, scoring, treatment, risk register
-4. **Policy Writing** — Information security policy, AUP, BYOD, incident response policy — real templates
-5. **Control Frameworks** — Control design, implementation, testing, evidence collection
-6. **Audit Preparation** — What auditors look for, evidence mapping, gap analysis
-7. **Vendor Risk Management** — Third party risk, questionnaires, tiering vendors
-8. **Capstone** — *"Your company is going for ISO 27001 certification. Build the program from scratch."*
-
-**Cabinet Artifacts:**
-- Complete risk register (template + example)
-- Information security policy suite
-- Control mapping spreadsheet
-- Gap analysis report
-- Audit evidence folder structure
-- Vendor risk questionnaire
-
-**Cert Alignment:** CompTIA Security+, CISM, CRISC, ISO 27001 Lead Implementer
+**Bug Bounty Hunter** — Coming Soon
+Finds vulnerabilities in companies public-facing assets for monetary rewards. Freelance and independent.
+Level: Entry to Senior (self-paced)
 
 ---
 
-#### 🔌 Path 5 — API Security
+#### DOMAIN 3 — Application and Product Security
+People in this domain make sure software is built and shipped securely.
 
-**Who it's for:** Developers moving into security, AppSec engineers, anyone working with APIs.
+**AppSec Engineer** — V1
+Embedded in development teams. Reviews code, runs SAST and DAST, builds security into the development lifecycle.
+Level: Mid to Senior
 
-**Tools:** Postman, OWASP crAPI, Burp Suite, OWASP ZAP, jwt.io
+**API Security Engineer** — V1
+Specialises in API attack surface. Authentication flaws, OWASP API Top 10, gateway security.
+Level: Mid
 
-**Modules:**
+**DevSecOps Engineer** — Coming Soon
+Security embedded in the pipeline. CI/CD gates, secrets management, container security, IaC scanning.
+Level: Mid to Senior
 
-1. **API Fundamentals for Security** — REST, GraphQL, gRPC, authentication patterns
-2. **OWASP API Top 10** — Each vulnerability explained with hands-on exploitation
-3. **Authentication & Authorization Flaws** — Broken JWT, OAuth misconfig, API key exposure
-4. **API Reconnaissance** — Finding undocumented endpoints, fuzzing, Swagger abuse
-5. **Rate Limiting & Business Logic** — Bypassing limits, abusing workflows
-6. **API Gateway Security** — WAF, rate limiting, authentication at the gateway layer
-7. **Secure API Design** — Building security in from the start, threat modeling APIs
-8. **Capstone** — *"Audit this fintech API before it goes to production. Find everything."*
-
-**Cabinet Artifacts:**
-- Postman security testing collection
-- OWASP API Top 10 findings report
-- API threat model document
-- Personal API security checklist
-
-**Cert Alignment:** BSCP, GWEB, APIsec University certifications
+**AI Security Engineer** — Coming Soon
+Securing AI systems and LLM-powered applications. Prompt injection, model poisoning, OWASP LLM Top 10, MITRE ATLAS.
+Level: Mid to Senior
 
 ---
 
-#### 💻 Path 6 — Application Security (AppSec)
+#### DOMAIN 4 — Cloud and Infrastructure Security
+People in this domain secure the environments everything else runs on.
 
-**Who it's for:** Developers wanting to move into security, AppSec engineers, secure code reviewers.
+**Azure Security Engineer** — V1
+Secures Microsoft Azure infrastructure. Entra ID, Sentinel, Defender, PIM, network controls, compliance.
+Level: Mid to Senior
 
-**Tools:** Semgrep, OWASP ZAP, SonarQube Community, Burp Suite, GitHub Advanced Security (free tier)
+**AWS Security Engineer** — Coming Soon
+Secures Amazon Web Services. IAM, GuardDuty, Security Hub, VPC security, CloudTrail, Macie.
+Level: Mid to Senior
 
-**Modules:**
+**GCP Security Engineer** — Coming Soon
+Secures Google Cloud Platform. IAM, Security Command Center, Chronicle, VPC controls.
+Level: Mid to Senior
 
-1. **Secure SDLC** — Where security fits in development, DevSecOps intro, shift left concept
-2. **OWASP Top 10** — Web application vulnerabilities hands-on
-3. **Code Review Fundamentals** — Reading code for security flaws, common patterns
-4. **SAST & DAST** — Setting up Semgrep, running ZAP, interpreting results
-5. **Threat Modeling for Applications** — STRIDE, data flow diagrams, abuse cases
-6. **Dependency & Supply Chain Security** — SCA tools, CVE triage, license issues
-7. **Security in CI/CD** — Adding security gates to pipelines, secrets scanning
-8. **Capstone** — *"Here's a pull request. Security review it before it merges."*
+**Network Security Engineer** — Coming Soon
+Firewalls, IDS/IPS, network segmentation, zero trust networking, traffic analysis.
+Level: Mid to Senior
 
-**Cabinet Artifacts:**
-- Semgrep custom rules
-- ZAP scan report
-- Threat model document
-- Secure code review checklist
-- CI/CD security pipeline config
+**Identity Security Engineer** — Coming Soon
+IAM, PAM, directory services, SSO, MFA, zero trust identity. CyberArk, BeyondTrust, Okta, Entra ID.
+Level: Mid to Senior
 
-**Cert Alignment:** GWEB, CSSLP, BSCP
-
----
-
-### 5.4 Labs & Challenges
-
-Standalone practice available throughout the platform.
-
-- Each lab is scenario-based with a real world context
-- Difficulty rated: Beginner / Intermediate / Advanced
-- Time estimated per lab
-- Three modes: Guided (full walkthrough) / Assisted (hints only) / Independent (no help)
-- Completion tracked on progress dashboard
-- New labs added regularly by community contributors
+**Email Security Engineer** — Coming Soon
+SPF, DKIM, DMARC, email gateway management, phishing analysis, email-based IR.
+Level: Entry to Mid
 
 ---
 
-### 5.5 Certification Roadmap
+#### DOMAIN 5 — Governance, Risk and Compliance
+People in this domain manage security as a business function.
 
-Per-path certification guidance:
+**GRC Analyst** — V1
+Frameworks, risk registers, controls, audits, policy writing. NIST, ISO 27001, SOC 2, GDPR and more.
+Level: Entry to Mid
 
-- Which certs actually matter for this path (honest assessment)
-- Recommended order — don't waste money doing them wrong
-- Difficulty rating, study time estimate, exam cost
-- Free study resources linked for each cert
-- Community pass rate and tips
+**Compliance Analyst** — Coming Soon
+Focused on regulatory compliance. GDPR, HIPAA, PCI-DSS, industry-specific regulations.
+Level: Entry to Mid
 
----
+**Risk Analyst** — Coming Soon
+Quantifies and manages security risk. Risk registers, treatment plans, board-level reporting.
+Level: Mid
 
-### 5.6 Interview Prep
+**Security Auditor** — Coming Soon
+Validates controls are working. Evidence collection, gap analysis, audit reports. Internal or external.
+Level: Mid to Senior
 
-**General Section (all paths):**
-- Behavioral questions — STAR method, common scenarios
-- "Tell me about yourself" for career switchers
-- How to talk about your lab work as real experience
-- What hiring managers actually look for
-- Salary ranges by role, level, and region
-
-**Path-Specific Technical Prep:**
-- SOC: Alert triage scenarios, log analysis questions, tool knowledge
-- Pentest: Methodology questions, explain-this-vulnerability scenarios
-- GRC: Framework knowledge, risk scenario walkthroughs, policy questions
-- Azure Security: Architecture questions, Sentinel/Defender scenarios
-- AppSec: Code review exercises, SDLC questions, tool knowledge
-- API Security: Auth flaw scenarios, OWASP API Top 10 deep questions
-
-**Mock Interview Scenarios:**
-- Full simulated interview flows
-- Question → your answer → feedback and model answer
-- Recorded so you can review your responses
+**vCISO** — Coming Soon
+Fractional or consulting CISO. Strategy, program building, board communication.
+Level: Senior
 
 ---
 
-### 5.7 CV / Resume Builder
+### Level 3 — Specialist Modules
 
-- Path-specific templates — pentest CV looks nothing like GRC CV
-- Guided section by section build
-- Translates your cabinet artifacts into CV bullet points
-- ATS optimization tips
-- LinkedIn profile guidance per path
-- Cover letter templates per path
-- Before/after examples — what a weak vs strong entry-level CV looks like
+Deep dives available standalone or embedded inside role paths. Someone already working in security can take just the module they need without doing a full path.
 
----
-
-### 5.8 Progress Dashboard
-
-- Visual journey map — where you are, what's next
-- Cabinet display — everything you've built so far
-- Time invested tracking
-- Streak and consistency tracking
-- Shareable progress profile — send to employers or mentors
-- Completion percentages per module and path
-
----
-
-### 5.9 Community Layer (V2)
-
-- Discord integration
-- Study group finder — connect with people on same path
-- Peer CV reviews
-- "Ask a practitioner" — real professionals answer questions
-- Community-contributed modules and labs
-
----
-
-### 5.10 Job Board (V2)
-
-- Curated entry-level and junior cybersecurity roles
-- Filtered by path
-- "You're ready for this" indicator based on progress
-- Application tips per role type
+- M365 Security — Defender for Office 365, Purview, Intune, M365 Defender, Defender for Cloud Apps
+- Endpoint Security and EDR — how EDR works, telemetry, detection tuning, evasion awareness
+- Database Security and Activity Monitoring — IBM Guardium, Imperva, pgAudit, hardening, compliance
+- PAM and CyberArk Deep Dive — CyberArk architecture, BeyondTrust, HashiCorp Vault, JIT access, session recording
+- PIM Deep Dive — Microsoft PIM, JIT activation, approval workflows, audit logs
+- AI Security Testing — prompt injection for pentesters, testing LLM features in application scope
+- AI Governance and EU AI Act — policy writing, risk assessment for AI tools, regulatory compliance
+- Physical Security and Social Engineering — tailgating, badge cloning, pretexting, vishing, physical pentest engagements
+- OPSEC for Security Professionals — protecting sensitive information through behaviour and process
+- Digital Forensics and DFIR — disk forensics, memory forensics, network forensics, chain of custody, Autopsy, Volatility
+- Threat Intelligence and CTI — MITRE ATT&CK, STIX/TAXII, threat feeds, dark web monitoring, threat actor profiles
+- OT/ICS/SCADA Security — industrial control systems, Purdue model, Modbus, DNP3, critical infrastructure
+- Mobile Application Security — iOS and Android app security, MDM, OWASP Mobile Top 10, MobSF, Frida
+- Cryptography in Practice — TLS configuration, PKI, certificate management, key management, common crypto failures
+- Security Architecture and Design — zero trust architecture, defence in depth, security patterns, reference architectures
+- Software Supply Chain Security — SBOM, dependency security, build pipeline integrity, SolarWinds-style attack awareness
+- Privacy Engineering — privacy by design, data minimisation, pseudonymisation, DPIA, cookie consent implementation
+- Purple Teaming — collaborative red and blue exercises, detection improvement, real-time tuning
+- Bug Bounty and Responsible Disclosure — VDP programs, writing good bug reports, working with vendor security teams
+- Kerberos and Active Directory Attacks — Kerberoasting, Pass the Hash, DCSync, Golden Ticket, defence strategies
+- Container and Kubernetes Security — Docker hardening, Kubernetes RBAC, image scanning, runtime security
+- GDPR in Practice — data subject rights, breach notification, DPA relationships, privacy notices, Article 30 records
+- SOX IT General Controls — ITGC framework, change management, access controls, financial system audit
+- PCI-DSS Implementation — cardholder data environment, 12 requirements, SAQ vs full audit, tokenisation
+- HIPAA Security Rule — covered entities, business associates, technical safeguards, risk analysis
+- FedRAMP Overview — US government cloud security, ATO process, continuous monitoring
+- Zero Trust Architecture — never trust always verify, microsegmentation, identity as perimeter, NIST 800-207
+- Cloud Forensics and IR — cloud-specific investigation techniques, log preservation, evidence collection in Azure/AWS/GCP
 
 ---
 
-### 5.11 Threat Intel Feed (V2)
+### Level 4 — Topic Library
 
-- Weekly curated real-world incidents
-- Mapped to relevant platform modules
-- "This breach happened because of X — here's the module that covers prevention"
+Short, focused explainers. No cabinet artifact. No progress tracking required. Community contributed and grows over time.
+
+Examples:
+- What is prompt injection
+- How DMARC works
+- Understanding CVSS scoring
+- What is a SOC 2 audit
+- How Kerberoasting works
+- What is a SIEM
+- How TLS handshake works
+- What is lateral movement
+- How ransomware spreads
+- What is a zero day
 
 ---
 
-## 6. Tech Stack
+### Level 5 — Tools Directory (V2)
+
+Filterable reference page. Select by role, category, or free vs enterprise. Each tool card shows:
+- What it is in plain language
+- What role uses it and why
+- Free or open source alternative if one exists
+- How to get started — trial link, free download, or setup guide
+- Which CyberPivot modules use this tool
+
+Categories: SIEM, EDR/XDR, Vulnerability Management, Penetration Testing, Web Application Testing, Network Security, Cloud Security, Identity and PAM, GRC and Compliance, Forensics and IR, Threat Intelligence, Email Security, AppSec and DevSecOps, AI Security.
+
+---
+
+## 7. Role Page Structure
+
+Every role has a dedicated page the user reads before committing to a path. Each page covers:
+
+- What the role actually does day to day — honest, no marketing language
+- Entry, mid, or senior level
+- What background suits this role
+- What a typical week looks like
+- Salary range by region — honest numbers
+- Industries that hire for this role
+- Tools used on the job — free and enterprise both listed
+- Certs that actually matter — honest assessment, no fluff
+- Where this role leads — career progression
+- Full module list with availability status
+- Cabinet artifacts they will build
+
+---
+
+## 8. Module Structure
+
+Every module follows this structure:
+
+1. **Scenario** — a real situation that makes the concept relevant. A real incident, a real job task, a real problem.
+2. **Concept** — concise, plain language explanation. The why before the what.
+3. **Free tool hands-on** — actual lab work. Install it, use it, break something, fix something.
+4. **Enterprise equivalent** — what the job version looks like. Trial link where available. Screenshots and walkthrough where not. Why organisations pay for it.
+5. **Cabinet artifact** — something tangible produced by completing the module. You built it, you own it.
+
+---
+
+## 9. Cabinet Artifacts — Full Detail
+
+### SOC Analyst
+- Wazuh SIEM — Windows Event logs, Sysmon, Linux auth logs and network flow ingested and dashboarded
+- Custom detection rules — brute force login, suspicious PowerShell, lateral movement via PsExec, new local admin creation
+- Incident investigation report — attack timeline reconstructed, evidence chain documented, root cause, containment, lessons learned
+- MITRE ATT&CK mapped threat hunting report — hypothesis, data sources, KQL/Sigma queries, findings
+- Phishing investigation report — full email header analysis, URL sandbox detonation, affected users, containment
+- IOC enrichment report — IPs, domains, hashes enriched via VirusTotal, AbuseIPDB, WHOIS, mapped to threat actor TTPs
+- Alert triage log — 20 alerts triaged, false positive vs true positive decisions with reasoning
+- Linux and Windows triage checklists — first responder reference cards built from real investigation work
+
+### Penetration Tester
+- Kali Linux environment — custom tool aliases, organised wordlists, VPN configs, structured note-taking
+- Reconnaissance report — OSINT findings, subdomain enumeration, technology fingerprinting, exposed services, employee data from public sources
+- Vulnerability assessment report — scan results analysed, false positives removed, findings CVSS scored and prioritised
+- Professional penetration test report — executive summary for non-technical audience, technical findings with reproduction steps, evidence screenshots, CVSS scores, remediation prioritised by risk
+- Burp Suite project — documented SQL injection, XSS, IDOR and broken authentication findings with request/response evidence
+- Custom nmap NSE scripts for targeted service enumeration
+- Exploitation notes — privilege escalation path from low privilege to SYSTEM/root, each step evidenced
+- Post-exploitation report — what an attacker could have accessed, data exfiltration simulation, persistence mechanisms documented
+
+### Azure Security Engineer
+- Entra ID tenant — MFA enforced, Conditional Access policies for compliant device, named location and sign-in risk, break-glass account documented
+- PIM configuration — all privileged roles require JIT activation, approval workflows active, activation audit log reviewed
+- Microsoft Sentinel workspace — 5+ data connectors, 10+ custom KQL analytics rules, MITRE ATT&CK coverage map
+- Defender for Cloud — Secure Score baseline documented, high severity recommendations remediated, before and after comparison
+- Azure network security architecture diagram — VNets, NSG rules, Azure Firewall, Private Endpoints, hub-spoke topology
+- Cloud incident response runbook — detection via Sentinel, investigation steps, containment for identity compromise and data exfiltration
+- Regulatory compliance report — CIS Azure Benchmark or NIST 800-53 posture exported and documented
+- Azure workload threat model — assets, trust boundaries, STRIDE analysis, mitigations mapped
+
+### GRC Analyst
+- Information security risk register — 15+ risks across people, process and technology, scored on likelihood and impact, treatment plans assigned
+- ISO 27001 gap analysis — all 93 Annex A controls assessed, gaps documented with remediation priorities and effort estimates
+- Information security policy suite — Information Security Policy, Acceptable Use Policy, BYOD Policy, Password Policy, Data Classification Policy, Incident Response Policy
+- NIST CSF control mapping — controls mapped to all five CSF functions, maturity level assessed per category
+- Audit evidence folder — structured evidence pack indexed per control domain, ready for external auditor
+- Vendor risk assessments — tiering matrix, questionnaire template, two completed assessments with risk ratings and treatment decisions
+- Security exceptions register — formal exception process, three examples with business justification, compensating controls, review dates
+- Business impact analysis — critical assets, RTO and RPO defined, recovery priorities documented
+- Regulatory compliance matrix — organisation's controls mapped to GDPR, SOX, PCI-DSS or HIPAA requirements depending on industry scenario
+
+### AppSec Engineer
+- Semgrep custom rule set — 10+ rules targeting OWASP Top 10 in a chosen language, tested against vulnerable and safe code samples
+- OWASP ZAP authenticated scan report — active scan findings categorised by severity, false positives removed, remediation guidance
+- Web application threat model — data flow diagram, trust boundaries, STRIDE analysis per component, mitigations and residual risk
+- Secure code review report — real PR reviewed, vulnerable code snippet shown, risk explained, remediated example provided
+- CI/CD security pipeline — GitHub Actions with Semgrep, OWASP Dependency Check, Trivy container scan, Gitleaks secrets scanning with pass/fail gates
+- OWASP Top 10 exploitation lab notes — each vulnerability exploited in controlled environment, root cause explained, fix demonstrated
+- Secure development guidelines — language-specific secure coding standards written for a development team
+
+### API Security Engineer
+- Postman security testing collection — auth tests, injection tests, BOLA/BFLA tests, rate limiting tests, business logic abuse tests with documented results
+- OWASP API Top 10 findings report — each vulnerability demonstrated against a target API, technical evidence and remediation
+- API threat model — all endpoints mapped, auth flows diagrammed, trust boundaries and attack surface documented
+- JWT security lab — algorithm confusion attack, weak secret cracking, none algorithm bypass, proper implementation documented
+- OAuth 2.0 misconfiguration lab — redirect URI manipulation, state parameter bypass, token leakage scenarios with fixes
+- API security checklist — covers auth, input validation, rate limiting, logging, error handling and versioning
+
+### AI Security Engineer (Coming Soon — cabinet shown)
+- OWASP LLM Top 10 exploitation lab — each vulnerability demonstrated: prompt injection, insecure output handling, training data poisoning, model denial of service, sensitive information disclosure
+- Prompt injection research report — direct and indirect injection attacks documented, payloads catalogued, detection and prevention strategies tested
+- LLM threat model — STRIDE applied to an LLM-powered application, MITRE ATLAS techniques mapped, mitigations documented
+- AI red team report — structured adversarial testing, jailbreak attempts documented, guardrail bypasses found, remediation recommended
+- RAG system security assessment — retrieval-augmented generation pipeline assessed for data poisoning, prompt leakage and unauthorised data access
+- AI governance policy — organisational policy for responsible AI use, risk assessment process for new AI tools, EU AI Act compliance considerations
+- Agentic AI security review — multi-agent system assessed for tool misuse, excessive permissions and trust boundary violations
+
+---
+
+## 10. Onboarding Flow
+
+**Welcome screen** — one line, one button, nothing else.
+
+**4 questions — one per screen, slides automatically:**
+
+Q1: Where are you starting from?
+- Complete beginner, no IT background
+- I work in IT already
+- I am a developer moving into security
+- I already work in security
+
+Q2: Have you used Linux before?
+- Yes, comfortably
+- A little
+- Never
+
+Q3: Do you understand basic networking?
+- Yes
+- Somewhat
+- Not really
+
+Q4: Do you have a path in mind?
+- Yes, show me the roles
+- Not yet, help me choose
+
+**Recommendation logic using all 4 answers:**
+- Q1 Complete beginner → Entry A, Foundation Module 1
+- Q1 IT background + Q3 Yes/Somewhat → Entry B, Foundation Module 3
+- Q1 IT background + Q3 Not really → Entry B, Foundation Module 2
+- Q1 Developer → Entry C, AppSec or DevSecOps highlighted
+- Q1 Already in security → Entry D, straight to role selection
+
+**Cabinet preview** — locked artifact cards for chosen or recommended role.
+
+**Account prompt** — not blocking. Google, GitHub, email, or skip.
+
+---
+
+## 11. Supporting Features
+
+### Interview Prep
+- General section — behavioral questions, STAR method, salary ranges, what hiring managers look for
+- Role-specific technical prep — questions, scenario walkthroughs, common gotchas, what good answers look like
+- Mock interview flows — question, answer space, model answer and feedback
+
+### CV Builder
+- Role-specific templates
+- Guided section by section
+- Pulls cabinet artifacts and formats as CV bullet points
+- ATS optimisation tips
+- LinkedIn profile guidance per role
+- Cover letter templates
+- Before and after examples
+
+### Certification Roadmap (per role)
+- Which certs actually matter — honest
+- Order to do them in and why
+- Difficulty, study time, cost
+- Free study resources
+- What each cert signals to an employer
+
+### Progress Dashboard
+- Visual journey map
+- Cabinet display — locked and unlocked
+- Time invested and streak tracking
+- Shareable progress profile
+
+---
+
+## 12. Security Requirements
+
+The platform must be secure by design. A cybersecurity learning platform that is not secure is an embarrassment.
+
+- Input sanitisation on all user input before processing or storage
+- Secure HTTP headers — CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy
+- OAuth state parameter validated on all SSO flows
+- Auth errors never reveal whether an email exists — generic messages only
+- JWT tokens handled entirely by Supabase, never manually stored or exposed
+- Rate limiting on all auth endpoints
+- Environment variables validated at startup
+- RLS enforced on every Supabase table — no exceptions
+- CSRF protection on all form submissions
+- No sensitive data in localStorage beyond onboarding answers
+
+---
+
+## 13. Tech Stack
 
 | Layer | Technology | Reason |
 |---|---|---|
-| Frontend | Next.js 14 (App Router) | Best OSS community, self-hostable, excellent performance |
-| Styling | Tailwind CSS + shadcn/ui | Fast, consistent, accessible components |
-| Backend / Auth / DB | Supabase | Auth + PostgreSQL + real-time, generous free tier |
-| Content / Modules | MDX files | Markdown + components, community can contribute via GitHub PR |
-| Lab CLI Companion | Python | Cross-platform, Windows friendly, easy to distribute |
-| Hosting (managed) | Vercel | Free tier covers early stage, excellent Next.js integration |
-| Hosting (self-hosted) | Docker Compose | Full self-host option for privacy-conscious users |
-| Package Manager | pnpm | Faster than npm, better monorepo support |
-| Version Control | GitHub | Public repo, open source, community contributions |
+| Frontend | Next.js 14 App Router | OSS, self-hostable, excellent performance |
+| Styling | Tailwind CSS + shadcn/ui | Fast, consistent, accessible |
+| Backend/Auth/DB | Supabase | Auth + PostgreSQL + Realtime, generous free tier |
+| Content | MDX files | Markdown + components, community contributes via PR |
+| Lab CLI | Python | Cross-platform, Windows friendly |
+| Hosting (managed) | Vercel | Free tier, excellent Next.js integration |
+| Hosting (self-hosted) | Docker Compose | Full self-host option |
+| Package Manager | pnpm | Faster, better monorepo support |
+| Analytics | Plausible | Open source, privacy friendly, no cookie banner |
+| Version Control | GitHub | Public repo, community contributions |
 
 ---
 
-## 7. V1 Scope
+## 14. V1 Scope
 
 Build this first. Prove the model. Ship it.
 
 **In V1:**
+- Homepage
+- Introduction section (all 8 parts)
 - Onboarding assessment flow
-- Foundation Layer (all 5 modules)
-- Azure Security Path (all 8 modules, complete end to end)
-- Progress Dashboard (basic)
-- Cabinet display (basic)
-- Certification Roadmap (Azure path)
-- Interview Prep (general + Azure path specific)
-- CV Builder (Azure path template)
-- Basic lab challenges (5-10 labs)
+- Foundation Layer (6 modules)
+- Azure Security Engineer path (full)
+- SOC Analyst path (full)
+- Penetration Tester path (full)
+- GRC Analyst path (full)
+- Progress dashboard
+- Cabinet display
+- Cert roadmap per role
+- Interview prep — general and per role
+- CV builder — per role templates
+- All role pages (V1 roles full, Coming Soon roles visible with basic info)
 
-**Not in V1 (V2 and beyond):**
-- All other specialization paths (added progressively)
-- Community / Discord integration
-- Job Board
-- Threat Intel Feed
-- Mock interview recording
+**V2 and beyond:**
+- All Coming Soon roles
+- Specialist modules
+- Topic Library
+- Tools Directory
+- Community layer
+- Job board
+- Threat intel feed
 - Mobile app
 
 ---
 
-## 8. Folder Structure (Proposed)
+## 15. Open Source Model
 
-```
-cyberpivot/
-├── app/                          # Next.js app router
-│   ├── (auth)/                   # Auth pages
-│   ├── (dashboard)/              # Logged in experience
-│   │   ├── dashboard/            # Progress dashboard
-│   │   ├── paths/                # Specialization paths
-│   │   ├── labs/                 # Standalone labs
-│   │   ├── interview/            # Interview prep
-│   │   ├── cv/                   # CV builder
-│   │   └── cabinet/              # Portfolio/cabinet
-│   ├── (marketing)/              # Public landing pages
-│   └── api/                      # API routes
-├── components/                   # Shared UI components
-│   ├── ui/                       # shadcn/ui components
-│   ├── modules/                  # Module-specific components
-│   └── layout/                   # Layout components
-├── content/                      # MDX content files
-│   ├── foundations/              # Foundation modules
-│   ├── paths/
-│   │   ├── azure-security/       # Azure path modules
-│   │   ├── pentest/              # Pentest path modules
-│   │   ├── soc/                  # SOC path modules
-│   │   ├── grc/                  # GRC path modules
-│   │   ├── api-security/         # API Security modules
-│   │   └── appsec/               # AppSec path modules
-│   ├── labs/                     # Lab content
-│   └── interview/                # Interview questions
-├── lib/                          # Utilities and helpers
-├── hooks/                        # Custom React hooks
-├── types/                        # TypeScript types
-├── cli/                          # Python CLI companion
-│   ├── setup/                    # Lab environment setup scripts
-│   └── checks/                   # System check utilities
-├── public/                       # Static assets
-├── supabase/                     # Supabase config and migrations
-├── PRD.md                        # This document
-├── CLAUDE.md                     # AI context file
-├── .cursorrules                  # Cursor conventions
-├── CONTRIBUTING.md               # How to contribute
-└── README.md                     # Project readme
-```
-
----
-
-## 9. Design Principles
-
-- **Dark mode first** — cybersecurity tools are dark mode. Our platform should feel native to that world.
-- **Clean and focused** — no distractions, content is the hero
-- **Progress is visible** — users should always know where they are and what's next
-- **Mobile responsive** — readable on any device, though lab work is desktop
-- **Accessible** — WCAG 2.1 AA minimum
-- **Fast** — static generation where possible, optimistic UI updates
-
----
-
-## 10. Open Source Contribution Model
-
-- All content lives in `/content` as MDX files
-- Community contributes new paths, modules, labs via GitHub Pull Requests
-- Each module has a standard template to follow
+- All content lives in MDX files in the /content directory
+- Community contributes new paths, modules, labs, topics via GitHub Pull Requests
+- Each module follows the standard template in /content/TEMPLATE.mdx
 - Maintainers review for accuracy and quality
 - Contributors credited in the platform and README
 - Issues tagged "good first issue" for new contributors
+- Topic Library is the easiest contribution — focused explainer, submit a PR
 
 ---
 
-## 11. Success Metrics (V1)
-
-- GitHub stars as community signal
-- Monthly active users
-- Module completion rates
-- Path completion rates
-- CV builder usage
-- Community contributions (PRs merged)
-- User-reported job placements
-
----
-
-## 12. What Makes CyberPivot Different
-
-| Feature | CyberPivot | TryHackMe | HTB | Udemy | YouTube |
-|---|---|---|---|---|---|
-| Free & open source | ✅ | Partial | Partial | ❌ | ✅ |
-| Path-aware journey | ✅ | Partial | ❌ | ❌ | ❌ |
-| Real tool experience | ✅ | Partial | ✅ | ❌ | ❌ |
-| Tangible portfolio output | ✅ | ❌ | ❌ | ❌ | ❌ |
-| CV builder | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Interview prep | ✅ | ❌ | ❌ | Partial | Partial |
-| Cert roadmap | ✅ | Partial | ❌ | ❌ | ❌ |
-| Self-hostable | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Start where you are | ✅ | ❌ | ❌ | ❌ | ❌ |
-
----
-
-*This document is the single source of truth for CyberPivot v1. All building decisions reference this PRD.*
+*This document is the single source of truth for CyberPivot. All building decisions reference this PRD. When in doubt, also check DECISIONS.md.*

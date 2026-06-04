@@ -1,18 +1,18 @@
 # CyberPivot — AI Context File
 
-This file is read by Claude Code and Cursor at the start of every session.
-Always read this file before making any code decisions.
+Read this file fully before making any code or content decisions.
+Also read PRD.md and DECISIONS.md before starting any session.
 
 ---
 
-## What We're Building
+## What We Are Building
 
-CyberPivot is a free, open source, lifecycle-based cybersecurity learning platform.
+CyberPivot is a free, open source cybersecurity learning platform.
 Core philosophy: **Start where you are.**
 
-Users go from zero (or wherever they are) to having real skills, a real home lab, and a real portfolio they can show employers. Not a course platform. A practical, role-aware, scenario-driven journey that ends with a cabinet of real artifacts and the confidence to walk into interviews.
+Users go from zero (or wherever they are) to having real skills, a real home lab, and a real portfolio. Not a course platform. A practical, role-aware, scenario-driven journey that ends with a cabinet of real artifacts and the confidence to walk into interviews.
 
-Full vision is in PRD.md — read it.
+Full vision and structure in PRD.md. All decisions and reasoning in DECISIONS.md.
 
 ---
 
@@ -22,8 +22,8 @@ Full vision is in PRD.md — read it.
 - **Styling:** Tailwind CSS + shadcn/ui components
 - **Backend / Auth / DB:** Supabase (PostgreSQL + Auth + Realtime)
 - **Content:** MDX files in /content directory
-- **Package Manager:** pnpm (always use pnpm, never npm or yarn)
-- **Language:** TypeScript everywhere, no plain JS files
+- **Package Manager:** pnpm — always pnpm, never npm or yarn
+- **Language:** TypeScript everywhere — no plain JS files
 - **CLI Companion:** Python (in /cli directory)
 - **Hosting:** Vercel (primary) + Docker Compose (self-host option)
 - **Analytics:** Plausible (open source, privacy friendly)
@@ -35,23 +35,26 @@ Full vision is in PRD.md — read it.
 ```
 cyberpivot/
 ├── app/
-│   ├── (auth)/
-│   ├── (dashboard)/
-│   │   ├── dashboard/
-│   │   ├── roles/
-│   │   ├── modules/
-│   │   ├── labs/
-│   │   ├── interview/
-│   │   ├── cv/
-│   │   └── cabinet/
-│   ├── (marketing)/        # Homepage, role pages, about
-│   └── api/
+│   ├── (auth)/                   # Auth pages — login, signup, callback
+│   ├── (dashboard)/              # Logged in experience
+│   │   ├── dashboard/            # Progress dashboard
+│   │   ├── roles/                # Role pages
+│   │   ├── modules/              # Module viewer
+│   │   ├── labs/                 # Standalone labs
+│   │   ├── interview/            # Interview prep
+│   │   ├── cv/                   # CV builder
+│   │   └── cabinet/              # Portfolio display
+│   ├── (marketing)/              # Homepage, intro, about
+│   ├── (onboarding)/             # Onboarding flow
+│   └── api/                      # API routes
 ├── components/
-│   ├── ui/                 # shadcn/ui only
-│   ├── modules/            # Module-specific components
-│   └── layout/             # Layout components
+│   ├── ui/                       # shadcn/ui only
+│   ├── modules/                  # Module-specific components
+│   └── layout/                   # Layout components
 ├── content/
-│   ├── modules/            # All modules live here, shared across roles
+│   ├── intro/                    # Introduction section (8 parts)
+│   ├── foundations/              # Foundation layer modules
+│   ├── modules/                  # All role modules — shared building blocks
 │   │   ├── networking-fundamentals/
 │   │   ├── linux-fundamentals/
 │   │   ├── windows-active-directory/
@@ -62,19 +65,26 @@ cyberpivot/
 │   │   ├── risk-management/
 │   │   ├── threat-modeling/
 │   │   └── ...
-│   ├── roles/              # Role definitions — which modules, in what order
+│   ├── roles/                    # Role definitions — module lists in order
 │   │   ├── soc-analyst.json
 │   │   ├── penetration-tester.json
-│   │   ├── cloud-security-azure.json
+│   │   ├── azure-security-engineer.json
 │   │   ├── grc-analyst.json
 │   │   └── ...
-│   ├── labs/
-│   └── interview/
-├── lib/
-├── hooks/
-├── types/
-├── cli/
-└── supabase/
+│   ├── specialist/               # Specialist modules
+│   ├── topics/                   # Topic library entries
+│   ├── labs/                     # Standalone lab content
+│   └── interview/                # Interview prep content
+├── lib/                          # Utilities and helpers
+├── hooks/                        # Custom React hooks
+├── types/                        # TypeScript types
+├── cli/                          # Python CLI companion
+├── supabase/                     # DB config and migrations
+├── PRD.md                        # Product requirements
+├── CLAUDE.md                     # This file
+├── DECISIONS.md                  # Decision log
+├── CONTRIBUTING.md               # How to contribute
+└── README.md
 ```
 
 ---
@@ -83,31 +93,34 @@ cyberpivot/
 
 Modules are the core building blocks. Roles are curated collections of modules in a specific order. Some modules appear across multiple role paths — written once, used everywhere.
 
-Roles are grouped into five domains:
+**Five domains:**
 
-**Defensive Security**
-SOC Analyst (V1), Incident Responder, Threat Hunter, EDR Analyst
+Defensive Security — SOC Analyst (V1), Incident Responder, Threat Hunter, EDR Analyst
 
-**Offensive Security**
-Vulnerability Assessment Analyst, Penetration Tester (V1), Red Teamer, Bug Bounty Hunter
+Offensive Security — Vulnerability Assessment, Penetration Tester (V1), Red Teamer, Bug Bounty Hunter
 
-**Application & Product Security**
-AppSec Engineer (V1), API Security Engineer (V1), DevSecOps Engineer, AI Security Engineer
+Application and Product Security — AppSec Engineer (V1), API Security Engineer (V1), DevSecOps Engineer, AI Security Engineer
 
-**Cloud & Infrastructure Security**
-Cloud Security Azure (V1), Cloud Security AWS, Cloud Security GCP, Network Security Engineer, Identity Security Engineer, Email Security Engineer
+Cloud and Infrastructure Security — Azure Security Engineer (V1), AWS Security Engineer, GCP Security Engineer, Network Security Engineer, Identity Security Engineer, Email Security Engineer
 
-**Governance Risk & Compliance**
-GRC Analyst (V1), Compliance Analyst, Risk Analyst, Security Auditor, vCISO
+Governance Risk and Compliance — GRC Analyst (V1), Compliance Analyst, Risk Analyst, Security Auditor, vCISO
 
-Every role is visible from day one. V1 roles are fully built. All others show as Coming Soon with expected dates and a notify option. Users can see the full module list for any role even if content is not built yet.
+Every role is visible from day one. V1 roles fully built. All others show as Coming Soon with expected dates and a notify option.
+
+**Content levels:**
+- Introduction — free, ungated, no account needed
+- Foundation Layer — shared modules for beginners
+- Role Paths — structured journeys with cabinet artifacts
+- Specialist Modules — deep dives, standalone or embedded in paths
+- Topic Library — short focused explainers, community contributed
+- Tools Directory — filterable reference, V2
 
 ---
 
 ## Coding Conventions
 
 - TypeScript strict mode always on
-- Use server components by default, client components only when needed
+- Server components by default, client components only when needed
 - All components in PascalCase
 - All utility functions in camelCase
 - Files use kebab-case naming
@@ -115,6 +128,8 @@ Every role is visible from day one. V1 roles are fully built. All others show as
 - Zod for all form validation and schema definition
 - React Hook Form for all forms
 - Every component must have proper TypeScript types — no `any`
+- Loading states on all async operations — no frozen screens
+- Error states on all async operations — clear non-technical messages
 
 ---
 
@@ -128,108 +143,92 @@ Every role is visible from day one. V1 roles are fully built. All others show as
 
 ---
 
+## Security Rules
+
+The platform must be secure by design. Non-negotiable.
+
+- Input sanitisation on all user input
+- Secure HTTP headers — CSP, X-Frame-Options, X-Content-Type-Options, HSTS, Referrer-Policy
+- OAuth state parameter validated on all SSO flows
+- Auth errors never reveal whether an email exists
+- JWT tokens handled entirely by Supabase
+- Rate limiting on all auth endpoints
+- Environment variables validated at startup
+- RLS enforced on every Supabase table — no exceptions
+- No sensitive data in localStorage
+
+---
+
 ## Supabase Rules
 
-- All DB queries go through typed Supabase client
-- Row Level Security (RLS) enabled on all tables
-- Never expose service role key on client side
+- All DB queries through typed Supabase client
+- RLS enabled on all tables
+- Never expose service role key client-side
 - Auth handled entirely through Supabase Auth
-- Database types auto-generated and kept in /types/supabase.ts
+- Database types in /types/supabase.ts
 
 ---
 
 ## Content Rules
 
-- All module content written in MDX format
-- Each module file follows the standard template in /content/TEMPLATE.mdx
-- Scenarios always come before theory in every module
+- All module content in MDX format
+- Follow the standard template in /content/TEMPLATE.mdx
+- Scenario always comes before theory
 - Tools introduced hands-on before explained conceptually
-- Every module ends with a cabinet artifact — something tangible the user builds
+- Every module ends with a cabinet artifact
 
 **Every module that involves tooling covers two tracks:**
 
-Free/Open Source Track — what the user installs and uses in the lab. Fully functional, no credit card needed.
+Free/Open Source Track — what the user installs and uses in the lab. Fully functional, no credit card.
 
-Enterprise Track — what they will see on the job. Trial links where available. Screenshots and walkthroughs where not. Explains what the enterprise tool does and why organisations pay for it.
-
-Example: A SIEM module covers Wazuh (free, full hands-on lab) and Splunk (enterprise, trial link and guided walkthrough).
-
----
-
-## Role Pages
-
-Every role has a dedicated page before the user commits to a path. Each covers:
-- What the role actually does day to day — honest, no fluff
-- Entry, mid, or senior level
-- What background suits this role
-- What a typical week looks like
-- Salary range by region
-- Industries that hire for this role
-- Tools used on the job — free and enterprise both listed
-- Certs that actually matter — honest assessment
-- Where this role leads — career progression
-- Full module list with availability status
-- Cabinet artifacts they will build
-
----
-
-## Homepage
-
-Speaks to someone who has heard about cybersecurity as a career and wants to know if CyberPivot is worth their time. Direct. No marketing language.
-
-Answers three questions fast: What is this? Why does it exist? What do I get?
-
-Sections: Hero, The Problem, How It Works, The Roles (all five domains), The Cabinet (what you actually build), Open Source section, Final CTA.
-
-No feature walls. No vague promises. No stock photos. No padlock imagery. Specific about what the user gets.
+Enterprise Track — what they will see on the job. Trial link where available. Screenshots and walkthrough where not. Explains what the enterprise tool does and why organisations pay for it.
 
 ---
 
 ## Writing Voice
 
-All copy on this platform follows these rules. UI text, module content, onboarding, interview prep, CV builder, tooltips, error messages — everything.
+All copy on this platform follows these rules. No exceptions.
 
-The voice: a knowledgeable security practitioner who is a good teacher. Direct, honest, no performance.
+**The voice:** A knowledgeable security practitioner who is a good teacher. Someone who has done the job, seen real incidents, used real tools.
 
-Rules:
-- Write like a person, not a product
+**Real examples always:**
+- Use real incidents — WannaCry, SolarWinds, Uber breach, NHS ransomware
+- Use relatable analogies before technical concepts
+- Treat the reader as intelligent, just new to this
+
+**Rules:**
 - Short sentences. Say the thing. Move on.
 - No em dashes
 - No "delve into", "leverage", "comprehensive", "in today's landscape", "it's worth noting", "in conclusion"
-- No announcing what you are about to say — just say it
+- No announcing what you are about to say
 - No rhetorical questions
-- No bullet points for everything — use prose when it reads better
 - Explain the why, not just the what
-- Do not dumb it down but do not show off either
-- Dry humour is fine, forced enthusiasm is not
+- Dry humour is fine. Forced enthusiasm is not.
 
-Bad: "In today's ever-evolving cybersecurity landscape, it's worth noting that understanding network fundamentals is a comprehensive first step in your journey."
+Bad: "In today's ever-evolving cybersecurity landscape, it's worth noting that understanding network fundamentals is a comprehensive first step."
 
 Good: "This module is about how traffic moves across a network. Start here before anything else."
 
-Apply this voice to every piece of user-facing text. No exceptions.
-
 ---
 
-## V1 Priority — Build In This Order
+## V1 Build Order
 
 1. Homepage
-2. Onboarding assessment flow
-3. All role pages (V1 roles full detail, Coming Soon roles visible with basic info)
-4. Shared foundation modules
-5. Cloud Security Azure path (first complete role)
-6. SOC Analyst path
-7. Penetration Tester path
-8. GRC Analyst path
-9. Progress dashboard
-10. Cabinet display
-11. Cert roadmap per role
-12. Interview prep — general and per role
-13. CV builder — per role templates
+2. Introduction section (all 8 parts)
+3. Onboarding flow
+4. All role pages (V1 full, Coming Soon basic)
+5. Foundation modules
+6. Azure Security Engineer path
+7. SOC Analyst path
+8. Penetration Tester path
+9. GRC Analyst path
+10. Progress dashboard
+11. Cabinet display
+12. Cert roadmap per role
+13. Interview prep
+14. CV builder
 
 Do not build V2 features until V1 is complete.
-
-V2: Community layer, job board, threat intel feed, AppSec path, API Security path, DevSecOps path, all Coming Soon roles.
 
 ---
 
@@ -238,19 +237,20 @@ V2: Community layer, job board, threat intel feed, AppSec path, API Security pat
 - Do not use npm or yarn — always pnpm
 - Do not create plain .js files — TypeScript only
 - Do not use inline styles — Tailwind only
-- Do not build custom UI components if shadcn/ui has it
-- Do not add dependencies without checking if one already exists
-- Do not skip TypeScript types — no `any` types
+- Do not build custom UI if shadcn provides it
+- Do not skip TypeScript types — no `any`
 - Do not build V2 features in V1
-- Do not make the platform light mode only — dark mode is primary
-- Do not write AI-sounding copy — follow the writing voice rules above
+- Do not use light mode as default
+- Do not write AI-sounding copy — follow writing voice rules
+- Do not name the cloud path "Cloud Security Azure" — it is "Azure Security Engineer"
+- Do not skip loading or error states
 
 ---
 
 ## Key Context
 
-- Target users: complete beginners, IT professionals pivoting to security, developers moving into security, existing security practitioners
-- Platform is free and open source — keep all dependencies free or with generous free tiers
+- Target users: complete beginners, IT professionals pivoting, developers moving into security, existing practitioners
+- Free and open source — keep all dependencies free or with generous free tiers
 - Windows is the primary dev OS for this project
-- Community contributes content via GitHub PRs on MDX files
-- Every decision should ask: does this help someone land a cybersecurity job?
+- Community contributes via GitHub PRs on MDX files
+- Every decision: does this help someone land a cybersecurity job?

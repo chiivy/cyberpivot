@@ -1,11 +1,13 @@
 export type { Database, Json } from "@/types/supabase";
 
-export type EntryPoint = "beginner" | "it-background" | "security";
-
-export type PathSlug =
-  | "azure-security"
-  | "pentest"
-  | "soc"
-  | "grc"
-  | "api-security"
-  | "appsec";
+export type {
+  EntryPoint,
+  OnboardingAnswers,
+  OnboardingPersistedState,
+  OnboardingRecommendation,
+  PathSlug,
+  Q1Background,
+  Q2Linux,
+  Q3Networking,
+  Q4PathKnown,
+} from "@/types/onboarding";
