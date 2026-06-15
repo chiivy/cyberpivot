@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { getAuthCallbackUrl } from "@/lib/auth/redirect";
-import { readOnboardingState } from "@/lib/onboarding/storage";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
@@ -21,16 +21,19 @@ export function AccountPromptView(): React.ReactElement {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showEmailForm, setShowEmailForm] = useState(false);
-  const [hasOnboarding, setHasOnboarding] = useState(false);
+  const { state, ready } = useOnboardingState();
+  const [validated, setValidated] = useState(false);
 
   useEffect(() => {
-    const stored = readOnboardingState();
-    if (!stored?.answers) {
+    if (!ready) {
+      return;
+    }
+    if (!state?.answers) {
       router.replace("/onboarding");
       return;
     }
-    setHasOnboarding(true);
-  }, [router]);
+    setValidated(true);
+  }, [ready, router, state]);
 
   const signInWithOAuth = async (provider: "google" | "github"): Promise<void> => {
     setStatus("loading");
@@ -78,7 +81,7 @@ export function AccountPromptView(): React.ReactElement {
     router.push("/dashboard");
   };
 
-  if (!hasOnboarding) {
+  if (!ready || !validated) {
     return (
       <OnboardingShell narrow>
         <p className="text-center text-sm text-zinc-500">Loading…</p>
@@ -189,6 +192,10 @@ export function AccountPromptView(): React.ReactElement {
         >
           Skip for now
         </button>
+      </p>
+      <p className="mt-2 text-center text-xs text-zinc-500">
+        Your progress won&apos;t be saved if you skip. You&apos;ll start fresh
+        next time.
       </p>
 
       <p className="mt-6 text-center text-xs text-zinc-600">

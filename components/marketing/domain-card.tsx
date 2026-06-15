@@ -13,15 +13,19 @@ export function DomainCard({
   className,
 }: DomainCardProps): React.ReactElement {
   return (
-    <Link
-      href={`/roles?domain=${domain.id}`}
+    <article
       className={cn(
-        "group flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-cyan-500/40 hover:bg-cyan-500/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0f]",
+        "flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.02] p-5",
         className,
       )}
     >
-      <h3 className="font-mono text-lg font-semibold text-foreground group-hover:text-cyan-300">
-        {domain.name}
+      <h3 className="font-mono text-lg font-semibold text-foreground">
+        <Link
+          href={`/roles?domain=${domain.id}`}
+          className="hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+        >
+          {domain.name}
+        </Link>
       </h3>
       <p className="mt-2 text-sm leading-relaxed text-zinc-400">
         {domain.description}
@@ -29,12 +33,15 @@ export function DomainCard({
       <ul className="mt-4 flex flex-wrap gap-2" aria-label={`Roles in ${domain.name}`}>
         {domain.roles.map((role) => (
           <li key={role.slug}>
-            <span
+            <Link
+              href={`/roles/${role.slug}`}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs text-zinc-300",
+                "inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs transition-colors",
+                "hover:border-cyan-500/40 hover:bg-cyan-500/[0.06]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
                 role.v1
-                  ? "border-cyan-500/30 bg-cyan-500/10"
-                  : "border-white/10 bg-white/5",
+                  ? "border-cyan-500/30 bg-cyan-500/10 text-zinc-300"
+                  : "border-white/10 bg-white/5 text-zinc-300",
               )}
             >
               {role.name}
@@ -43,10 +50,10 @@ export function DomainCard({
                   Soon
                 </span>
               ) : null}
-            </span>
+            </Link>
           </li>
         ))}
       </ul>
-    </Link>
+    </article>
   );
 }

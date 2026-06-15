@@ -7,7 +7,16 @@ export type {
   OnboardingRecommendation,
   PathSlug,
   Q1Background,
-  Q2Linux,
-  Q3Networking,
-  Q4PathKnown,
+  Q2WorkInstinct,
+  Q3Environment,
+  Q4Terminal,
+  Q5Goal,
+  Q6Answer,
+  RoleRecommendation,
 } from "@/types/onboarding";
+
+export type {
+  ComingSoonRoleContent,
+  RolePageContent,
+  RolePageData,
+} from "@/types/role";

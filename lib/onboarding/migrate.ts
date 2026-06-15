@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/client";
-import { clearOnboardingState, readOnboardingState } from "@/lib/onboarding/storage";
+import {
+  clearOnboardingState,
+  isBrowser,
+  readOnboardingState,
+} from "@/lib/onboarding/storage";
 import type { OnboardingAnswers } from "@/types/onboarding";
 
 export interface MigrateOnboardingResult {
@@ -8,6 +12,10 @@ export interface MigrateOnboardingResult {
 }
 
 export async function migrateOnboardingToSupabase(): Promise<MigrateOnboardingResult> {
+  if (!isBrowser()) {
+    return { success: true, error: null };
+  }
+
   const state = readOnboardingState();
   if (!state) {
     return { success: true, error: null };
@@ -60,9 +68,13 @@ function answersToRow(
 } {
   return {
     q1_background: answers.q1Background,
-    q2_linux: answers.q2Linux,
-    q3_networking: answers.q3Networking,
-    q4_path_known: answers.q4PathKnown,
+    q2_linux: answers.q2WorkInstinct,
+    q3_networking: answers.q3Environment,
+    q4_path_known: JSON.stringify({
+      terminal: answers.q4Terminal,
+      goal: answers.q5Goal,
+      q6: answers.q6 ?? null,
+    }),
     entry_point: entryPoint,
     chosen_path: chosenPath,
   };

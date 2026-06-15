@@ -1,14 +1,45 @@
 export type Q1Background =
-  | "beginner"
+  | "no-background"
   | "it"
   | "developer"
   | "security";
 
-export type Q2Linux = "comfortable" | "little" | "never";
+export type Q2WorkInstinct =
+  | "investigate"
+  | "fix-fast"
+  | "prevention"
+  | "replicate"
+  | "build-right";
 
-export type Q3Networking = "yes" | "somewhat" | "not-really";
+export type Q3Environment =
+  | "cloud"
+  | "code"
+  | "soc"
+  | "business"
+  | "attack";
 
-export type Q4PathKnown = "show-roles" | "help-choose";
+export type Q4Terminal =
+  | "very-comfortable"
+  | "somewhat"
+  | "not-really"
+  | "never";
+
+export type Q5Goal =
+  | "job-from-scratch"
+  | "it-to-security"
+  | "level-up"
+  | "understand-field";
+
+export type Q6CloudPlatform = "azure" | "aws" | "gcp" | "not-sure";
+
+export type Q6SocFocus = "monitoring" | "endpoint" | "hunting";
+
+export type Q6CodeFocus = "applications" | "apis" | "pipeline" | "ai";
+
+export type Q6Answer =
+  | { type: "cloud"; value: Q6CloudPlatform }
+  | { type: "soc"; value: Q6SocFocus }
+  | { type: "code"; value: Q6CodeFocus };
 
 export type EntryPoint = "A" | "B" | "C" | "D";
 
@@ -23,9 +54,32 @@ export type PathSlug =
 
 export interface OnboardingAnswers {
   q1Background: Q1Background;
-  q2Linux: Q2Linux;
-  q3Networking: Q3Networking;
-  q4PathKnown: Q4PathKnown;
+  q2WorkInstinct: Q2WorkInstinct;
+  q3Environment: Q3Environment;
+  q4Terminal: Q4Terminal;
+  q5Goal: Q5Goal;
+  q6?: Q6Answer;
+}
+
+export interface BridgeRole {
+  name: string;
+  slug: string;
+  domainId: string;
+  pathSlug: PathSlug;
+  explanation: string;
+}
+
+export interface RoleRecommendation {
+  roleName: string;
+  roleSlug: string;
+  domain: string;
+  domainId: string;
+  level: string;
+  pathSlug: PathSlug;
+  comingSoon: boolean;
+  targetRoleName?: string;
+  bridgeRole?: BridgeRole;
+  pathNote?: string;
 }
 
 export interface OnboardingRecommendation {
@@ -33,7 +87,9 @@ export interface OnboardingRecommendation {
   entryLabel: string;
   startingPointTitle: string;
   startingPointDescription: string;
-  highlightedPaths?: PathSlug[];
+  role: RoleRecommendation;
+  whyExplanation: string;
+  foundationFirst: boolean;
 }
 
 export interface OnboardingPersistedState {
@@ -48,13 +104,4 @@ export interface CabinetPreviewItem {
   name: string;
   description: string;
   unlocksInModule: string;
-}
-
-export interface RecommendedRole {
-  name: string;
-  slug: string;
-  domainId: string;
-  pathSlug: PathSlug;
-  suggested?: boolean;
-  comingSoon?: boolean;
 }

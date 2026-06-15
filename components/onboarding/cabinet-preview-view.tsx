@@ -6,31 +6,31 @@ import { useEffect, useState } from "react";
 import { CabinetArtifactCard } from "@/components/onboarding/cabinet-artifact-card";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { Button } from "@/components/ui/button";
+import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import {
   CABINET_BY_PATH,
   PATH_COMING_SOON,
   PATH_LABELS,
 } from "@/lib/onboarding/cabinet-artifacts";
 import { resolveCabinetPath } from "@/lib/onboarding/resolve-cabinet-path";
-import { readOnboardingState } from "@/lib/onboarding/storage";
-import type { OnboardingPersistedState } from "@/types/onboarding";
 
 export function CabinetPreviewView(): React.ReactElement {
   const router = useRouter();
-  const [state, setState] = useState<OnboardingPersistedState | null>(null);
-  const [ready, setReady] = useState(false);
+  const { state, ready } = useOnboardingState();
+  const [validated, setValidated] = useState(false);
 
   useEffect(() => {
-    const stored = readOnboardingState();
-    if (!stored?.answers || !stored.chosenPath) {
+    if (!ready) {
+      return;
+    }
+    if (!state?.answers || !state.chosenPath) {
       router.replace("/onboarding/recommendation");
       return;
     }
-    setState(stored);
-    setReady(true);
-  }, [router]);
+    setValidated(true);
+  }, [ready, router, state]);
 
-  if (!ready || !state?.chosenPath) {
+  if (!ready || !validated || !state?.chosenPath) {
     return (
       <OnboardingShell>
         <p className="text-center text-sm text-zinc-500">Loading…</p>
@@ -47,7 +47,7 @@ export function CabinetPreviewView(): React.ReactElement {
   const isComingSoon = PATH_COMING_SOON[cabinetPath] === true;
 
   return (
-    <OnboardingShell className="!max-w-4xl !justify-start !py-16">
+    <OnboardingShell alignTop wide>
       <header className="mb-10 text-center">
         <h1 className="text-xl font-medium leading-snug text-foreground sm:text-2xl">
           Here&apos;s what you&apos;ll have built by the time you&apos;re done.
