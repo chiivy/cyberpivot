@@ -857,3 +857,117 @@ Cabinet artifacts (6):
 Reference: OWASP API Security Top 10 2023, APIsec University, FAPI specification, PSD2
 **Date:** June 2026
 
+
+---
+
+## Licensing Model
+
+**Decision:** Two-tier licensing approach.
+- Code: MIT licence. Fully open source. Anyone can fork, modify, and run their own instance.
+- Content: Creative Commons Attribution Non-Commercial 4.0 (CC BY-NC 4.0). Content is freely readable and shareable but cannot be used in commercial products or services without a licence from CyberPivot.
+
+**Reason:** Open source code builds community trust, attracts developer contributors, and is standard for developer-facing platforms in the security community. Proprietary content licence protects the commercial model while keeping content accessible for individual learners. Someone can fork the platform and run a community instance. They cannot build a competing commercial business using CyberPivot content without permission.
+
+The real competitive moat is not the licence. It is content quality, community, employer relationships, and brand. Those are not forkable.
+**Date:** June 2026
+
+---
+
+## Business Model
+
+**Decision:** Freemium model with three revenue streams.
+
+**Free forever (core mission):**
+- All learning content across all paths
+- All modules and labs
+- The cabinet system
+- Cert roadmaps
+- Interview prep guides
+- CV templates
+- Community features
+
+**Premium individual features (paid monthly or annually):**
+- AI CV builder — reads cabinet artifacts and writes tailored CV bullet points, cover letters, LinkedIn summaries
+- Mock interview AI — role-specific technical interview practice with real-time feedback
+- Verified certification — practical capstone assessment producing a certificate that means something because it is backed by real demonstrated skill, not multiple choice
+
+**B2B revenue streams:**
+- Team accounts — for bootcamps, universities, and corporate training programmes. Companies pay for cohort access and progress tracking.
+- Employer partnerships — companies pay for access to the candidate pool. They can see cabinet artifacts and capstone results before interviewing. Placement fee or monthly access model.
+- Sponsored cohorts — a company sponsors a group of learners through a specific path, gets first access to hire from the cohort. Apprenticeship model without the administrative overhead.
+- Corporate training licences — companies use CyberPivot to upskill existing junior staff instead of sending them to expensive vendor training.
+
+**Reason:** Keeping core content free serves the mission of accessible security education. Premium features create revenue without compromising that mission. B2B revenue is the largest opportunity and most aligned with the platform's purpose — connecting skilled people with employers who need them.
+**Date:** June 2026
+
+---
+
+## Certification Strategy
+
+**Decision:** CyberPivot will offer its own verified certification as a premium feature. Not in V1. Introduced after the platform has built sufficient reputation and content depth that the certification means something to employers.
+
+**What makes it different from existing certifications:**
+- Entirely practical. No multiple choice. Completion requires producing all cabinet artifacts and passing a capstone assessment involving real work.
+- Role-specific. A CyberPivot SOC Analyst certification means the holder has demonstrated they can do SOC work, not just answer questions about it.
+- Transparent. Employers can see exactly what the assessment involved and what artifacts were produced. No black box.
+
+**Path to credibility:**
+1. Build excellent free content and community (V1 and V2)
+2. Employer partnerships that validate the quality of CyberPivot learners
+3. Real placement data — people who completed paths and got hired
+4. Introduce certification once employers recognise the platform's quality signal
+
+**Reason:** A certification launched before the platform has credibility is just another badge. Credibility comes from the quality of people the platform produces and the employers who trust those people. Build that first.
+**Date:** June 2026
+
+---
+
+## Employer Partnership Model
+
+**Decision:** CyberPivot will pursue employer partnerships as the primary B2B revenue stream and the most powerful validation of the platform's mission.
+
+**How it works:**
+- Companies register as hiring partners
+- They get access to a searchable pool of candidates who have completed specific paths
+- They can view cabinet artifacts, capstone results, and progress before requesting an interview
+- They pay a placement fee or monthly access fee
+
+**Sponsored cohort model:**
+- A company identifies a hiring need — for example 10 SOC Tier 1 analysts
+- They sponsor a cohort through the SOC Analyst path — paying a fixed fee
+- CyberPivot runs the cohort over three to four months
+- The company gets first access to hire from the cohort
+- Learners get a clear path to employment with a committed employer at the end
+
+**Nigerian market opportunity:**
+- Nigerian banks and fintechs face growing CBN cybersecurity requirements and a shortage of qualified local talent
+- A sponsored cohort model partnered with Nigerian financial institutions trains people to CBN framework standard and connects them directly to employers
+- Priority targets: GTBank, Access Bank, Zenith Bank, Flutterwave, Paystack, and other fintech companies with security hiring needs
+- This model creates the most powerful marketing asset possible — real people who went through CyberPivot and got hired
+
+**Corporate training:**
+- Companies pay for existing junior staff to go through paths
+- Cheaper and more practical than expensive vendor training or SANS courses
+- Progress visible to the employer through team accounts
+- Cabinet artifacts demonstrate what was learned
+
+**Reason:** Employer partnerships serve the mission (connecting skilled people with employers), create sustainable revenue, and produce the most credible marketing asset — real placement data. The Nigerian market is specifically underserved and represents a first-mover opportunity.
+**Date:** June 2026
+
+---
+
+## Platform Resources Section (V2)
+
+**Decision:** Add a Resources section accessible from the dashboard covering podcasts, communities, conferences, blogs, and YouTube channels relevant to each role path.
+
+**Podcasts to include:**
+- Darknet Diaries — real stories of hacks, breaches, and espionage. Best entry point for anyone new to the field.
+- Risky Business — weekly news and interviews, practitioner focused.
+- Security Now — deep technical dives, long running.
+- The CyberWire Daily — quick daily news briefing.
+- Smashing Security — lighter tone, still substantive.
+- Nigerian and African voices — research and add relevant African cybersecurity podcast voices when identified.
+
+**Not built in V1.** Resources section is a V2 feature. Flag content as it is identified and store in a resources data file for when it is built.
+**Date:** June 2026
+
