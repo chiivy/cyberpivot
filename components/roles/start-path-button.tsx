@@ -65,7 +65,7 @@ export function StartPathButton({
         });
       }
 
-      router.push(`/dashboard?path=${cabinetPath}`);
+      router.push(`/dashboard?role=${roleSlug}&path=${cabinetPath}`);
     } finally {
       setLoading(false);
     }

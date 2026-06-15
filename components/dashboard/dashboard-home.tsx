@@ -10,14 +10,20 @@ import { PATH_LABELS } from "@/lib/onboarding/cabinet-artifacts";
 import { activeRoleForPath } from "@/lib/onboarding/recommendation-engine";
 import { V1_ROLE_PAGES } from "@/lib/roles/v1-roles";
 import type { PathSlug } from "@/types/onboarding";
+import type { RolePageContent } from "@/types/role";
 
 function isPathSlug(value: string): value is PathSlug {
   return value in PATH_LABELS;
 }
 
+function findRoleBySlug(slug: string): RolePageContent | null {
+  return V1_ROLE_PAGES.find((role) => role.slug === slug) ?? null;
+}
+
 export function DashboardHome(): React.ReactElement {
   const searchParams = useSearchParams();
   const pathParam = searchParams.get("path");
+  const roleParam = searchParams.get("role");
   const { state, ready } = useOnboardingState();
 
   const pathFromUrl = useMemo((): PathSlug | null => {
@@ -27,38 +33,52 @@ export function DashboardHome(): React.ReactElement {
     return pathParam;
   }, [pathParam]);
 
-  const roleFromPath = useMemo(() => {
-    if (!pathFromUrl) {
-      return null;
+  const selectedRole = useMemo((): RolePageContent | null => {
+    if (state?.chosenRoleSlug) {
+      const fromStorage = findRoleBySlug(state.chosenRoleSlug);
+      if (fromStorage) {
+        return fromStorage;
+      }
     }
-    return (
-      V1_ROLE_PAGES.find((role) => role.cabinetPath === pathFromUrl) ?? null
-    );
-  }, [pathFromUrl]);
+    if (roleParam) {
+      const fromUrl = findRoleBySlug(roleParam);
+      if (fromUrl) {
+        return fromUrl;
+      }
+    }
+    if (pathFromUrl) {
+      return (
+        V1_ROLE_PAGES.find((role) => role.cabinetPath === pathFromUrl) ?? null
+      );
+    }
+    return null;
+  }, [pathFromUrl, roleParam, state?.chosenRoleSlug]);
 
   const recommendation = state?.recommendation;
   const activeRole =
     recommendation?.role != null ? activeRoleForPath(recommendation) : null;
 
-  const displayRole = roleFromPath
-    ? roleFromPath.name
+  const displayRole = selectedRole
+    ? selectedRole.name
     : recommendation?.role.comingSoon && recommendation.role.targetRoleName
       ? recommendation.role.targetRoleName
       : activeRole?.roleName;
 
-  const displayDomain = roleFromPath
-    ? roleFromPath.domain
+  const displayDomain = selectedRole
+    ? selectedRole.domain
     : activeRole?.domain;
 
-  const displayLevel = roleFromPath ? roleFromPath.level : activeRole?.level;
+  const displayLevel = selectedRole ? selectedRole.level : activeRole?.level;
 
-  const startHref = roleFromPath
-    ? `/roles/${roleFromPath.slug}`
-    : activeRole
-      ? `/roles/${activeRole.roleSlug}`
-      : null;
+  const pathSlug =
+    selectedRole?.cabinetPath ??
+    (pathFromUrl ?? state?.chosenPath ?? activeRole?.pathSlug ?? null);
 
-  const pathLabel = pathFromUrl ? PATH_LABELS[pathFromUrl] : null;
+  const pathLabel = pathSlug ? PATH_LABELS[pathSlug] : null;
+
+  const learningHref = pathSlug ? `/paths?path=${pathSlug}` : "/paths";
+
+  const hasProgress = Boolean(selectedRole || activeRole);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
@@ -73,7 +93,7 @@ export function DashboardHome(): React.ReactElement {
 
         {!ready ? (
           <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
-        ) : displayRole && (roleFromPath || activeRole) ? (
+        ) : hasProgress && displayRole ? (
           <div className="mt-4">
             {pathLabel ? (
               <p className="text-sm text-muted-foreground">
@@ -92,11 +112,9 @@ export function DashboardHome(): React.ReactElement {
                 {displayDomain} · {displayLevel}
               </p>
             ) : null}
-            {startHref ? (
-              <Button asChild className="mt-6">
-                <Link href={startHref}>Start</Link>
-              </Button>
-            ) : null}
+            <Button asChild className="mt-6">
+              <Link href={learningHref}>Start</Link>
+            </Button>
           </div>
         ) : (
           <div className="mt-4">
