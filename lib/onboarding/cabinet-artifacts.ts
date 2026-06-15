@@ -167,58 +167,82 @@ export const CABINET_BY_PATH: Record<PathSlug, readonly CabinetPreviewItem[]> = 
   ],
   grc: [
     {
-      name: "Information security risk register",
+      name: "PCI-DSS 4.0 gap analysis report",
       description:
-        "Fifteen or more risks across people, process, and technology, scored on likelihood and impact with treatment plans assigned. This is the document boards and auditors expect to see maintained.",
-      unlocksInModule: "Risk Management",
+        "Scoped to a card-processing environment. All 12 requirements assessed, gaps prioritised by risk. This is what auditors and QSAs expect before remediation work starts.",
+      unlocksInModule: "PCI-DSS 4.0",
     },
     {
-      name: "ISO 27001 gap analysis",
+      name: "ISO 27001 internal audit report",
       description:
-        "All 93 Annex A controls assessed with gaps, remediation priorities, and effort estimates. Proves you can map a real programme to a standard, not just quote clause numbers.",
+        "Findings documented, evidence referenced, management responses drafted. Shows you can run an internal audit, not just read the standard.",
       unlocksInModule: "ISO 27001",
     },
     {
-      name: "Information security policy suite",
+      name: "SOC 2 readiness assessment",
       description:
-        "Information Security, Acceptable Use, BYOD, Password, Data Classification, and Incident Response policies written for a real organisation context. Policies nobody reads help nobody.",
-      unlocksInModule: "Policy and Standards",
+        "Trust Service Criteria mapped, gaps identified, remediation priorities set. SaaS companies need this before their first Type II audit.",
+      unlocksInModule: "SOC 2 Readiness",
     },
     {
-      name: "NIST CSF control mapping",
+      name: "GDPR Article 30 records of processing",
       description:
-        "Controls mapped to all five CSF functions with maturity assessed per category. Gives leadership a language they already use in US-facing programmes.",
+        "Data flows mapped, processing activities documented, legal bases identified. Required for any organisation handling EU or UK personal data at scale.",
+      unlocksInModule: "GDPR Compliance",
+    },
+    {
+      name: "NIST CSF 2.0 current state assessment",
+      description:
+        "Scored across all five functions with target state and improvement roadmap. Gives leadership a maturity picture they can fund.",
       unlocksInModule: "NIST Cybersecurity Framework",
     },
     {
-      name: "Audit evidence folder",
+      name: "Cyber Essentials self-assessment",
       description:
-        "Structured evidence pack indexed per control domain, ready for an external auditor. Saves weeks of scramble when audit season hits.",
-      unlocksInModule: "Audit Preparation",
+        "All five controls assessed and documented for a simulated UK organisation. Mandatory stepping stone for UK government contract work.",
+      unlocksInModule: "Cyber Essentials",
     },
     {
-      name: "Vendor risk assessments",
+      name: "NDPR compliance review",
       description:
-        "Tiering matrix, questionnaire template, and two completed assessments with risk ratings and treatment decisions. Third parties are still one of the fastest ways to leak data.",
+        "Nigerian data protection obligations assessed, gaps identified, remediation plan produced. Nigerian GRC roles need this on the portfolio.",
+      unlocksInModule: "NDPR Compliance",
+    },
+    {
+      name: "Regulatory applicability matrix",
+      description:
+        "Maps a Nigerian fintech profile to every applicable regulation with obligations, gaps, and priorities. Overlapping regimes are the hard part. This proves you can handle them.",
+      unlocksInModule: "Regulatory Mapping",
+    },
+    {
+      name: "CBN Cybersecurity Framework assessment",
+      description:
+        "Nigerian banking cybersecurity requirements assessed and documented. Required knowledge for GRC roles in Nigerian financial services.",
+      unlocksInModule: "CBN Cybersecurity Framework",
+    },
+    {
+      name: "Vendor risk assessment",
+      description:
+        "Completed questionnaire, risk rating, and recommendation documented. Third-party risk is where most data breaches start.",
       unlocksInModule: "Third-Party Risk",
-    },
-    {
-      name: "Security exceptions register",
-      description:
-        "Formal exception process with three examples covering business justification, compensating controls, and review dates. Shows you can say no with paperwork, not just opinions.",
-      unlocksInModule: "Governance Operations",
     },
     {
       name: "Business impact analysis",
       description:
-        "Critical assets listed with RTO and RPO defined and recovery priorities documented. BIA work is boring until recovery planning depends on it.",
+        "Critical assets, RTO, RPO, and recovery priorities documented. BIA work feeds business continuity and incident planning.",
       unlocksInModule: "Business Continuity",
     },
     {
-      name: "Regulatory compliance matrix",
+      name: "Information security risk register",
       description:
-        "Controls mapped to GDPR, SOX, PCI-DSS, or HIPAA depending on the industry scenario you work through. One framework rarely covers every customer you support.",
-      unlocksInModule: "Regulatory Compliance",
+        "Fifteen or more risks scored with treatment plans assigned. The document boards and auditors expect to see maintained.",
+      unlocksInModule: "Risk Management",
+    },
+    {
+      name: "Information security policy suite",
+      description:
+        "Acceptable Use, BYOD, Incident Response, Password, and Data Classification policies written for a real organisation context.",
+      unlocksInModule: "Policy and Standards",
     },
   ],
   appsec: [

@@ -10,6 +10,8 @@ interface RolePageProps {
   params: { slug: string };
 }
 
+export const dynamicParams = true;
+
 export function generateStaticParams(): { slug: string }[] {
   return getAllRoleSlugs().map((slug) => ({ slug }));
 }

@@ -1,9 +1,8 @@
-import Link from "next/link";
-
 import { CabinetArtifactCard } from "@/components/onboarding/cabinet-artifact-card";
-import { Button } from "@/components/ui/button";
+import { StartPathButton } from "@/components/roles/start-path-button";
 import { CABINET_BY_PATH } from "@/lib/onboarding/cabinet-artifacts";
-import type { RolePageContent } from "@/types/role";
+import { SALARY_TABLE_NOTE } from "@/lib/roles/shared-snippets";
+import type { RoleLabRequirements, RolePageContent } from "@/types/role";
 import { cn } from "@/lib/utils";
 
 interface RoleV1PageProps {
@@ -18,10 +17,61 @@ function Section({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <section className="marketing-divider py-10 first:pt-0">
-      <h2 className="font-mono text-lg font-semibold text-foreground">{title}</h2>
-      <div className="mt-4">{children}</div>
+    <section className="border-t border-white/[0.08] py-12 first:border-t-0 first:pt-0">
+      <h2 className="border-l-2 border-cyan-500/60 pl-4 font-mono text-xl font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
+      <div className="mt-6">{children}</div>
     </section>
+  );
+}
+
+function LabRequirementsBlock({
+  lab,
+}: {
+  lab: RoleLabRequirements;
+}): React.ReactElement {
+  return (
+    <dl className="space-y-3 text-sm text-zinc-400">
+      <div>
+        <dt className="font-medium text-zinc-300">Minimum specs</dt>
+        <dd className="mt-1">{lab.minimumSpecs}</dd>
+      </div>
+      {lab.recommendedSpecs ? (
+        <div>
+          <dt className="font-medium text-zinc-300">Recommended</dt>
+          <dd className="mt-1">{lab.recommendedSpecs}</dd>
+        </div>
+      ) : null}
+      <div>
+        <dt className="font-medium text-zinc-300">Disk space</dt>
+        <dd className="mt-1">{lab.diskSpace}</dd>
+      </div>
+      <div>
+        <dt className="font-medium text-zinc-300">What gets installed</dt>
+        <dd className="mt-2">
+          <ul className="list-disc space-y-1 pl-5" role="list">
+            {lab.installs.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </dd>
+      </div>
+      <div>
+        <dt className="font-medium text-zinc-300">Setup time</dt>
+        <dd className="mt-1">{lab.setupTime}</dd>
+      </div>
+      <div>
+        <dt className="font-medium text-zinc-300">OS support</dt>
+        <dd className="mt-1">{lab.osSupport}</dd>
+      </div>
+      {lab.additionalNotes ? (
+        <div>
+          <dt className="font-medium text-zinc-300">Notes</dt>
+          <dd className="mt-1">{lab.additionalNotes}</dd>
+        </div>
+      ) : null}
+    </dl>
   );
 }
 
@@ -30,7 +80,7 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
-      <header>
+      <header className="pb-4">
         <p className="text-xs font-medium uppercase tracking-widest text-zinc-500">
           {role.domain}
         </p>
@@ -38,14 +88,62 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
           {role.name}
         </h1>
         <p className="mt-3 text-sm text-cyan-400/90">Level: {role.level}</p>
+        {role.careerSwitcherNote ? (
+          <p className="mt-6 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] px-4 py-3 text-sm leading-relaxed text-zinc-300">
+            {role.careerSwitcherNote}
+          </p>
+        ) : null}
       </header>
 
       <Section title="What you actually do">
         <p className="text-base leading-relaxed text-zinc-400">{role.dayToDay}</p>
       </Section>
 
+      <Section title="A day in the life">
+        <p className="text-base leading-relaxed text-zinc-400">{role.dayInTheLife}</p>
+      </Section>
+
       <Section title="Background that fits">
         <p className="text-base leading-relaxed text-zinc-400">{role.background}</p>
+        <h3 className="mt-8 text-sm font-medium text-zinc-300">
+          Foundation modules we recommend first
+        </h3>
+        <ul className="mt-4 space-y-3" role="list">
+          {role.prerequisites.map((prereq) => (
+            <li key={prereq.module} className="text-sm leading-relaxed text-zinc-400">
+              <span className="font-medium text-zinc-300">{prereq.module}</span>
+              {" — "}
+              {prereq.reason}
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Common misconceptions">
+        <ul className="space-y-5" role="list">
+          {role.misconceptions.map((item) => (
+            <li key={item.myth}>
+              <p className="text-sm font-medium text-zinc-300">
+                &ldquo;{item.myth}&rdquo;
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                {item.reality}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="What the labs look like">
+        <ul className="list-disc space-y-2.5 pl-5 text-sm leading-relaxed text-zinc-400" role="list">
+          {role.handsOnProjects.map((project) => (
+            <li key={project}>{project}</li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Lab environment requirements">
+        <LabRequirementsBlock lab={role.labRequirements} />
       </Section>
 
       <Section title="A typical week">
@@ -62,10 +160,6 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
       </Section>
 
       <Section title="Salary ranges (2025/2026)">
-        <p className="mb-4 text-sm text-zinc-500">
-          Figures are typical base salary ranges. Contract and senior leadership
-          roles can sit higher. Always check local market reports before you negotiate.
-        </p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
             <thead>
@@ -91,6 +185,9 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
             </tbody>
           </table>
         </div>
+        <p className="mt-5 text-sm leading-relaxed text-zinc-500">
+          {SALARY_TABLE_NOTE}
+        </p>
       </Section>
 
       <Section title="Industries that hire">
@@ -106,10 +203,10 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
       </Section>
 
       <Section title="Tools on the job">
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-8 sm:grid-cols-2">
           <div>
             <h3 className="text-sm font-medium text-zinc-300">Free / open source</h3>
-            <ul className="mt-2 space-y-1.5" role="list">
+            <ul className="mt-3 space-y-1.5" role="list">
               {role.toolsFree.map((tool) => (
                 <li key={tool} className="text-sm text-zinc-400">
                   {tool}
@@ -119,7 +216,7 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
           </div>
           <div>
             <h3 className="text-sm font-medium text-zinc-300">Enterprise</h3>
-            <ul className="mt-2 space-y-1.5" role="list">
+            <ul className="mt-3 space-y-1.5" role="list">
               {role.toolsEnterprise.map((tool) => (
                 <li key={tool} className="text-sm text-zinc-400">
                   {tool}
@@ -130,12 +227,39 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
         </div>
       </Section>
 
+      <Section title="Regulations and standards you will work with">
+        <ul className="space-y-5" role="list">
+          {role.regulationsAndStandards.map((item) => (
+            <li key={item.name}>
+              <p className="text-sm font-medium text-zinc-300">{item.name}</p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+                {item.description}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Top 5 interview questions">
+        <ul className="space-y-6" role="list">
+          {role.interviewQuestions.map((item) => (
+            <li key={item.question}>
+              <p className="text-sm font-medium text-zinc-300">{item.question}</p>
+              <p className="mt-2 text-sm leading-relaxed text-zinc-500">
+                <span className="font-medium text-zinc-400">Good answer: </span>
+                {item.goodAnswer}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
       <Section title="Certs that actually matter">
-        <ul className="space-y-4" role="list">
+        <ul className="space-y-5" role="list">
           {role.certs.map((cert) => (
             <li key={cert.name}>
               <p className="font-medium text-zinc-200">{cert.name}</p>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-400">
+              <p className="mt-2 text-sm leading-relaxed text-zinc-400">
                 {cert.note}
               </p>
             </li>
@@ -149,6 +273,31 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
             <li key={step}>{step}</li>
           ))}
         </ol>
+      </Section>
+
+      <Section title="Related roles">
+        <ul className="space-y-3" role="list">
+          {role.relatedRoles.map((related) => (
+            <li key={related.name} className="text-sm leading-relaxed text-zinc-400">
+              <span className="font-medium text-zinc-300">{related.name}</span>
+              {" — "}
+              {related.note}
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section title="Community and resources">
+        <ul className="space-y-3" role="list">
+          {role.communityAndResources.map((resource) => (
+            <li key={resource.name} className="text-sm text-zinc-400">
+              <span className="font-medium text-zinc-300">{resource.name}</span>
+              {resource.note ? (
+                <span className="text-zinc-500"> — {resource.note}</span>
+              ) : null}
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title="Modules on this path">
@@ -190,14 +339,12 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
         </ul>
       </Section>
 
-      <div className="marketing-divider py-12 text-center">
-        <Button
-          size="lg"
-          asChild
-          className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
-        >
-          <Link href="/onboarding">Start this path</Link>
-        </Button>
+      <div className="border-t border-white/[0.08] py-12 text-center">
+        <StartPathButton
+          roleSlug={role.slug}
+          cabinetPath={role.cabinetPath}
+          domainId={role.domainId}
+        />
       </div>
     </div>
   );

@@ -1,7 +1,16 @@
 import type { RolePageContent } from "@/types/role";
 
 import {
+  API_SECURITY_ENGINEER_ENRICHED,
+  APPSEC_ENGINEER_ENRICHED,
+  AZURE_SECURITY_ENGINEER_ENRICHED,
+  GRC_ANALYST_ENRICHED,
+  PENTESTER_ENRICHED,
+  SOC_ANALYST_ENRICHED,
+} from "@/lib/roles/enriched";
+import {
   SALARY_APPSEC,
+  SALARY_API_SECURITY,
   SALARY_AZURE,
   SALARY_GRC,
   SALARY_PENTEST,
@@ -82,6 +91,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "Endpoint Triage", status: "coming-soon" },
       { name: "SOC Capstone", status: "coming-soon" },
     ],
+    ...SOC_ANALYST_ENRICHED,
   },
   {
     slug: "penetration-tester",
@@ -155,6 +165,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "Post-Exploitation", status: "coming-soon" },
       { name: "Reporting and Communication", status: "coming-soon" },
     ],
+    ...PENTESTER_ENRICHED,
   },
   {
     slug: "azure-security-engineer",
@@ -227,6 +238,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "Compliance and Governance", status: "coming-soon" },
       { name: "Cloud Security Capstone", status: "coming-soon" },
     ],
+    ...AZURE_SECURITY_ENGINEER_ENRICHED,
   },
   {
     slug: "grc-analyst",
@@ -298,6 +310,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "Regulatory Compliance", status: "coming-soon" },
       { name: "Business Continuity", status: "coming-soon" },
     ],
+    ...GRC_ANALYST_ENRICHED,
   },
   {
     slug: "appsec-engineer",
@@ -370,6 +383,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "DevSecOps Foundations", status: "coming-soon" },
       { name: "Secure SDLC", status: "coming-soon" },
     ],
+    ...APPSEC_ENGINEER_ENRICHED,
   },
   {
     slug: "api-security-engineer",
@@ -390,7 +404,7 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       "Thursday: Rate limiting and abuse case workshop.",
       "Friday: Write findings report for gateway misconfiguration.",
     ],
-    salaries: SALARY_APPSEC,
+    salaries: SALARY_API_SECURITY,
     industries: [
       "Fintech and payment platforms",
       "SaaS with public APIs",
@@ -435,5 +449,6 @@ export const V1_ROLE_PAGES: readonly RolePageContent[] = [
       { name: "OAuth Security", status: "coming-soon" },
       { name: "API Security Review", status: "coming-soon" },
     ],
+    ...API_SECURITY_ENGINEER_ENRICHED,
   },
 ] as const;
