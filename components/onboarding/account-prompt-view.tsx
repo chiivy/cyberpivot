@@ -184,18 +184,19 @@ export function AccountPromptView(): React.ReactElement {
         </form>
       ) : null}
 
-      <p className="mt-8 text-center">
+      <p className="mt-8 text-center text-sm leading-relaxed">
         <button
           type="button"
           onClick={skipForNow}
-          className="text-sm text-zinc-400 underline-offset-4 hover:text-zinc-200 hover:underline"
+          className="text-zinc-400 underline-offset-4 hover:text-zinc-200 hover:underline"
         >
           Skip for now
         </button>
-      </p>
-      <p className="mt-2 text-center text-xs text-zinc-500">
-        Your progress won&apos;t be saved if you skip. You&apos;ll start fresh
-        next time.
+        <span className="text-xs text-zinc-500">
+          {" "}
+          Your progress won&apos;t be saved if you skip. You&apos;ll start fresh
+          next time.
+        </span>
       </p>
 
       <p className="mt-6 text-center text-xs text-zinc-600">
