@@ -23,7 +23,7 @@ export function generateMetadata({ params }: RolePageProps): Metadata {
   }
   const description = isV1RoleContent(role)
     ? role.dayToDay.slice(0, 160)
-    : role.oneLiner;
+    : role.dayToDay.slice(0, 160);
   return {
     title: role.name,
     description,

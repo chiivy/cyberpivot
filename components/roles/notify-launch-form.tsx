@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 const emailSchema = z.object({
   email: z.string().email("Enter a valid email address."),
@@ -13,16 +14,20 @@ const emailSchema = z.object({
 interface NotifyLaunchFormProps {
   roleSlug: string;
   roleName: string;
+  variant?: "default" | "coming-soon";
 }
 
 export function NotifyLaunchForm({
   roleSlug,
   roleName,
+  variant = "default",
 }: NotifyLaunchFormProps): React.ReactElement {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const isComingSoon = variant === "coming-soon";
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -52,7 +57,14 @@ export function NotifyLaunchForm({
 
   if (submitted) {
     return (
-      <p className="rounded-md border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">
+      <p
+        className={cn(
+          "rounded-md border px-4 py-3 text-sm",
+          isComingSoon
+            ? "border-amber-500/30 bg-amber-500/10 text-amber-200"
+            : "border-cyan-500/30 bg-cyan-500/10 text-cyan-200",
+        )}
+      >
         Thanks. We will email you when the {roleName} path is ready.
       </p>
     );
@@ -80,7 +92,11 @@ export function NotifyLaunchForm({
       ) : null}
       <Button
         type="submit"
-        className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
+        className={cn(
+          isComingSoon
+            ? "bg-amber-500/90 text-[#0a0a0f] hover:bg-amber-400"
+            : "bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400",
+        )}
         disabled={loading}
       >
         {loading ? "Saving…" : "Notify me"}

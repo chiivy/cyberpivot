@@ -256,6 +256,106 @@ Add this note under every salary table on every role page:
 - EU: Entry €42k–€62k / Mid €62k–€90k / Senior €90k–€130k+
 - Nigeria (monthly): Entry ₦200k–₦400k / Mid ₦450k–₦900k / Senior ₦900k–₦1.8m+
 
+**Incident Responder:**
+- UK: Entry £40k–£55k / Mid £55k–£75k / Senior £75k–£110k+
+- US: Entry $70k–$90k / Mid $90k–$120k / Senior $120k–$160k+
+- EU: Entry €42k–€60k / Mid €60k–€90k / Senior €90k–€130k+
+- Nigeria (monthly): Entry ₦200k–₦400k / Mid ₦500k–₦900k / Senior ₦900k–₦1.8m+
+
+**Threat Hunter:**
+- UK: Entry £50k–£65k / Mid £65k–£85k / Senior £85k–£120k+
+- US: Entry $85k–$110k / Mid $110k–$155k / Senior $155k–$215k+
+- EU: Entry €55k–€70k / Mid €70k–€100k / Senior €100k–€140k+
+- Nigeria (monthly): Entry ₦300k–₦600k / Mid ₦700k–₦1.2m / Senior ₦1.2m–₦2.5m+
+
+**EDR Analyst:**
+- UK: Entry £32k–£48k / Mid £48k–£68k / Senior £68k–£95k+
+- US: Entry $60k–$80k / Mid $80k–$110k / Senior $110k–$145k+
+- EU: Entry €38k–€55k / Mid €55k–€80k / Senior €80k–€115k+
+- Nigeria (monthly): Entry ₦175k–₦350k / Mid ₦400k–₦750k / Senior ₦850k–₦1.6m+
+
+**Red Teamer:**
+- UK: Entry £45k–£65k / Mid £65k–£90k / Senior £90k–£140k+
+- US: Entry $85k–$110k / Mid $110k–$150k / Senior $150k–$200k+
+- EU: Entry €48k–€68k / Mid €68k–€95k / Senior €95k–€140k+
+- Nigeria (monthly): Entry ₦250k–₦500k / Mid ₦600k–₦1.1m / Senior ₦1.2m–₦2.2m+
+
+**Vulnerability Assessment Analyst:**
+- UK: Entry £28k–£42k / Mid £42k–£60k / Senior £60k–£85k+
+- US: Entry $55k–$75k / Mid $75k–$105k / Senior $105k–$135k+
+- EU: Entry €35k–€50k / Mid €50k–€75k / Senior €75k–€105k+
+- Nigeria (monthly): Entry ₦150k–₦300k / Mid ₦350k–₦650k / Senior ₦750k–₦1.4m+
+
+**Bug Bounty Hunter:**
+- Not a traditional salaried role. Earnings are programme-dependent.
+- Top hunters earn $100k–$500k+ annually from programmes
+- Entry level realistic expectation: $5k–$20k supplemental income while building skills
+- Display as a note on the role page rather than a standard salary table
+
+**DevSecOps Engineer:**
+- UK: Entry £42k–£60k / Mid £60k–£85k / Senior £85k–£130k+
+- US: Entry $90k–$115k / Mid $115k–$155k / Senior $155k–$210k+
+- EU: Entry €48k–€68k / Mid €68k–€98k / Senior €98k–€140k+
+- Nigeria (monthly): Entry ₦250k–₦500k / Mid ₦600k–₦1.1m / Senior ₦1.2m–₦2.2m+
+
+**AI Security Engineer:**
+- UK: Entry £45k–£65k / Mid £65k–£95k / Senior £95k–£150k+
+- US: Entry $95k–$125k / Mid $125k–$170k / Senior $170k–$250k+
+- EU: Entry €52k–€75k / Mid €75k–€110k / Senior €110k–€160k+
+- Nigeria (monthly): Entry ₦300k–₦600k / Mid ₦700k–₦1.3m / Senior ₦1.4m–₦2.8m+
+
+**AWS Security Engineer:**
+- UK: Entry £42k–£60k / Mid £60k–£88k / Senior £88k–£135k+
+- US: Entry $90k–$120k / Mid $120k–$160k / Senior $160k–$210k+
+- EU: Entry €52k–€72k / Mid €72k–€102k / Senior €102k–€145k+
+- Nigeria (monthly): Entry ₦270k–₦540k / Mid ₦650k–₦1.3m / Senior ₦1.3m–₦2.6m+
+
+**GCP Security Engineer:**
+- Same as AWS Security Engineer — comparable market rates
+
+**Network Security Engineer:**
+- UK: Entry £35k–£52k / Mid £52k–£75k / Senior £75k–£110k+
+- US: Entry $75k–$100k / Mid $100k–$135k / Senior $135k–$175k+
+- EU: Entry €42k–€60k / Mid €60k–€88k / Senior €88k–€125k+
+- Nigeria (monthly): Entry ₦200k–₦400k / Mid ₦500k–₦950k / Senior ₦1m–₦2m+
+
+**Identity Security Engineer:**
+- UK: Entry £40k–£58k / Mid £58k–£82k / Senior £82k–£125k+
+- US: Entry $85k–$110k / Mid $110k–$148k / Senior $148k–$195k+
+- EU: Entry €48k–€68k / Mid €68k–€98k / Senior €98k–€138k+
+- Nigeria (monthly): Entry ₦250k–₦480k / Mid ₦580k–₦1.1m / Senior ₦1.2m–₦2.3m+
+
+**Email Security Engineer:**
+- UK: Entry £32k–£48k / Mid £48k–£68k / Senior £68k–£95k+
+- US: Entry $65k–$85k / Mid $85k–$115k / Senior $115k–$150k+
+- EU: Entry €38k–€55k / Mid €55k–€80k / Senior €80k–€115k+
+- Nigeria (monthly): Entry ₦175k–₦350k / Mid ₦400k–₦750k / Senior ₦850k–₦1.5m+
+
+**Compliance Analyst:**
+- UK: Entry £28k–£40k / Mid £40k–£58k / Senior £58k–£80k+
+- US: Entry $52k–$70k / Mid $70k–$95k / Senior $95k–$130k+
+- EU: Entry €30k–€45k / Mid €45k–€65k / Senior €65k–€92k+
+- Nigeria (monthly): Entry ₦150k–₦280k / Mid ₦320k–₦620k / Senior ₦700k–₦1.3m+
+
+**Risk Analyst:**
+- UK: Entry £30k–£45k / Mid £45k–£65k / Senior £65k–£90k+
+- US: Entry $55k–$75k / Mid $75k–$105k / Senior $105k–$140k+
+- EU: Entry €32k–€48k / Mid €48k–€70k / Senior €70k–€100k+
+- Nigeria (monthly): Entry ₦150k–₦300k / Mid ₦350k–₦680k / Senior ₦750k–₦1.4m+
+
+**Security Auditor:**
+- UK: Entry £32k–£48k / Mid £48k–£70k / Senior £70k–£100k+
+- US: Entry $58k–$78k / Mid $78k–$108k / Senior $108k–$145k+
+- EU: Entry €35k–€52k / Mid €52k–€75k / Senior €75k–€108k+
+- Nigeria (monthly): Entry ₦160k–₦320k / Mid ₦370k–₦700k / Senior ₦800k–₦1.5m+
+
+**vCISO:**
+- UK: £90k–£180k+ (fractional/consulting, day rates vary widely)
+- US: $120k–$300k+ (fractional engagements often $200–$400/hour)
+- EU: €90k–€180k+
+- Nigeria (monthly): ₦800k–₦3m+ (fractional, consulting)
+- Note: vCISO is almost always a senior consulting role. Display a note explaining day rates and fractional engagement model rather than standard entry/mid/senior salary bands.
+
 **Date:** June 2026
 
 ---
@@ -520,3 +620,240 @@ When someone clicks "Start this path" the platform shows a contextual recommenda
 ---
 
 *Add new decisions to this log as they are made. Format: Decision, Reason, Date.*
+
+---
+
+## AI Security Engineer — Expanded Scope and Module List
+
+**Decision:** AI Security Engineer is a deep specialist role covering offensive AI security, defensive AI security, MCP security, RAG security, LLM application security, AI governance, and AI incident response. The full module list is:
+
+1. AI Fundamentals for Security — LLM architecture, tokenization, inference, attack surface mapping, MITRE ATLAS introduction. No prior AI experience required.
+2. OWASP LLM Top 10 — all 10 vulnerabilities exploited hands-on: prompt injection, insecure output handling, training data poisoning, model denial of service, sensitive information disclosure, excessive agency, system prompt leakage, vector and embedding weaknesses, misinformation, model theft.
+3. Prompt Injection in Depth — direct injection, indirect injection, tokenization bypasses, multi-turn injection chains, defence techniques, detection strategies. References SEC411 and OWASP LLM01.
+4. RAG System Security — vector database poisoning, retrieval manipulation, indirect prompt injection via poisoned documents, unauthorised data access through retrieval, context window attacks.
+5. Training Pipeline Security — data poisoning, model manipulation, supply chain attacks on AI, fine-tuning risks, model cards and provenance.
+6. Agentic AI and MCP Security — agent permissions, tool validation, MCP trust boundaries, tool poisoning, reasoning model attacks, chain-of-thought manipulation, human oversight mechanisms, excessive agency prevention.
+7. Tokenization Security — tokenization vulnerabilities across model families, tokenization bypass techniques, exploitation at the tokenization level to bypass security controls.
+8. AI Monitoring and SOC Integration — detection rules for AI attacks, SIEM integration for LLM behaviour monitoring, anomaly detection, incident indicators for AI systems.
+9. Secure AI Deployment — deployment architecture, API security for LLM services, authentication and authorisation patterns, rate limiting, network segmentation for AI workloads, inference environment hardening.
+10. AI Incident Response — IR playbook for AI-specific incidents, evidence preservation for AI systems, containment strategies, recovery, post-incident review.
+11. AI Governance and Compliance — NIST AI RMF, EU AI Act risk classification, ISO 42001, responsible AI policy, bias auditing, model documentation requirements.
+12. AI Security Capstone — full red team assessment of a simulated LLM-powered application end to end, report produced.
+
+Cabinet artifacts (12):
+- OWASP LLM Top 10 exploitation lab report
+- Prompt injection payload library with documented bypasses and defences
+- Tokenization vulnerability research notes
+- RAG system security assessment — poisoning and retrieval manipulation demonstrated
+- Training pipeline threat model
+- MCP security assessment — tool permissions, trust boundaries, agent control documented
+- Agentic AI red team report — jailbreaks, guardrail bypasses, reasoning manipulation
+- AI security monitoring runbook — detection rules, SIEM integration, alert triage
+- AI incident response playbook — containment, evidence preservation, recovery steps
+- AI governance policy suite — responsible AI use policy, risk assessment process, EU AI Act compliance
+- ISO 42001 gap analysis — AI management system requirements assessed
+- Secure AI deployment architecture diagram — annotated with security controls
+
+Reference: SANS SEC411, OWASP LLM Top 10 2024, MITRE ATLAS, NIST AI RMF
+**Date:** June 2026
+
+---
+
+## SOC Analyst — Comprehensive Module List
+
+**Decision:** SOC Analyst path covers all topics from SANS SEC450 (Blue Team Fundamentals), SEC504 (Incident Handling), and SEC555 (Detection Engineering). Module list:
+
+1. SOC Fundamentals — how a SOC works, tiers, shift operations, alert lifecycle, SOC tools ecosystem, SOAR introduction, alert fatigue and how to manage it.
+2. Security Data Collection — endpoint telemetry (EDR), network sensors, cloud logs, SIEM ingestion, log normalisation, data quality.
+3. SIEM Fundamentals — Wazuh deployment, log ingestion, dashboards, search and correlation. Enterprise: Splunk, Microsoft Sentinel, IBM QRadar.
+4. Detection Engineering — writing detection rules, Sigma rules, KQL, SPL basics, MITRE ATT&CK mapping, detection tuning, false positive reduction.
+5. Alert Triage and Analysis — triage methodology, cognitive bias in analysis, separating commodity attacks from advanced threats, escalation decisions, documentation.
+6. Log Analysis and Investigation — Windows event logs, Linux auth logs, network logs, web access logs, DNS logs, building investigation timelines.
+7. Incident Response — IR lifecycle, containment decisions, eradication, recovery, post-incident review, IR playbook development.
+8. Threat Hunting — hypothesis-driven hunting, MITRE ATT&CK as a hunting framework, proactive hunting techniques, KQL/Sigma hunting queries, hunt documentation.
+9. Email Threat Analysis — email header analysis, phishing indicators, URL detonation, sandbox analysis, BEC patterns, reporting workflow.
+10. Endpoint Triage — Windows and Linux triage methodology, volatile data collection, live response techniques, EDR investigation, memory acquisition basics.
+11. Malware Analysis Introduction — static analysis, dynamic analysis, sandbox tools, IOC extraction, threat actor attribution basics.
+12. SOC Automation — SOAR concepts, playbook design, automation opportunities, Python scripting for SOC tasks.
+13. SOC Capstone — 48-hour simulated incident investigation from initial alert through to full IR report.
+
+Cabinet artifacts (8 core + capstone):
+- Wazuh SIEM deployment with documented configuration
+- Custom detection rules — 10+ rules with MITRE ATT&CK mapping
+- Incident investigation report — full timeline, evidence chain, root cause, lessons learned
+- MITRE ATT&CK mapped threat hunting report
+- Phishing investigation report — header analysis, sandbox results, containment documented
+- IOC enrichment report — VirusTotal, AbuseIPDB, WHOIS enriched
+- Alert triage log — 20 alerts with documented decisions
+- Linux and Windows triage checklists
+- SOC Capstone report — full investigation from alert to closure
+
+Reference: SANS SEC450, SEC504, SEC555, BTL1 curriculum, MITRE ATT&CK
+**Date:** June 2026
+
+---
+
+## Penetration Tester — Comprehensive Module List
+
+**Decision:** Penetration Tester path covers all topics from SANS SEC560 (Enterprise Penetration Testing), OffSec PWK/OSCP curriculum, and eJPT. Module list:
+
+1. Penetration Testing Methodology — engagement types, scoping, rules of engagement, legal framework (CMA, CFAA, Nigerian Cybercrime Act), reporting structure, PTES and OSSTMM frameworks.
+2. Passive Reconnaissance — OSINT techniques, Google dorking, Shodan, Maltego, WHOIS, certificate transparency, LinkedIn OSINT, breach data analysis.
+3. Active Reconnaissance — DNS enumeration, subdomain discovery, network scanning, service fingerprinting, technology identification.
+4. Scanning and Enumeration — nmap in depth, service enumeration, SMB enumeration, SNMP enumeration, web directory enumeration, Gobuster, ffuf.
+5. Vulnerability Assessment — OpenVAS, Nessus (trial), vulnerability analysis, CVSS scoring, false positive identification, prioritisation by exploitability and impact.
+6. Exploitation Fundamentals — Metasploit framework, manual exploitation concepts, payload types, staged vs stageless, antivirus evasion basics.
+7. Web Application Penetration Testing — OWASP Top 10 2025 hands-on, Burp Suite in depth, SQL injection, XSS, IDOR, SSRF, authentication bypass, business logic flaws.
+8. Active Directory Attacks — Kerberoasting, AS-REP roasting, Pass the Hash, Pass the Ticket, BloodHound, ADCS exploitation, domain privilege escalation.
+9. Post-Exploitation — privilege escalation (Windows and Linux), persistence mechanisms, lateral movement, credential dumping, data exfiltration simulation.
+10. Cloud Penetration Testing — Azure/AWS misconfigurations, cloud-specific attack paths, IAM privilege escalation in cloud, storage bucket exposure.
+11. Social Engineering — pretexting, phishing campaign design, vishing concepts, physical security testing introduction.
+12. Penetration Test Reporting — executive summary writing, technical finding documentation, CVSS scoring, evidence standards, remediation recommendations, client communication.
+13. Penetration Testing Capstone — full black box engagement on a simulated target environment, complete professional report produced.
+
+Cabinet artifacts (8):
+- Configured Kali Linux environment with custom toolset
+- Reconnaissance report — passive and active recon findings
+- Vulnerability assessment report — CVSS scored and prioritised
+- Professional penetration test report — executive summary, technical findings, remediation
+- Burp Suite project — documented findings with request/response evidence
+- Custom nmap scripts for service enumeration
+- Exploitation notes — privilege escalation path documented end to end
+- Post-exploitation report — access simulation and persistence mechanisms documented
+
+Reference: SANS SEC560, OffSec PWK/OSCP, eJPT curriculum, PTES, OWASP Top 10 2025
+**Date:** June 2026
+
+---
+
+## Azure Security Engineer — Comprehensive Module List
+
+**Decision:** Azure Security Engineer path covers Microsoft SC-200, AZ-500, and SC-300 exam domains plus practical cloud security operations. Module list:
+
+1. Azure Fundamentals for Security — resource hierarchy, management groups, subscriptions, resource groups, shared responsibility model, Azure trust model.
+2. Identity and Access Management — Entra ID architecture, users, groups, roles, MFA configuration, Conditional Access policies, break-glass accounts, hybrid identity.
+3. Privileged Identity Management — PIM setup, JIT access, role activation, approval workflows, access reviews, audit logs.
+4. Network Security in Azure — VNets, subnets, NSGs, Azure Firewall, Private Endpoints, VNet peering, DDoS protection, hub-spoke topology.
+5. Microsoft Defender for Cloud — Secure Score, recommendations, workload protections, regulatory compliance dashboard, alert investigation.
+6. Microsoft Sentinel — workspace setup, data connectors, KQL fundamentals, analytics rules, incidents, playbooks, UEBA, threat intelligence integration.
+7. Microsoft Defender for Endpoint — onboarding, alert investigation, live response, threat and vulnerability management, attack surface reduction rules.
+8. Microsoft 365 Security — Defender for Office 365, anti-phishing, safe links, safe attachments, Purview, DLP, sensitivity labels, Defender for Cloud Apps.
+9. Compliance and Governance — Azure Policy, management group policy, regulatory compliance dashboard, CIS benchmark, NIST 800-53 mapping, Blueprints.
+10. Cloud Incident Response — detection via Sentinel, investigation playbook, containment for identity compromise and data exfiltration, evidence preservation in Azure.
+11. Azure Security Architecture — threat modelling for Azure workloads, STRIDE analysis, security architecture patterns, landing zone security.
+12. Azure Security Capstone — full security assessment of a simulated Azure environment, Secure Score improvement documented, IR simulation run.
+
+Cabinet artifacts (8):
+- Configured Entra ID tenant — MFA, Conditional Access, PIM documented
+- Microsoft Sentinel workspace — 5+ connectors, 10+ KQL rules, ATT&CK coverage map
+- Defender for Cloud Secure Score improvement report — before and after
+- Azure network security architecture diagram
+- Cloud incident response runbook
+- Regulatory compliance report — CIS Azure Benchmark or NIST 800-53 posture
+- Azure workload threat model — STRIDE analysis, mitigations mapped
+- M365 security configuration baseline — documented and verified
+
+Reference: Microsoft SC-200, AZ-500, SC-300 exam domains, CIS Azure Benchmark, NIST 800-53
+**Date:** June 2026
+
+---
+
+## GRC Analyst — Comprehensive Module List
+
+**Decision:** GRC Analyst path covers ISACA CISM/CRISC domains, ISO 27001 Lead Implementer curriculum, and CompTIA Security+ governance content. Module list:
+
+1. GRC Fundamentals — what GRC is, how it fits the business, governance vs risk vs compliance, security programme structure, GRC tools.
+2. Information Security Risk Management — risk identification, qualitative vs quantitative risk assessment, risk scoring, risk registers, treatment options, risk appetite, risk reporting to leadership.
+3. Security Frameworks Overview — NIST CSF 2.0, ISO 27001:2022, CIS Controls v8, COBIT 2019, COSO ERM — purpose, scope, and when to use each.
+4. ISO 27001 Implementation — ISMS scope, context of organisation, leadership requirements, risk treatment, Annex A controls, Statement of Applicability, internal audit, management review.
+5. Regulatory Compliance — GDPR, UK GDPR, NDPR, HIPAA, SOX, PCI-DSS 4.0, NIS2, DORA, Cyber Essentials, CBN Cybersecurity Framework. Regulatory landscape mapping by geography and industry.
+6. Policy and Procedure Development — information security policy suite, policy writing standards, AUP, BYOD, incident response policy, data classification policy, password policy.
+7. Security Control Assessment — control design vs operating effectiveness, control testing methods, evidence collection and documentation, control deficiency reporting.
+8. Audit Management — internal audit planning and execution, audit evidence standards, gap analysis methodology, finding classification, management response, audit reporting.
+9. Vendor and Third Party Risk — vendor tiering, risk questionnaires, contract security requirements, ongoing monitoring, supply chain risk.
+10. Business Continuity and Disaster Recovery — BIA methodology, RTO and RPO, BCP development, DRP development, testing and exercising, lessons learned.
+11. Data Protection and Privacy — data lifecycle management, data classification, data subject rights, Article 30 records, DPIA methodology, breach notification procedures.
+12. Security Awareness Programme Design — programme planning, phishing simulation, targeted training, behaviour measurement, board reporting.
+13. GRC Capstone — full ISO 27001 readiness assessment of a simulated organisation, all deliverables produced.
+
+Cabinet artifacts (13):
+- Information security risk register — 15+ risks scored and treatment plans assigned
+- ISO 27001 gap analysis — all 93 Annex A controls assessed
+- Information security policy suite — 6 policies written
+- NIST CSF 2.0 current state assessment — scored across all five functions
+- PCI-DSS 4.0 gap analysis report
+- ISO 27001 internal audit report
+- SOC 2 readiness assessment
+- GDPR Article 30 records of processing
+- Cyber Essentials self-assessment
+- NDPR compliance review
+- Regulatory applicability matrix — Nigerian fintech scenario
+- CBN Cybersecurity Framework assessment
+- Vendor risk assessment — completed questionnaire, risk rating, recommendation
+- Business impact analysis — RTO, RPO, recovery priorities documented
+- Security awareness programme design document with GoPhish results
+
+Reference: ISO 27001:2022, NIST CSF 2.0, ISACA CISM/CRISC domains, PCI-DSS 4.0, GDPR, NDPR, CBN Cybersecurity Framework
+**Date:** June 2026
+
+---
+
+## AppSec Engineer — Comprehensive Module List
+
+**Decision:** AppSec Engineer path covers OWASP SAMM, OWASP Top 10 2025, OWASP ASVS, and SANS SEC522 curriculum. Module list:
+
+1. Secure SDLC — security in each phase of development, OWASP SAMM maturity model, security gates, developer security training, shifting left.
+2. OWASP Top 10 2025 — all 10 categories hands-on: broken access control, cryptographic failures, injection, insecure design, security misconfiguration, vulnerable components, authentication failures, software and data integrity failures, logging failures, SSRF. New 2025 additions: software supply chain failures, mishandling of exceptional conditions.
+3. Threat Modelling — STRIDE methodology, data flow diagrams, trust boundaries, abuse cases, PASTA framework, threat modelling for Agile teams, output documentation.
+4. Secure Code Review — code review methodology, language-specific vulnerability patterns, OWASP Code Review Guide, tools-assisted review, peer review vs security review, finding documentation.
+5. SAST and DAST — Semgrep setup and custom rule writing, OWASP ZAP authenticated scanning, interpreting results, false positive management, SonarQube community edition.
+6. Software Composition Analysis — dependency security, CVE triage, OWASP Dependency Check, Snyk free tier, SBOM concepts, supply chain attack awareness.
+7. Cryptography for Developers — correct implementation of encryption, common cryptographic failures, TLS configuration, secrets management, key management, certificate handling.
+8. Authentication and Authorisation — secure session management, OAuth 2.0 implementation, OIDC, JWT best practices, MFA implementation, broken auth patterns.
+9. Security in CI/CD — GitHub Actions security gates, secrets scanning with Gitleaks, container scanning with Trivy, SAST in pipeline, dependency checking in pipeline, security as code.
+10. Agile Security — security user stories, abuse cases in sprint planning, security acceptance criteria, definition of done security gates, AppSec in retrospectives.
+11. API Security for Developers — OWASP API Top 10 2023 from a developer perspective, secure API design, input validation, rate limiting, authentication for APIs.
+12. AppSec Programme Building — building a security champions programme, metrics and reporting, developer security training design, bug bounty programme basics.
+13. AppSec Capstone — full security assessment of a sample application, threat model produced, code reviewed, SAST and DAST run, findings reported with remediation.
+
+Cabinet artifacts (7):
+- Semgrep custom rule set — 10+ rules targeting OWASP Top 10
+- OWASP ZAP authenticated scan report with categorised findings
+- Web application threat model — STRIDE analysis, mitigations documented
+- Secure code review report — real PR reviewed with findings
+- CI/CD security pipeline — GitHub Actions with SAST, SCA, secrets scanning
+- OWASP Top 10 2025 exploitation lab notes
+- Secure development guidelines document
+
+Reference: OWASP SAMM, OWASP Top 10 2025, OWASP ASVS, OWASP Code Review Guide, SANS SEC522
+**Date:** June 2026
+
+---
+
+## API Security Engineer — Comprehensive Module List
+
+**Decision:** API Security Engineer path covers OWASP API Security Top 10 2023, APIsec University curriculum, and practical API testing methodology. Module list:
+
+1. API Fundamentals for Security — REST, GraphQL, gRPC, SOAP, API authentication patterns, API documentation review, attack surface mapping for APIs.
+2. OWASP API Top 10 2023 — all 10 categories hands-on against OWASP crAPI: BOLA, broken authentication, BOPLA, unrestricted resource consumption, BFLA, unrestricted access to sensitive business flows, SSRF, security misconfiguration, improper inventory management, unsafe consumption of APIs.
+3. API Authentication and Authorisation — JWT in depth (algorithm confusion, weak secrets, none algorithm), OAuth 2.0 vulnerabilities, API key management, FAPI for financial APIs, scope validation.
+4. API Reconnaissance and Discovery — finding undocumented endpoints, Swagger and OpenAPI abuse, GraphQL introspection, fuzzing for hidden endpoints, API inventory management.
+5. Business Logic and Abuse — rate limiting bypass, workflow abuse, price manipulation, mass assignment, testing for business logic flaws specific to APIs.
+6. GraphQL Security — introspection attacks, query depth limits, batching attacks, authorisation in GraphQL, field-level security.
+7. API Gateway Security — WAF for APIs, rate limiting at gateway level, authentication at gateway, mTLS, API versioning security, gateway misconfiguration.
+8. Secure API Design — security by design for APIs, input validation, output filtering, error handling, logging and monitoring for APIs, deprecation security.
+9. API Security in Financial Services — PSD2, Open Banking, FAPI compliance, payment API security patterns, regulatory requirements for financial APIs.
+10. API Security Testing Methodology — building a repeatable API security testing process, Postman collections, automated security testing, CI/CD integration for API security.
+11. API Security Capstone — full security assessment of a simulated fintech API, OWASP API Top 10 coverage, professional findings report produced.
+
+Cabinet artifacts (6):
+- Postman security testing collection — auth, injection, BOLA/BFLA, rate limiting, business logic tests
+- OWASP API Top 10 2023 findings report — each vulnerability demonstrated
+- API threat model — endpoints mapped, trust boundaries documented
+- JWT security lab — algorithm confusion, weak secret, none algorithm bypass
+- OAuth 2.0 misconfiguration lab — redirect URI manipulation, state bypass, token leakage
+- API security checklist — comprehensive reusable checklist
+
+Reference: OWASP API Security Top 10 2023, APIsec University, FAPI specification, PSD2
+**Date:** June 2026
+

@@ -1,4 +1,4 @@
-import type { PathSlug } from "@/types/onboarding";
+import type { CabinetPreviewItem, PathSlug } from "@/types/onboarding";
 
 export type RoleLevel =
   | "Entry"
@@ -100,7 +100,23 @@ export interface ComingSoonRoleContent {
   name: string;
   domain: string;
   domainId: string;
-  oneLiner: string;
+  level: RoleLevel;
+  v1: false;
+  dayToDay: string;
+  differentiator: string;
+  background: string;
+  salaryDisplay:
+    | { type: "table"; salaries: readonly SalaryByRegion[] }
+    | { type: "note"; note: string };
+  /** Extra note below salary (e.g. AI Security demand stat). */
+  salaryExtraNote?: string;
+  industries: readonly string[];
+  toolsFree: readonly string[];
+  toolsEnterprise: readonly string[];
+  certs: readonly RoleCert[];
+  careerProgression: readonly string[];
+  relatedRoles: readonly RoleRelatedRole[];
+  cabinetPreview: readonly CabinetPreviewItem[];
 }
 
 export type RolePageData = RolePageContent | ComingSoonRoleContent;
@@ -108,5 +124,5 @@ export type RolePageData = RolePageContent | ComingSoonRoleContent;
 export function isV1RoleContent(
   role: RolePageData,
 ): role is RolePageContent {
-  return "dayToDay" in role;
+  return "v1" in role && role.v1 === true;
 }
