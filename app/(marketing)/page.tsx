@@ -34,7 +34,9 @@ export default function HomePage(): React.ReactElement {
             id="hero-heading"
             className="font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            Your cybersecurity career starts here. Wherever here is.
+            Your cybersecurity career starts here.
+            <br />
+            Wherever here&nbsp;is.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
             CyberPivot takes you from where you are now to job-ready in your
@@ -48,6 +50,14 @@ export default function HomePage(): React.ReactElement {
               className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
             >
               <Link href="/onboarding">Find your path</Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              asChild
+              className="w-full border-white/15 bg-transparent text-zinc-200 hover:bg-white/5 hover:text-foreground sm:w-auto"
+            >
+              <Link href="/intro">Start with the Introduction</Link>
             </Button>
             <Button
               size="lg"
@@ -178,7 +188,7 @@ export default function HomePage(): React.ReactElement {
             CyberPivot is free forever. Self-host it if you want. Content and
             code improve through community pull requests. MIT licensed.
           </p>
-          <dl className="mt-10 grid grid-cols-3 gap-6 border-y border-white/[0.08] py-10">
+          <dl className="mt-10 grid grid-cols-3 gap-6 py-10">
             <div>
               <dt className="text-xs uppercase tracking-wider text-zinc-500">
                 GitHub stars

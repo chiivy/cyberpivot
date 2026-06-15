@@ -1,0 +1,119 @@
+---
+title: "Core Concepts Everyone Must Know"
+slug: "core-concepts"
+section: 2
+description: "CIA triad, risk, controls, defence in depth, least privilege, zero trust, and the ideas that come up in every security interview."
+readingTime: "12 min"
+---
+
+Before you specialise in anything, there is a set of concepts that come up in every corner of cybersecurity. In interviews. In job descriptions. In day-to-day work. You will hear them constantly regardless of which role you end up in.
+
+This section covers them properly. Not as definitions to memorise. As ideas to understand well enough to apply.
+
+## The CIA Triad
+
+Almost everything in security comes back to three properties. Confidentiality, Integrity, and Availability. Together they are called the CIA Triad and they are the lens through which security professionals evaluate risk.
+
+**Confidentiality** means only the right people can access the information. Your bank statements should be visible to you and your bank, not to anyone who happens to ask. A confidentiality failure is when information reaches someone it should not. Data breaches are confidentiality failures. So is a misconfigured cloud storage bucket that exposes customer records to the public internet, which happens more often than most companies would like to admit.
+
+**Integrity** means information is accurate and has not been tampered with. If someone changes your account balance from £500 to £5 in the database, that is an integrity failure. So is an attacker quietly modifying a software update to include malicious code before it reaches users, which is exactly what happened in the 2020 SolarWinds attack. Nobody noticed for months because the software looked legitimate.
+
+**Availability** means systems and data are accessible when needed. A hospital's patient record system going offline during an emergency is an availability failure with real human consequences. Ransomware attacks availability by encrypting all your files and demanding payment to restore access. Attackers flooding a website with traffic until it crashes are doing the same thing from a different angle. Both make something unavailable that was supposed to be there.
+
+Every security decision maps back to these three. When you are assessing a risk, you are asking which of these properties is threatened, by how much, and what happens to the business if it fails.
+
+Some practitioners add two more properties. **Authenticity** means you can verify that something is what it claims to be. A digitally signed email that proves it came from a specific sender is an authenticity control. **Non-repudiation** means someone cannot later deny having done something. Detailed activity logs that record exactly who accessed which file at what time provide non-repudiation. You will see these mentioned in some frameworks and certifications.
+
+## Threats, Vulnerabilities, and Risk
+
+These three words are used constantly and confused constantly. Getting them right matters because they mean different things and require different responses.
+
+A **threat** is anything that could cause harm. A criminal group trying to steal your customer data is a threat. A disgruntled employee with access to sensitive systems is a threat. A fire in your server room is a threat. Threats exist in the world independently of your organisation. You generally cannot eliminate them.
+
+A **vulnerability** is a weakness that a threat could exploit. An unpatched server is a vulnerability. A weak password policy is a vulnerability. A door to the server room that staff leave propped open is a vulnerability. These are weaknesses in your own systems and processes. You can find and fix them.
+
+**Risk** is what happens when a threat meets a vulnerability. A serious weakness in a system that nothing can reach from the outside world carries low risk. The same weakness in a public-facing system with no other protections carries high risk. The impact if something goes wrong matters too. Understanding this relationship is what risk management is built on.
+
+When an employer asks how you approach risk in an interview, they are asking whether you understand this relationship and can apply it to real decisions.
+
+## Assets
+
+An asset is anything of value that needs protecting. Systems, data, people, processes, reputation, intellectual property. Before you can protect something you need to know what it is, where it lives, who owns it, and what happens if it is compromised.
+
+Asset management sounds administrative. In practice it is the foundation of everything else. You cannot protect what you do not know exists. You cannot monitor what is not in your inventory. Most significant breaches involve systems the organisation did not know were exposed, or had simply forgotten about.
+
+## Security Controls
+
+A control is anything you put in place to reduce risk. Controls fall into several categories and understanding them helps you think clearly about defence.
+
+**Preventive controls** stop bad things from happening in the first place. A lock on a door, a firewall blocking unwanted traffic, multi-factor authentication requiring a second proof of identity before granting access. These are all preventive.
+
+**Detective controls** identify when something bad has happened or is happening. Security monitoring tools, activity logs, and alerts that fire when unusual behaviour is spotted are all detective controls. They do not stop the attack but they tell you it is happening so you can respond.
+
+**Corrective controls** fix things after a bad event. Restoring files from backup after a ransomware attack, removing a compromised account, patching a vulnerability that was just exploited. These clean up the damage.
+
+**Deterrent controls** discourage attacks before they start. Warning banners on login pages, visible security cameras in office spaces, publicised security awareness training that signals you take this seriously. They change the attacker's calculation without technically blocking anything.
+
+**Compensating controls** fill a gap when the ideal control cannot be implemented. If you cannot update a critical legacy system because the vendor no longer supports it and updating it would break production, you might isolate it from the rest of the network and monitor it more closely as a compensating measure.
+
+In interviews you will often be asked how you would secure a particular system. The best answers combine multiple control types. A preventive control alone is not enough because every control has a failure mode. You also need detective controls to know when something gets through.
+
+## Defence in Depth
+
+No single control is perfect. Every protection has a weakness. Defence in depth means layering multiple controls so that if one fails, others remain.
+
+Think about how online banking works today. Logging in requires your password, a one-time code sent to your phone, and sometimes a biometric check. Even if an attacker steals your password, they still need your phone. If they somehow get your phone too, suspicious login activity from a new device triggers a fraud alert. If that alert is missed, transaction limits cap how much they can move. Each layer is independent. Getting past one does not give you everything.
+
+That is defence in depth applied to a product you use every day. The same principle applies to organisational security. Network controls combined with endpoint monitoring combined with identity verification combined with activity logging. Each layer assumes the others might fail.
+
+When you are designing a security control or responding to an incident, ask yourself: what is the next layer of defence if this one fails?
+
+## Least Privilege
+
+Give people only the access they need to do their job. Nothing more.
+
+A customer service agent does not need access to the payroll database. A developer does not need the ability to deploy directly to production systems. An administrator who manages printers does not need the keys to the whole domain.
+
+Least privilege limits the damage when something goes wrong. If an attacker compromises a user account, they can only reach what that account was allowed to touch. The 2020 Twitter breach happened partly because too many employees had access to powerful internal tools. One social engineering phone call gave the attacker access to some of the most followed accounts on the internet because the privilege was sitting there, available to anyone who could convince the right person to hand it over.
+
+In practice, enforcing least privilege requires knowing what access people have, reviewing it regularly, and having the organisational will to remove access from people who no longer need it. That last part is harder than it sounds.
+
+## Zero Trust
+
+The traditional security model worked like a gated office building. Once you were past the front desk and had your visitor badge, people mostly left you alone inside. The assumption was that the boundary kept the bad people out and the good people in.
+
+That model broke when employees started working from home, applications moved to cloud services outside the building entirely, and attackers learned that getting past the boundary was often easier than expected. Trusting someone just because they were inside the network no longer made sense.
+
+Zero trust replaces that assumption with a simple principle. Never trust, always verify. It does not matter whether a request comes from inside the office network or from a phone in Lagos. Every access request gets checked. Every device is assessed. Every session is authenticated. Permissions are granted for the minimum necessary scope, for the minimum necessary time.
+
+Zero trust is not a single product. It is a design philosophy and an architecture. Microsoft, Google, and most large enterprises have been moving toward it for years. You will see it in job descriptions, hear it in interviews, and encounter it in almost every cloud security context.
+
+## Attack Surface
+
+The attack surface is everything that could potentially be targeted. Every application, every service accessible from the internet, every user account, every connection to a third party, every employee who could receive a phishing email.
+
+Security teams work to reduce the attack surface by removing things that are not needed. Disabling unused services. Closing accounts that belong to former employees. Decommissioning old systems. Every unnecessary element that stays in place is an opportunity.
+
+This is also why knowing what you have is so important. You cannot reduce an attack surface you cannot see.
+
+## Encryption Basics
+
+Encryption converts readable data into scrambled, unreadable output that can only be reversed with the correct key. It protects information while it is moving across a network and while it is sitting on a disk or in a database.
+
+There are two main types worth understanding.
+
+**Symmetric encryption** uses the same key to lock and unlock the data. It is fast and efficient. The challenge is getting that key safely to whoever needs it. If an attacker intercepts the key, they can decrypt everything. AES is the most widely used symmetric algorithm and you will see it mentioned in security standards constantly.
+
+**Asymmetric encryption** solves the key sharing problem using a pair of mathematically linked keys. A public key that anyone can use to encrypt data sent to you, and a private key that only you hold to decrypt it. You can share your public key freely. Only you can read what people send you with it. This is how secure websites work. When you see the padlock in your browser, the connection is using this principle to protect your data in transit.
+
+Encryption is not magic. It protects data from people without the key. It does not protect against someone who already has legitimate access, or against a system that decrypts data to process it and accidentally leaves it exposed.
+
+In security work you will encounter encryption in website security configuration, certificate management, protecting stored passwords, securing sensitive data in databases, and managing secrets like API keys. You do not need to build cryptographic systems. You need to know when encryption is required, which approach is appropriate, and how to recognise when it has been done wrong.
+
+## Putting It Together
+
+These concepts are not academic. They come up in real work constantly.
+
+A security analyst triaging an alert is asking which CIA property is under threat and how severe the impact could be. A cloud security engineer reviewing access policies is applying least privilege and zero trust. A GRC analyst mapping controls to a compliance framework is categorising preventive, detective and corrective controls. A penetration tester scoping an engagement is mapping the attack surface.
+
+Understanding these ideas before you start your chosen path means the technical content will make sense faster. You will see why things are done the way they are, not just how to do them.

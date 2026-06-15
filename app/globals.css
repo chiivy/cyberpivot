@@ -88,12 +88,13 @@
     background-size: 48px 48px, 48px 48px, 256px 256px;
   }
 
-  .marketing-divider {
-    @apply border-t border-white/[0.08];
+  /* Long-form content pages: clean background, no grid (intro sections, future modules) */
+  .intro-reading-page {
+    background-color: #111118;
   }
 
   .marketing-section {
-    @apply marketing-divider py-12 sm:py-[4.5rem];
+    @apply py-12 sm:py-[4.5rem];
   }
 
   @media (prefers-reduced-motion: no-preference) {

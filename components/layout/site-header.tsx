@@ -29,7 +29,27 @@ export function SiteHeader({
         >
           CyberPivot
         </Link>
-        <nav className="flex items-center gap-2" aria-label="Account">
+        <div className="flex items-center gap-4">
+          {marketing ? (
+            <nav
+              className="flex items-center gap-4 text-sm sm:gap-6"
+              aria-label="Main"
+            >
+              <Link
+                href="/intro"
+                className="text-zinc-400 transition-colors hover:text-cyan-300"
+              >
+                Introduction
+              </Link>
+              <Link
+                href="/roles"
+                className="text-zinc-400 transition-colors hover:text-cyan-300"
+              >
+                Roles
+              </Link>
+            </nav>
+          ) : null}
+          <nav className="flex items-center gap-2" aria-label="Account">
           <Button
             variant="ghost"
             asChild
@@ -47,7 +67,8 @@ export function SiteHeader({
           >
             <Link href="/onboarding">Get Started</Link>
           </Button>
-        </nav>
+          </nav>
+        </div>
       </div>
     </header>
   );

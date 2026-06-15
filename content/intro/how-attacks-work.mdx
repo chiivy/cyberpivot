@@ -1,0 +1,111 @@
+---
+title: "How Attacks Actually Work"
+slug: "how-attacks-work"
+section: 3
+description: "The attacker mindset, kill chain, MITRE ATT&CK, common attack types, and how real breaches unfold."
+readingTime: "15 min"
+---
+
+Most people learn about cybersecurity from the defender's side. Tools, controls, policies. But understanding how attacks actually unfold is what separates someone who can follow a checklist from someone who can think through a threat and anticipate what comes next.
+
+This section is about the attacker's perspective. Not because you need to become one, but because defenders who understand how attacks work build better defences, write better detection rules, ask better questions during investigations, and give better advice to the organisations they protect.
+
+## The Attacker's Mindset
+
+Attackers think about systems the way a locksmith thinks about locks. Not as things that work, but as things that might fail. Every system has assumptions built into its design. Attackers look for places where those assumptions break down.
+
+A login page assumes that only the legitimate user knows the password. An attacker finds ways to make that assumption false. Steal the password through phishing. Guess it using a list of common passwords. Intercept it on an unencrypted connection. Compromise a database where it is stored in a format that can be cracked.
+
+The attacker is not smarter than the defender. They have one structural advantage: they only need to find one way in. The defender has to protect everything. That asymmetry is why defence in depth matters so much, and why security is never finished.
+
+## How Attacks Unfold — The Kill Chain
+
+Most successful attacks follow a predictable sequence of stages. Understanding this sequence helps defenders figure out where to detect and disrupt an attacker before they reach their goal.
+
+The Cyber Kill Chain, developed by Lockheed Martin, describes seven stages.
+
+**Reconnaissance** — the attacker researches their target before doing anything. What systems do they run? What software versions? Who works there? What are their email formats? What is publicly exposed? This phase is often entirely passive. No intrusion yet. Just observation and research.
+
+**Weaponisation** — the attacker prepares their attack. Writing or obtaining malware. Creating a convincing phishing email. Building an exploit for a known vulnerability. This happens entirely on the attacker's side with no contact with the target.
+
+**Delivery** — the attacker gets their weapon to the target. Sending the phishing email. Hosting a malicious website the target will visit. Dropping a USB drive in the car park. This is the first moment of contact.
+
+**Exploitation** — the weapon executes. The target clicks the link and malicious code runs. The vulnerability is triggered. The attacker has their first foothold.
+
+**Installation** — the attacker establishes persistence so they survive reboots and maintain access. Installing a backdoor. Adding a scheduled task. Creating a hidden user account.
+
+**Command and Control** — the attacker connects their tools to external infrastructure they control. The compromised system phones home. The attacker can now issue commands remotely.
+
+**Actions on Objectives** — the attacker does what they came to do. Steal data. Encrypt files for ransom. Move to other systems. Disrupt operations. This is the end goal, and by this point they have been inside for a while.
+
+The insight this model gives defenders is that attackers can be stopped at any stage. You do not have to catch them at the end. A phishing email blocked at delivery, a vulnerability that was patched before exploitation, a lateral movement attempt detected before they reach their target. Every stage is an opportunity to disrupt.
+
+## MITRE ATT&CK
+
+The Cyber Kill Chain gives you the shape of an attack. MITRE ATT&CK gives you the detail.
+
+ATT&CK is a framework maintained by MITRE, a US non-profit research organisation. It catalogues the specific tactics, techniques, and procedures that real attacker groups use in real attacks. It is built from observed behaviour, not theory.
+
+Tactics are the high-level goals at each stage of an attack. Initial access, execution, persistence, privilege escalation, defence evasion, credential access, discovery, lateral movement, collection, exfiltration, impact.
+
+Techniques are the specific methods used to achieve each tactic. Spearphishing attachment is a technique under Initial Access. Pass the Hash is a technique under Lateral Movement. Data encrypted for impact is a technique under Impact.
+
+The framework is freely available at attack.mitre.org and it is used across the industry. When a SOC analyst writes a detection rule, they often map it to an ATT&CK technique so colleagues know exactly what behaviour it is designed to catch. When a penetration tester writes a report, they reference ATT&CK techniques to give the client precise language for remediation. When a threat intelligence team tracks a criminal group, they map that group's known techniques to ATT&CK.
+
+You do not need to memorise it. You need to know it exists, understand its structure, and be comfortable navigating it. Employers in defensive and offensive roles will reference it regularly.
+
+## Who Attacks and Why
+
+Not all attackers are the same. Understanding who is behind an attack shapes how you respond and what you prioritise defending against.
+
+**Financially motivated criminals** are the most common threat for most organisations. They want money. Ransomware, business email compromise, payment fraud, data theft for sale. These groups operate like businesses. They have affiliates, customer service, and reinvest profits into better tooling. They are opportunistic but increasingly sophisticated.
+
+**Nation state actors** are typically after intelligence, disruption, or strategic advantage. They are patient, well-resourced, and willing to spend months or years inside a target network without doing anything visible. The SolarWinds attack is the most prominent recent example. The goal was intelligence gathering, not ransomware. They were inside thousands of organisations for nearly a year before being discovered.
+
+**Hacktivists** attack to make a political point. Website defacement, data dumps, disruption of services. Less common than criminal or nation state activity but still relevant, especially for organisations involved in politically contentious areas.
+
+**Insiders** are current or former employees, contractors, or business partners who abuse their access. Sometimes malicious, deliberately stealing data or sabotaging systems. Sometimes accidental, clicking a phishing link or misconfiguring a system. Insider threats are particularly difficult because the attacker already has legitimate access.
+
+**Script kiddies** are low-skill attackers using tools built by others. They run automated scanners, deploy publicly available exploits against unpatched systems, and look for easy targets. They cause real damage despite their limited capability because there are a lot of them and many organisations are unpatched.
+
+Understanding which type of threat actor you are dealing with changes everything. A ransomware group wants to encrypt your systems and get paid. A nation state wants to read your emails without you knowing. The defences, detections, and responses are different.
+
+## Common Attack Types
+
+**Phishing** is the most common initial access technique across almost every category of attacker. An email that appears to come from a trusted source, designed to get the recipient to click a link, open an attachment, or hand over credentials. Spearphishing is a targeted version aimed at a specific person with personalised content. Vishing is voice phishing, done over the phone. Smishing is done via SMS. The 2020 Twitter breach started with a vishing call to a Twitter employee.
+
+**Malware** is malicious software designed to damage, disrupt, or gain unauthorised access. Ransomware encrypts files and demands payment. Trojans disguise themselves as legitimate software. Spyware silently collects information. Keyloggers record everything you type. Rootkits hide the presence of other malware. Most malware arrives via phishing, malicious downloads, or compromised legitimate software.
+
+**Social engineering** is manipulating people rather than exploiting technology. Pretexting involves creating a fabricated scenario to extract information or access. An attacker calls pretending to be IT support and asks an employee to reset their password. An attacker impersonates a senior executive and pressures finance staff to authorise a payment. The human is often the easiest vulnerability to exploit.
+
+**Man-in-the-middle attacks** intercept communications between two parties. The attacker sits between a user and a website, reading or modifying traffic in real time. Public Wi-Fi networks without proper security are a classic environment for this. HTTPS encryption makes this significantly harder but not impossible if implemented incorrectly.
+
+**SQL injection** is a technique for attacking databases through vulnerable web applications. If an application takes user input and passes it directly to a database query without proper validation, an attacker can manipulate that query to extract data, bypass authentication, or delete records. It has been in the OWASP Top 10 list of web application vulnerabilities for over a decade because it remains common despite being entirely preventable.
+
+**Denial of service** attacks flood a system with traffic or requests until it cannot respond to legitimate users. Distributed denial of service uses thousands or millions of compromised devices to generate the traffic. These attacks are often used as distractions or as leverage in extortion schemes.
+
+**Supply chain attacks** compromise software or hardware before it reaches the target. Rather than attacking the target directly, the attacker compromises a trusted vendor or software component that the target uses. The SolarWinds attack is the most significant recent example. The 3CX attack in 2023 followed the same pattern. These are particularly dangerous because the malicious code arrives through a trusted channel.
+
+## How a Real Breach Unfolds
+
+Abstract attack types are easier to understand when you see how they combine in a real scenario. Here is a realistic composite of how many breaches actually happen.
+
+A mid-sized financial services company. Monday morning. A member of the finance team receives an email that appears to come from the CEO. It says there is an urgent invoice that needs processing and includes a link to a document. The email looks right. The sender name matches. The person clicks the link.
+
+The link opens what looks like a Microsoft login page asking them to re-enter their credentials. They do. That page is controlled by the attacker. The credentials are captured.
+
+Within minutes the attacker logs into the company's email system using those credentials. They set up a forwarding rule so they receive copies of all incoming emails without the victim noticing. They spend a week reading emails, learning who the senior leaders are, what payment processes look like, and who in finance has authority to authorise transfers.
+
+The following week they send an email from the compromised account to another finance team member, impersonating a legitimate supplier. The email requests a change of bank account details for an upcoming payment. It includes a realistic invoice. The payment goes to an account controlled by the attacker.
+
+By the time the company realises what happened, the money is gone and has been moved through several accounts. The attacker used no malware. Exploited no software vulnerabilities. The entire attack ran through a compromised email account and human decisions.
+
+This type of attack, called Business Email Compromise, costs organisations billions every year globally. It is detected by monitoring for impossible travel on accounts, forwarding rules being created, changes to supplier payment details, and anomalies in email behaviour. All of those detection opportunities require someone to have put them in place beforehand.
+
+## What This Means for Defenders
+
+Every attacker technique has a defensive response. Phishing awareness training and email filtering reduce delivery. Multi-factor authentication stops credential theft from being enough on its own. Monitoring for suspicious login behaviour catches attackers who do get in. Strict payment verification processes break the final stage of business email compromise attacks.
+
+The kill chain gives defenders multiple opportunities. A defender who understands how attacks unfold does not just respond to the final stage. They build detection and prevention at every stage, so there are multiple chances to catch an attacker before they reach their goal.
+
+Understanding attacks is not optional knowledge for security professionals. It is the foundation of knowing what to defend, how to detect, and why specific controls matter.
