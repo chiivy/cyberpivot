@@ -32,8 +32,13 @@ function parseTasksSection(
   title: string,
   body: string,
 ): FoundationTasksSection {
-  const taskPattern = /^#{1,3} Task (\d+) — (.+)$/gm;
-  const matches = Array.from(body.matchAll(taskPattern));
+  const headingPattern = /^#{1,3} Task (\d+) — (.+)$/gm;
+  const boldCommaPattern = /^\*\*Task (\d+), (.+?)\*\*$/gm;
+
+  let matches = Array.from(body.matchAll(headingPattern));
+  if (matches.length === 0) {
+    matches = Array.from(body.matchAll(boldCommaPattern));
+  }
 
   if (matches.length === 0) {
     return { type: "tasks", title, intro: body.trim(), tasks: [] };
@@ -73,7 +78,10 @@ export function parseFoundationModuleContent(
     const title = part.slice(0, newlineIndex).trim();
     const body = part.slice(newlineIndex + 1).trim();
 
-    if (title.toLowerCase().startsWith("analysis tasks")) {
+    if (
+      title.toLowerCase().startsWith("analysis tasks") ||
+      title.toLowerCase() === "hands-on lab"
+    ) {
       sections.push(parseTasksSection(title, body));
     } else if (title.toLowerCase().startsWith("answer guide")) {
       sections.push({ type: "answer-guide", title, markdown: body });

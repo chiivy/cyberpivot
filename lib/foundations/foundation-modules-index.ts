@@ -19,10 +19,10 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     module: 2,
     level: "Foundation",
     description:
-      "Command line fluency on the OS most security tools and servers run on.",
+      "Navigate a Linux filesystem, read and search logs, understand permissions, and investigate running processes before you touch a real security tool.",
     readingTime: "50 min",
     labTime: "45-60 min",
-    status: "coming-soon",
+    status: "available",
     nextModule: "windows-active-directory",
   },
   {

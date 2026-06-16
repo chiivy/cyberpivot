@@ -1,0 +1,353 @@
+---
+title: "Linux Fundamentals"
+slug: "linux-fundamentals"
+module: 2
+level: "Foundation"
+description: "Navigate a Linux filesystem, read and search logs, understand permissions, and investigate running processes before you touch a real security tool."
+readingTime: "50 min"
+labTime: "45-60 min"
+tools:
+  - name: "WSL2"
+    type: "free"
+    url: "https://learn.microsoft.com/en-us/windows/wsl/install"
+  - name: "VirtualBox"
+    type: "free"
+    url: "https://virtualbox.org"
+  - name: "VMware Workstation Player"
+    type: "free"
+    url: "https://vmware.com"
+  - name: "Webminal"
+    type: "free"
+    url: "https://webminal.org"
+cabinetArtifact:
+  name: "Linux Investigation Log"
+  description: "Documented Linux filesystem, permissions, and process investigation, your second portfolio entry"
+  unlocksOn: "completion"
+previousModule: "how-the-internet-works"
+nextModule: "windows-and-active-directory"
+---
+
+## Before You Start
+
+If your onboarding placed you at Entry Point B or above and you already use Linux comfortably day to day, skim this module rather than reading every section in depth. Jump straight to the Hands-On Lab and check that the five tasks feel straightforward. If they do, you are ready to move on to Module 3. If anything feels shaky, come back and read the relevant section properly.
+
+If you are a complete beginner, read this module in order. Everything here is the foundation that every later module assumes you already have.
+
+## Scenario
+
+You join a SOC as a junior analyst. On day three an alert fires. A server is showing unusual CPU usage and a process nobody recognises is running. Your senior analyst is in a meeting. They message you: "SSH into the box and have a look. Check what's running, check who's logged in, check recent log entries. Tell me what you find."
+
+You open a terminal. A blinking cursor stares back. You realise you do not actually know how to look at anything on this system. You know what a file is. You do not know how to find one, read one, or tell who else has touched it.
+
+This module exists so that moment never happens to you. Almost every server you will ever investigate, almost every security tool you will ever run, and almost every SOC, cloud security, or penetration testing role you are building toward assumes you are comfortable in a Linux terminal. Not an expert. Comfortable. By the end of this module you will be.
+
+## Why Linux, Specifically
+
+Windows is what most people grow up using. Linux is what most of the internet actually runs on.
+
+The vast majority of web servers, cloud infrastructure, and enterprise backend systems run Linux, not Windows. Most security tools, Wireshark aside since it runs well on both, are built Linux-first. Wazuh, Suricata, Zeek, Metasploit, nmap, the tools you will use throughout every role path on this platform, either run natively on Linux or run best there. Penetration testers run Kali Linux, a security-focused Linux distribution, as their primary toolkit. SOC analysts SSH into Linux servers to investigate incidents constantly. Cloud security engineers work with Linux-based virtual machines and containers every day.
+
+If you skip learning Linux, you are not skipping a niche skill. You are skipping the floor that almost everything else in this platform stands on.
+
+## What a Terminal Actually Is
+
+A terminal is a text-based way of telling your computer what to do, instead of clicking icons. You type a command, press Enter, and the computer does exactly that thing and shows you the result as text.
+
+This feels intimidating at first because there is no menu telling you what is possible. But the trade-off is enormous control and speed. Once you know the commands, doing something in a terminal is often faster than clicking through five menus, and it is the only practical way to work efficiently on a remote server that has no graphical interface at all, which describes most servers you will ever touch professionally.
+
+If you have used Windows your whole life, a few rough comparisons help anchor what you are about to learn:
+
+| What you want to do | Windows | Linux |
+|---|---|---|
+| See what's in a folder | Open File Explorer | `ls` |
+| Move into a folder | Double-click it | `cd foldername` |
+| View a text file's contents | Open it in Notepad | `cat filename` |
+| Delete a file | Right-click, Delete | `rm filename` |
+| Make a new folder | Right-click, New Folder | `mkdir foldername` |
+| Run a program as administrator | Right-click, Run as administrator | `sudo command` |
+| See what's running | Task Manager | `ps aux` or `top` |
+
+These are not perfect one-to-one matches, but they give you something familiar to hold onto while the actual Linux commands sink in properly over the rest of this module.
+
+Every command you type follows roughly the same shape: the command itself, followed by options that modify how it behaves, followed by the thing you want it to act on. For example `ls -la /home` means "list (`ls`), show everything including hidden files in long detail (`-la`), inside the /home directory."
+
+## The Linux Filesystem, Where Things Actually Live
+
+Unlike Windows, where you have separate drive letters like `C:` and `D:`, Linux has one single filesystem tree starting at the root, written as `/`. Everything lives somewhere under that root.
+
+A handful of directories matter constantly in security and system administration work.
+
+`/etc` — configuration files for almost everything on the system live here. Network settings, user account definitions, service configurations. When something is misconfigured, this is often where you look.
+
+`/var` — variable data, meaning data that changes while the system runs. Most importantly, `/var/log` is where most system and application logs live. This is one of the first places a SOC analyst looks during an investigation.
+
+`/home` — every regular user's personal folder lives here, similar to `C:\Users` on Windows. `/home/analyst` would be a personal space belonging to a user called analyst.
+
+`/root` — the home folder belonging specifically to the root user, the all-powerful administrator account. Not to be confused with the root directory `/` itself, which is a common point of early confusion.
+
+`/bin` and `/usr/bin` — this is where the actual programs live, the executable files that commands like `ls` and `grep` actually run.
+
+`/tmp` — temporary files. Anyone can write here. Attackers frequently drop malicious files in `/tmp` because it is writable and gets cleaned automatically, which also makes it a place worth checking during an investigation.
+
+You do not need to memorise this list. You need to recognise these names the moment you see them in a log path or a command, and have a rough sense of why something living there matters.
+
+## Getting Around, Core Navigation Commands
+
+These five commands are how you move around and look at things. You will use all of them constantly, in every module from here onward.
+
+`pwd` — print working directory. Tells you exactly where you currently are in the filesystem. The first thing to run when you feel lost.
+
+`ls` — list. Shows you what is inside the current directory. Add `-l` for a detailed long listing showing permissions, owner, size, and date. Add `-a` to also show hidden files, which on Linux are any files or folders starting with a dot, like `.bashrc`. Combined as `ls -la`, this is one of the most-typed commands in all of Linux.
+
+`cd` — change directory. `cd /var/log` takes you straight there. `cd ..` moves you up one level. `cd ~` or just `cd` with nothing after it takes you home.
+
+`cat` — short for concatenate, but in practice it just means "show me the full contents of this file." `cat /etc/hostname` prints out whatever is in that file.
+
+`less` — for files too long to comfortably read with `cat`. `less /var/log/syslog` opens the file in a scrollable view. Press the space bar to page down, `q` to quit. For long log files, `less` is what you actually want, not `cat`.
+
+## Users, Permissions, and Why They Are a Security Concept, Not Just CLI Trivia
+
+This section matters more than it might first appear. Permissions are not an administrative detail. They are one of the most fundamental security controls in any operating system, and misconfigured permissions are a real, recurring cause of breaches.
+
+`whoami` — tells you which user you currently are. Always worth checking, especially when you SSH into an unfamiliar system.
+
+`sudo` — short for "superuser do." Running a command with `sudo` in front of it executes that command with administrator-level privileges, after you confirm with your password. This is least privilege in practice, a concept covered in the Introduction. Most of the time you operate as a regular user with limited permissions. You only elevate to admin privileges for the specific moment you need them, then drop back down. This is exactly the principle behind Privileged Identity Management in enterprise environments, which you will encounter again in the Azure Security Engineer path.
+
+Run `ls -l` on any file and the very first part of the output, something like `-rwxr-xr--`, is the permission string. It looks cryptic at first but breaks down cleanly once you understand who it is actually describing.
+
+The first character tells you the type of thing you are looking at: `-` for a regular file, `d` for a directory.
+
+After that, the remaining nine characters describe permissions for three separate categories of people, in three groups of three characters each.
+
+The first three characters describe the **owner**, the one specific user who owns this file, usually whoever created it.
+
+The next three characters describe the **group**, a named collection of users that the system administrator has defined. Groups exist so you can grant the same permission to many people at once without listing every individual user. For example, a company might have a group called `developers`, and a file owned by one developer might still be readable by everyone else in that group, without being readable by random other employees.
+
+The final three characters describe **everyone else**, every other user on the system who is not the owner and not in the relevant group.
+
+Within each of those three groups, the three characters represent read (`r`), write (`w`), and execute (`x`), always in that order. A dash means that specific permission is not granted.
+
+So reading `rwxr-xr--` in full: the owner can read, write, and execute. The group can read and execute but not write. Everyone else can only read.
+
+`chmod` — change mode, meaning change permissions. `chmod 755 script.sh` is a pattern you will see constantly, and it maps directly to the rwx structure above. Each digit represents one of the three categories, owner, group, everyone, in that order, and the digit is simply read worth 4, write worth 2, and execute worth 1, added together. So 7 means read+write+execute (4+2+1), 5 means read+execute (4+1), and so on. `755` therefore means the owner gets full control, while the group and everyone else can read and execute but not modify.
+
+`chown` — change owner. `chown analyst file.txt` makes the user called analyst the new owner of that file.
+
+Why this matters in security work specifically: a huge number of real misconfigurations and breaches trace back to permissions being too loose. A file that should only be readable by the owner, but is instead readable by everyone, can leak credentials, private keys, or sensitive configuration. A script that should not be executable by random users, but is, can become an attack path. When you review a Linux server during an investigation or an audit, checking permissions on sensitive files is a standard, expected step, not an afterthought.
+
+## Finding Things, Search, Filter, and Pipe
+
+A server can have millions of files and log entries. Knowing how to find exactly what you need, fast, is the difference between an efficient investigation and an overwhelming one.
+
+`grep` — searches for a specific pattern of text inside a file or files. `grep "failed password" /var/log/auth.log` finds every line in that log file containing the phrase "failed password," exactly the kind of search you would run while investigating a suspected brute-force login attempt.
+
+`find` — searches the filesystem itself for files matching certain criteria, rather than searching inside file contents. `find / -name "*.conf"` searches starting from the root for any file ending in `.conf`. `find /home -mtime -1` finds files inside `/home` that were modified in the last day, which is genuinely useful when you are trying to figure out what an attacker touched recently.
+
+The pipe symbol `|` is one of the most powerful ideas in the entire Linux command line. It takes the output of one command and feeds it directly as input into the next command, letting you chain simple tools together into something more powerful. `ps aux | grep ssh` runs `ps aux` (which lists every running process) and pipes that output into `grep ssh` (which filters it down to only lines mentioning ssh). Instead of scrolling through hundreds of processes manually, you get exactly the lines you care about, instantly.
+
+This pattern, chaining small focused commands together with pipes, is something you will do constantly once it clicks. It is one of the genuine "aha" moments of learning Linux properly.
+
+## Processes, What Is Actually Running
+
+A process is a running instance of a program. Every time something executes on a Linux system, whether it is a background service or a command you just typed, it becomes a process with its own unique process ID, or PID.
+
+`ps` — process status. `ps aux` is the version you will use most, showing every process currently running on the system, who started it, how much CPU and memory it is using, and its PID.
+
+`top` — gives you a live, constantly updating view of running processes, sorted by resource usage by default. Genuinely useful the moment something is behaving unusually, like the CPU spike in this module's opening scenario. Press `q` to exit.
+
+`kill` — stops a running process, using its PID. `kill 4521` sends a standard termination signal to the process with PID 4521. If a process refuses to stop, `kill -9 4521` forces it to stop immediately, with no chance to clean up after itself first.
+
+In the scenario at the start of this module, this is exactly the toolkit you would reach for. `top` to see what is consuming CPU right now. `ps aux | grep <suspicious name>` to get full details on a specific process you have spotted. Once you can confidently identify what should and should not be running on a system, you are doing genuine, real triage work, not just typing commands for the sake of it.
+
+## Installing Software, Package Management
+
+Most Linux distributions, including Ubuntu, which is what you will be using in this module, use a package manager to install and update software, rather than downloading installer files from random websites the way Windows often does.
+
+`apt` is Ubuntu's package manager. `sudo apt update` refreshes the list of available software and their latest versions. `sudo apt install wireshark` installs Wireshark directly from Ubuntu's trusted software repositories.
+
+You will see commands like `sudo apt install <tool name>` throughout later modules on this platform. Now you know exactly what is happening when you run them: you are asking the system to fetch and install trusted software from an official repository, not downloading a random executable from the internet.
+
+## Setting Up Your Environment
+
+You have several real ways to get a Linux environment running. They are ordered here from least effort to most, so pick based on how much time you have right now.
+
+**Option A, Just want to try it right now, zero setup**
+
+If you want to get a feel for typing real commands before committing to any installation, **Webminal** (webminal.org) and **Coddy's online terminal** both offer free, no-signup, browser-based Linux terminals you can use immediately.
+
+These are genuinely useful for getting comfortable with typing commands and seeing real output. They are not where you do this module's actual lab, though, since sessions are temporary or stateless and nothing you create there will persist between visits. Once you are ready to do the real hands-on work below and build something for your portfolio, move to one of the options below.
+
+**Option B, WSL2 on Windows (recommended for most Windows users)**
+
+Windows Subsystem for Linux, version 2, gives you a genuine Linux environment running alongside Windows, with no separate virtual machine window and very little setup overhead. This is the fastest path to a real, persistent Linux environment for most people on Windows, and what this module's lab instructions assume by default.
+
+1. Open PowerShell as Administrator (right-click the Start button, select "Windows PowerShell (Admin)" or "Terminal (Admin)")
+2. Run: `wsl --install`
+3. Restart your computer when prompted
+4. After restart, Ubuntu installs automatically and opens a terminal window asking you to create a username and password for your new Linux environment. This is separate from your Windows login.
+5. Once that finishes, you have a working Ubuntu terminal. Open it any time by typing "Ubuntu" into the Windows search bar.
+
+**Option C, Mac (no separate install needed)**
+
+macOS is built on a Unix foundation, which means the Terminal app already installed on every Mac gives you a real Unix-like command line. Almost every command in this module works directly in your Mac's built-in Terminal with no setup at all.
+
+Open Terminal by pressing Cmd+Space, typing "Terminal," and pressing Enter.
+
+A small number of commands behave slightly differently on macOS compared to Ubuntu Linux, since macOS uses BSD-style command tools rather than GNU tools. The most common difference you may notice is with certain flags on `ls` and `find`. If a specific command in this module's lab does not behave exactly as described, that is the likely reason, and it is worth noting in your portfolio writeup as something you learned, rather than something that means you did anything wrong.
+
+**Option D, VirtualBox (full virtual machine, any OS)**
+
+VirtualBox is free and gives you a complete, isolated Linux desktop, including a graphical interface, not just a terminal. Good if you want the full Linux desktop experience or plan to use graphical Linux tools later, not just the command line. More setup involved than Options A through C.
+
+1. Download VirtualBox from virtualbox.org and install it
+2. Download the Ubuntu Desktop ISO from ubuntu.com/download/desktop
+3. In VirtualBox, click "New," name your VM, allocate at least 4GB of RAM and 25GB of disk space
+4. Point the VM at the Ubuntu ISO you downloaded and start it
+5. Follow the on-screen Ubuntu installer, which is genuinely straightforward, choosing default options throughout
+
+**Option E, VMware Workstation Player (full virtual machine, alternative to VirtualBox)**
+
+Functionally similar to VirtualBox, free for personal use. Some people simply prefer its interface. Same setup overhead as Option D.
+
+1. Download VMware Workstation Player from vmware.com and install it
+2. Download the Ubuntu Desktop ISO as in Option D
+3. Create a new virtual machine, point it at the ISO, allocate similar resources as above (4GB RAM, 25GB disk)
+4. Follow the Ubuntu installer
+
+## Hands-On Lab
+
+For this lab you need a real, persistent Linux environment from Options B through E above, since you will be creating files and checking that your work sticks around.
+
+**Setup**
+
+Open your terminal (WSL2, your VM, or Mac Terminal) and confirm you are in your home directory by running `pwd`. It should show something like `/home/yourusername`.
+
+Create a working folder for this lab:
+```
+mkdir linux-lab
+cd linux-lab
+```
+
+**Task 1, Explore the filesystem**
+
+Run each of these and note what you see:
+```
+pwd
+ls -la /
+ls -la /etc
+ls -la /var/log
+```
+
+Write down:
+- Two files or folders you noticed inside `/etc` and what you think each one might be for, based on its name
+- Whether you were able to list `/var/log` directly, and what kinds of files appeared inside it
+
+**Task 2, Create and investigate a simulated suspicious log file**
+
+Run this to create a sample log file with some normal and some suspicious-looking entries. Before you run it, here is what this block actually does, since it looks unfamiliar the first time you see it: `cat << 'EOF' > suspicious.log` tells the terminal "everything I type after this, until you see a line that just says EOF on its own, treat as one big block of text, and write that whole block into a new file called suspicious.log." The word `EOF` is not a special Linux command. It simply means "end of file," and it is just a marker you and the terminal agree on. You could use any word instead, but `EOF` is the standard convention, so you will see it constantly in scripts and tutorials.
+
+```
+cat << 'EOF' > suspicious.log
+2026-06-16 02:14:01 auth: Accepted password for analyst from 192.168.1.40
+2026-06-16 02:15:22 auth: Failed password for root from 203.0.113.77
+2026-06-16 02:15:24 auth: Failed password for root from 203.0.113.77
+2026-06-16 02:15:26 auth: Failed password for root from 203.0.113.77
+2026-06-16 02:15:29 auth: Failed password for root from 203.0.113.77
+2026-06-16 02:15:31 auth: Accepted password for root from 203.0.113.77
+2026-06-16 02:16:02 system: New process started: /tmp/.hidden_update
+2026-06-16 02:16:05 system: Outbound connection established to 203.0.113.77:4444
+EOF
+```
+
+Now investigate it using what you have learned:
+```
+cat suspicious.log
+grep "Failed password" suspicious.log
+grep "root" suspicious.log
+```
+
+Write down:
+- How many failed login attempts for root appear in the log, and over how many seconds
+- What happens immediately after the failed attempts succeed
+- What two things happen right after that successful login that look suspicious, and why
+
+**Task 3, Permissions investigation**
+
+Run:
+```
+touch secret-notes.txt
+chmod 777 secret-notes.txt
+ls -l secret-notes.txt
+```
+
+Write down:
+- What the permission string `rwxrwxrwx` actually means for this file, in plain language, naming what the owner, the group, and everyone else can each do
+- Why a file with these permissions would be a real security concern if it contained something sensitive, like a password or an API key
+- What command you would run to fix it so only the owner can read and write the file, with no execute permission for anyone, thinking in terms of the 4/2/1 values covered earlier
+
+**Task 4, Process investigation**
+
+Open a second terminal window or tab if you can, and in it run a harmless long-running command to simulate something active:
+```
+ping 8.8.8.8
+```
+
+Leave that running. In your original terminal run:
+```
+ps aux | grep ping
+```
+
+Write down:
+- The process ID (PID) shown for the ping process
+- What command you would run to stop it using that PID
+- What the difference is between a normal `kill` and a `kill -9`, in your own words
+
+Go back to the terminal running ping and press Ctrl+C to stop it manually as well.
+
+**Task 5, Plain language summary**
+
+Without using technical jargon, write 4 to 6 sentences explaining what you found in the suspicious log file in Task 2, as if you were briefing a non-technical manager who asked "so what actually happened on that server?"
+
+This is the most important task. If you can explain it in plain language clearly, you understood it.
+
+## Enterprise Equivalent
+
+Everything in this module scales directly into real enterprise environments. The commands do not change. The scale and the tooling around them does.
+
+**Bash and shell scripting** — what you are doing manually now, typing individual commands, becomes automated through shell scripts in real environments. A SOC analyst's "check these five things on a suspicious server" routine often becomes a script that runs all five checks automatically and produces a report.
+
+**SSH** — Secure Shell, the protocol used to remotely connect to and operate on Linux servers from anywhere. The scenario at the top of this module, "SSH into the box and have a look," is something you will do constantly in real SOC, cloud security, and incident response work, once you add SSH itself as a topic in a later module.
+
+**Centralised logging** — instead of manually running `cat` and `grep` on one server's log files, enterprise environments forward logs from hundreds or thousands of servers into a central SIEM, the same kind of system covered conceptually in the Introduction and built hands-on in the SOC Analyst path. The underlying log entries look exactly like the kind you just investigated in Task 2. The skill of reading and querying them is identical. The scale is what changes.
+
+**Configuration management tools** like Ansible or Puppet manage permissions, installed packages, and configuration across thousands of Linux servers consistently, applying the exact same `chmod` and `apt install` style operations you just learned, just automated and applied at scale.
+
+You will get properly hands-on with SSH, centralised logging, and configuration management in later modules and role paths. For now, recognising these names and understanding that they are built directly on top of what you just practiced is enough.
+
+## Your Second Portfolio Entry
+
+This module's artifact follows the same idea introduced in Foundation Module 1. It is not just something to show an employer. It is a record of real work you did, that you keep and build on.
+
+For this module, document:
+
+- Which environment option you used
+- Your answers to all five tasks, including the commands you ran
+- Screenshots of your terminal output for Tasks 2, 3, and 4
+- Your plain language summary from Task 5
+- Any commands or concepts that confused you, and what you want to dig into further
+
+As with Module 1, writing your Task 5 summary as a short blog post or LinkedIn article is a genuinely good option if you want to start building a public portfolio alongside your private notes. "Here is how I investigated my first simulated suspicious log file using nothing but the Linux command line" is a strong, honest, specific post, the kind that stands out precisely because it is not generic.
+
+## What Is Next
+
+You can now navigate a Linux filesystem, read and search files and logs, understand and modify permissions, inspect and stop running processes, and install software properly. That is genuinely useful, real skill, not trivia.
+
+This is the second of six Foundation modules.
+
+**Foundation Module 3, Windows and Active Directory** covers how enterprise Windows environments work, since while Linux dominates servers and tooling, Windows and Active Directory dominate corporate end-user environments and identity infrastructure. Most attacks you investigate in a SOC role will involve a Windows endpoint at some point.
+
+**Foundation Module 4, Security Fundamentals** goes deeper on cryptography, authentication, and PKI in practice, building directly on the permissions and access concepts you just covered here.
+
+**Foundation Module 5, Cloud Fundamentals** covers how cloud environments work, building on both the Linux skills here, since most cloud virtual machines run Linux, and the networking concepts from Module 1.
+
+**Foundation Module 6, Python for Security** teaches you to automate exactly the kind of manual investigation you just did by hand in Tasks 2 through 4, turning repeated command sequences into a single script.
