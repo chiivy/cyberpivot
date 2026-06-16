@@ -54,6 +54,7 @@ export function RecommendationView(): React.ReactElement {
 
   const { recommendation } = state;
   const { role, whyExplanation, foundationFirst } = recommendation;
+  const isEntryPointA = recommendation.entryPoint === "A";
   const displayRole = role.comingSoon && role.targetRoleName
     ? role.targetRoleName
     : role.roleName;
@@ -103,7 +104,25 @@ export function RecommendationView(): React.ReactElement {
         </section>
       ) : null}
 
-      {foundationFirst ? (
+      {isEntryPointA ? (
+        <>
+          <section className="mt-8 text-sm text-zinc-500">
+            <p className="font-medium text-zinc-400">
+              Entry point: {recommendation.entryLabel}
+            </p>
+            <p className="mt-1">{recommendation.startingPointTitle}</p>
+          </section>
+
+          <section className="mt-6 rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] p-5">
+            <p className="text-sm leading-relaxed text-zinc-300">
+              Before diving into your role path, the Foundation modules cover
+              the essentials — networking, Linux, Windows, security
+              fundamentals, cloud basics, and Python basics. They are short,
+              practical, and built for people starting from scratch.
+            </p>
+          </section>
+        </>
+      ) : foundationFirst ? (
         <section className="mt-8 rounded-lg border border-white/10 bg-white/[0.02] p-5">
           <h2 className="text-sm font-medium text-zinc-300">Foundations first</h2>
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
@@ -121,15 +140,37 @@ export function RecommendationView(): React.ReactElement {
       )}
 
       <div className="mt-10 flex flex-col items-center gap-4">
-        <Button
-          size="lg"
-          className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
-          onClick={continueToCabinet}
-        >
-          {role.comingSoon && role.bridgeRole
-            ? `Preview ${role.bridgeRole.name} cabinet`
-            : "Preview your cabinet"}
-        </Button>
+        {isEntryPointA ? (
+          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+            <Button
+              size="lg"
+              asChild
+              className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
+            >
+              <Link href="/foundations">Start with Foundations</Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full border-white/15 bg-transparent text-zinc-200 hover:bg-white/[0.04] sm:w-auto"
+              onClick={continueToCabinet}
+            >
+              {role.comingSoon && role.bridgeRole
+                ? `Preview ${role.bridgeRole.name} cabinet`
+                : "Preview your cabinet"}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            size="lg"
+            className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
+            onClick={continueToCabinet}
+          >
+            {role.comingSoon && role.bridgeRole
+              ? `Preview ${role.bridgeRole.name} cabinet`
+              : "Preview your cabinet"}
+          </Button>
+        )}
         <Button
           variant="ghost"
           className="text-zinc-400"

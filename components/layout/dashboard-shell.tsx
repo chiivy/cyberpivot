@@ -6,6 +6,7 @@ interface DashboardShellProps {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/foundations", label: "Foundations" },
   { href: "/paths", label: "Paths" },
   { href: "/labs", label: "Labs" },
   { href: "/interview", label: "Interview" },

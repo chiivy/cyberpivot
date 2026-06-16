@@ -1,0 +1,359 @@
+---
+title: "How the Internet Actually Works"
+slug: "how-the-internet-works"
+module: 1
+level: "Foundation"
+description: "Capture and read real network traffic. Understand how packets, IP addresses, DNS, ports, and protocols work in practice before you touch anything else."
+readingTime: "45 min"
+labTime: "30-45 min"
+tools:
+  - name: "Wireshark"
+    type: "free"
+    url: "https://wireshark.org"
+  - name: "Zeek"
+    type: "free"
+    url: "https://zeek.org"
+  - name: "Suricata"
+    type: "free"
+    url: "https://suricata.io"
+  - name: "Darktrace"
+    type: "enterprise"
+  - name: "ExtraHop"
+    type: "enterprise"
+  - name: "Vectra"
+    type: "enterprise"
+cabinetArtifact:
+  name: "Packet Capture Analysis"
+  description: "Documented analysis of a real network capture — your first portfolio entry"
+  unlocksOn: "completion"
+nextModule: "linux-fundamentals"
+---
+
+## Scenario
+
+It is your first week as a junior security analyst. Your manager drops a file on your desk — a network capture from the previous night. Something unusual was flagged by an automated alert and they want you to look at the traffic and describe what happened.
+
+You open the file. Hundreds of rows of data. IP addresses, port numbers, protocol names, timestamps. The manager walks past and asks if you can see anything interesting.
+
+You have no idea where to start.
+
+This is the moment most people realise they do not actually understand how traffic moves across a network. They use the internet every day. They just have never seen it happen underneath.
+
+This module fixes that. By the end you will have used Wireshark to capture and read real network traffic, identified specific packets by type, and documented what you found. Every role on this platform — SOC analyst, cloud security engineer, penetration tester, GRC analyst — requires you to understand what is happening on a network at a basic level. This is that level.
+
+## What Actually Happens When You Visit a Website
+
+Type google.com into your browser and press Enter. Within about half a second a webpage appears. That feels instant. Underneath it, a lot happened.
+
+Here is the problem computers have. They do not understand words. They understand numbers. Every device on a network — your laptop, a web server in a data centre, a phone — is identified by a number called an IP address. google.com is a human-friendly name we invented so people do not have to memorise numbers. But the network only works with numbers.
+
+So before anything else can happen, your computer has to translate google.com into the number the network actually uses. It does this by asking a DNS server — Domain Name System. Think of DNS as the internet's phone book. You give it a name. It gives you back a number. google.com becomes something like 142.250.187.46. Now your computer knows where to go.
+
+Once it has that number your browser opens a connection to the web server at that address. Before sending any actual data it does a quick handshake — three messages back and forth just to establish that both sides are ready and talking. Only then does it send the request: "please give me the homepage."
+
+The server sends back the homepage. Not as one piece but as dozens or sometimes hundreds of small chunks. Your browser collects them all, checks none are missing, and assembles them into the page you see.
+
+All of that happened before you finished reading this paragraph.
+
+## What Is a Network Packet
+
+Each of those small chunks is called a packet. Every piece of data that travels across a network — a webpage, an email, a video stream, a login request — gets broken into packets, sent across the network, and reassembled at the other end.
+
+Each packet has two parts.
+
+The header is like the label on an envelope. It contains the source address, the destination address, the protocol being used, and information about where this packet fits in the larger conversation. The network uses the header to route the packet to the right place.
+
+The payload is the contents of the envelope. The actual data being carried — a piece of a webpage, part of a file, a fragment of a video.
+
+When you capture network traffic in Wireshark you are reading those envelopes. Thousands of them, flying past your network interface every second. By the end of this module you will know how to read what is written on them.
+
+## IP Addresses — Why Computers Use Numbers
+
+Because computers work with numbers rather than words, every device on a network needs a unique numerical address. That is what an IP address is.
+
+IPv4 addresses look like this: 192.168.1.1. Four numbers between 0 and 255, separated by dots. There are two types you will encounter constantly.
+
+**Private IP addresses** are used inside networks. Your laptop on the office Wi-Fi might have an address like 10.0.1.47. The printer down the hall has 10.0.1.23. The server in the IT room has 10.0.2.100. None of these addresses exist on the public internet. They only mean something inside that specific network.
+
+In a large enterprise this gets more structured. A bank operating across Lagos, Abuja, and Port Harcourt might assign 10.1.x.x to Lagos offices, 10.2.x.x to Abuja, and 10.3.x.x to Port Harcourt. Security analysts monitoring traffic can immediately tell which location generated a packet just by looking at the IP address range. That is useful during an investigation.
+
+Private IP ranges you will see constantly:
+
+- **10.x.x.x** — very common in enterprise environments
+- **192.168.x.x** — common in home and small office networks
+- **172.16.x.x through 172.31.x.x** — less common but valid
+
+**Public IP addresses** are assigned to devices that communicate directly on the internet. Your company's router has one public IP — say 197.211.58.14. When anyone inside the company visits a website, to the outside world all that traffic appears to come from that one public address. This is called NAT — Network Address Translation. Dozens or hundreds of internal devices share one public IP.
+
+When you are analysing a packet capture the first question about any IP address is: is this private or public? Private to private means internal traffic. Private to public means something inside is talking to the internet. Public to private means something from the internet is reaching inside. Each pattern tells you something different.
+
+IPv6 is the newer format, using letters and numbers: 2001:0db8:85a3::8a2e:0370:7334. You will see it in captures. The same concepts apply — source, destination, routing. For now IPv4 is what you will work with most in enterprise environments.
+
+## Ports — Which Service on the Device
+
+An IP address tells you which device to send traffic to. A port tells you which service on that device should handle it.
+
+Think of it like a large office building. The street address gets you to the building. The floor number gets you to the right department. IP address is the building. Port is the floor.
+
+Every network service runs on a specific port number. Some are so standard they never change.
+
+| Port | Service | What it does |
+| --- | --- | --- |
+| 80 | HTTP | Unencrypted web traffic |
+| 443 | HTTPS | Encrypted web traffic |
+| 53 | DNS | Translates domain names to IP addresses |
+| 22 | SSH | Secure remote access to servers |
+| 3389 | RDP | Windows Remote Desktop |
+| 25 | SMTP | Email sending |
+
+In a packet capture you will see source port and destination port on every TCP and UDP packet. The destination port tells you what service was being accessed. The source port is usually a random high number assigned by the sending device for that specific session.
+
+If you see traffic going to destination port 443 from many different source IPs that is probably normal web server traffic. If you see traffic going to destination port 3389 from an IP outside your network that is worth investigating. Knowing what services run on which ports is one of the most practical things you can learn early.
+
+## Protocols — The Rules of Communication
+
+A protocol is a set of rules that defines how two devices communicate. Both sides have to follow the same protocol for the communication to work.
+
+### TCP — Transmission Control Protocol
+
+TCP is the reliable protocol. It guarantees delivery. Before sending data TCP performs a three-way handshake.
+
+- **SYN** — the sender says "I want to connect"
+- **SYN-ACK** — the receiver replies "acknowledged, let's connect"
+- **ACK** — the sender confirms "connection established"
+
+After the handshake data flows. If a packet is lost TCP retransmits it. If packets arrive out of order TCP reassembles them correctly. HTTP, HTTPS, SSH, and most application protocols use TCP because reliability matters more than raw speed.
+
+### UDP — User Datagram Protocol
+
+UDP sends packets without establishing a connection and without guaranteeing delivery. If a packet is lost it stays lost. For some applications speed matters more than perfection. DNS uses UDP. Video streaming uses UDP. A slightly dropped video frame is better than pausing the stream to retransmit it.
+
+### ICMP — Internet Control Message Protocol
+
+ICMP is used for network diagnostics. When you ping a device you are sending ICMP echo request packets and waiting for ICMP echo reply packets. The round trip time tells you how responsive the device is. You will see ICMP constantly in network captures.
+
+## DNS — The Internet's Phone Book
+
+DNS deserves its own section because it is involved in almost every network connection and it is one of the most important things to understand in security work.
+
+As covered earlier — computers use numbers, not words. DNS is the system that bridges that gap. Every time you type a domain name, visit a website, open an app, or send an email, a DNS lookup happens automatically in the background translating the human-readable name into the IP address the network uses.
+
+The sequence in a packet capture is always the same. DNS query goes out, DNS response comes back with the IP address, then the actual connection to that IP address begins. That pattern repeats for almost every web request you will ever analyse.
+
+In enterprise environments DNS logs are some of the most valuable data a security team has. Attackers frequently abuse DNS for command and control because DNS traffic is often allowed through firewalls without inspection. Malware beacons to attacker servers via DNS queries. Data is sometimes exfiltrated by encoding it in DNS query strings. Spotting abnormal DNS behaviour starts with understanding what normal DNS looks like. You are building that baseline right now.
+
+## HTTP and HTTPS
+
+HTTP is the protocol browsers use to request content from web servers. When you visit a website your browser sends an HTTP GET request and the server responds with the content.
+
+HTTP is unencrypted. Anyone capturing traffic on the same network can read exactly what was requested and what was returned. Usernames and passwords submitted over HTTP are visible in plain text in a packet capture. This is why HTTP is being phased out.
+
+HTTPS is HTTP over TLS — Transport Layer Security. The same request and response structure but encrypted. An attacker capturing HTTPS traffic can see that a connection was made to a particular server on port 443 and how much data was transferred. They cannot read the content without the private key.
+
+In Wireshark, HTTP traffic is fully readable in the packet details pane. HTTPS traffic shows the TLS handshake — the negotiation process — but the actual content is encrypted and unreadable. Understanding the difference between what you can and cannot see in a capture is practical knowledge from day one.
+
+## What Is Wireshark and Why We Need It
+
+Wireshark is a packet analyser. It captures every packet that crosses your network interface and lets you read each one in detail. Think of it as a magnifying glass on your internet connection. Every DNS query, every web request, every ping that flows in or out of your machine — Wireshark captures it and shows you exactly what it contains, header by header.
+
+Security professionals use Wireshark to investigate suspicious traffic, understand how applications communicate, analyse malware behaviour, and learn how protocols work in practice. It is free, open source, and used by practitioners at every level from students to senior incident responders.
+
+You are using it in this module because the best way to understand how a network works is to see it happening. Reading about packets is useful. Reading actual packets is what makes it stick.
+
+## Installing Wireshark
+
+Download Wireshark from wireshark.org. The Windows installer includes Npcap — the packet capture driver Wireshark needs to capture live traffic.
+
+- Go to wireshark.org and click Download
+- Select the Windows x64 Installer
+- Run the installer and accept the defaults throughout
+- When prompted about Npcap, leave all options as default and install it
+- Finish the installation and open Wireshark
+
+When Wireshark opens you will see a list of network interfaces. Your Wi-Fi adapter, your Ethernet adapter, and possibly others. Each interface shows a small waveform — if it is moving, that interface has active traffic. Double click the interface you are currently using to connect to the internet to start a live capture.
+
+## The Three Wireshark Panes
+
+Wireshark shows packet data in three panes. Understanding what each one does saves a lot of confusion.
+
+### Packet list pane — top section
+
+One row per packet. Columns show packet number, timestamp, source IP, destination IP, protocol, length, and a brief description. This is your overview of everything captured. Rows are colour coded by protocol.
+
+### Packet details pane — middle section
+
+Shows the detailed breakdown of whichever packet you have selected in the list above. Click a row and this pane updates. You will see the layers of the packet — Ethernet frame, IP header, TCP or UDP header, and the application layer data. Click the arrow next to each layer to expand it and read the individual fields.
+
+### Packet bytes pane — bottom section
+
+Shows the raw bytes of the selected packet in hexadecimal on the left and ASCII on the right. You will not need this much in this module but it becomes useful when looking at actual payload content in later work.
+
+## Navigating a Large Capture
+
+Even two minutes of network traffic produces thousands of packets. Two tools make navigation manageable.
+
+Display filters hide packets you are not interested in. Type a filter into the bar at the top of the packet list pane and press Enter. The list updates immediately. Clear the filter to show everything again.
+
+Common filters for this module:
+
+| Filter | What it shows |
+| --- | --- |
+| dns | DNS traffic only |
+| http | HTTP traffic only |
+| icmp | ICMP ping traffic only |
+| tcp.flags.syn == 1 | TCP connection starts |
+| ip.addr == 8.8.8.8 | Traffic to or from a specific IP |
+
+**Ctrl+F — Find Packet**
+
+Press Ctrl+F to open the Find Packet dialog. Select String from the dropdown, type what you are looking for, and press Enter. Wireshark jumps to the first matching packet. Press Ctrl+N to find the next match. Much faster than scrolling when you are looking for something specific in a large capture.
+
+## Hands-On Lab
+
+You have two options. Do whichever fits your situation. Both cover the same analysis tasks.
+
+### Option A — Capture your own live traffic
+
+- Open Wireshark and double click your active network interface to start capturing
+- Open a browser and visit http://example.com — plain HTTP, your request will be fully visible
+- Open Command Prompt and type ping 8.8.8.8 — let it run for 10 pings then stop it
+- Visit any HTTPS site — https://bbc.com or any site you use regularly
+- Back in Wireshark click the red square Stop button after about 2 minutes
+
+### Option B — Use the official Wireshark sample capture
+
+Go to the official Wireshark sample captures page: https://wiki.wireshark.org/SampleCaptures
+
+Search the page for nb6-http and download nb6-http.pcap. Once downloaded open Wireshark, go to File → Open, navigate to where you saved the file, and click Open. The capture loads immediately and you will see all packets in the packet list pane ready to analyse. The answer guide below is written for this file.
+
+## Analysis Tasks — complete all five regardless of which option you used
+
+### Task 1 — Find a DNS query and its response
+
+Apply the display filter dns. Look for a packet with "Standard query" in the info column. Click it. In the packet details pane expand "Domain Name System (query)" and find the domain name being queried.
+
+Now find the corresponding DNS response — "Standard query response" in the info column. Expand it and find the IP address returned.
+
+Write down:
+
+- The domain name that was queried
+- The IP address returned in the DNS response
+- Which DNS server answered — the source IP of the response packet
+
+Take a screenshot of the DNS response packet with the details pane expanded.
+
+### Task 2 — Find an HTTP request
+
+Apply the display filter http. Find a packet with "GET" in the info column. Click it. Expand "Hypertext Transfer Protocol" in the packet details pane.
+
+Write down:
+
+- The full URL requested
+- The HTTP method
+- The web server's IP address
+- The destination port number
+
+Take a screenshot of the HTTP packet with the details pane expanded.
+
+### Task 3 — Find a TCP three-way handshake
+
+Apply the filter tcp.flags.syn == 1. Find a SYN packet and note the source IP, destination IP, and destination port. Clear the filter and find the SYN-ACK reply. Then find the final ACK.
+
+Write down:
+
+- Source and destination IP of the handshake
+- The destination port — what service was being connected to?
+- The packet numbers of all three handshake packets
+
+Take a screenshot showing all three packets.
+
+### Task 4 — Find an ICMP ping
+
+Apply the filter icmp. Find an echo request packet and the echo reply that follows it.
+
+Write down:
+
+- Source and destination IP
+- The ICMP type number for request and reply — visible in packet details
+- The round trip time if visible in the reply packet info
+
+Take a screenshot of both packets.
+
+### Task 5 — Plain language summary
+
+Without using technical terms, write 4 to 6 sentences describing what happened on the network during the capture. Who was talking to whom? What were they doing? What did the device need to do before it could connect anywhere?
+
+This is the most important task. If you can describe what you saw in plain language to someone who has never opened Wireshark, you understood it.
+
+## Answer Guide — nb6-http.pcap
+
+This guide is for learners using the official sample capture. If you captured your own traffic your specific answers will differ but the patterns should match.
+
+### Task 1 — DNS
+
+- Filter dns and look for Standard query packets. The file contains DNS lookups for the domains accessed in the HTTP requests. The DNS server IP appears as the source of the response packets. You should see both outgoing queries and incoming responses. The A record in the response contains the IPv4 address resolved.
+
+### Task 2 — HTTP
+
+- The file contains three HTTP GET requests. Filter http to find them. Each shows the full URI in the Hypertext Transfer Protocol layer in packet details. Destination port for all HTTP requests is 80.
+
+### Task 3 — TCP handshake
+
+- Every HTTP connection is preceded by a TCP three-way handshake. Filter tcp.flags.syn == 1 to find the SYN packets. For each one you will find a SYN-ACK response and a final ACK completing the handshake before any HTTP data flows.
+
+### Task 4 — ICMP
+
+- If ICMP packets are present apply the icmp filter. Type 8 is echo request. Type 0 is echo reply. If the sample file does not contain ICMP, note that in your analysis document and describe what ICMP would look like based on the concepts covered in this module.
+
+### Task 5 — Model answer
+
+- A correct plain language summary reads something like: "A device on the network visited several websites. Before connecting to each one it asked a DNS server to translate the website name into a number the network could use. It then opened a connection to that number and sent requests to retrieve the webpage content. The whole process — name lookup, connection setup, content request — happened automatically and repeatedly for each site visited."
+
+## Enterprise Equivalent
+
+Wireshark is what you use in your home lab and smaller environments. In enterprise environments the tooling scales up but the underlying knowledge is identical.
+
+Zeek — open source network analysis framework used in many SOC environments. Instead of showing raw packets it generates structured logs of network activity. DNS logs, HTTP logs, connection logs. Easier to query at scale than raw Wireshark captures.
+
+Suricata — open source network intrusion detection system. Analyses traffic in real time against detection rules. You will write Suricata rules in the SOC Analyst path.
+
+Darktrace, ExtraHop, Vectra — enterprise network detection and response platforms. They ingest network traffic at scale, identify anomalies, and surface alerts for the SOC team.
+
+You will get hands-on with these tools in the relevant role paths. For now knowing they exist and understanding that they analyse the same traffic you just read in Wireshark is enough. The skill transfers directly. The interface changes. The knowledge stays the same.
+
+## Your First Portfolio Entry
+
+Every module in this platform produces something you keep. Not just to show in an interview but as a record of your own learning and evidence of real work done.
+
+For this module that is your packet capture analysis. As you work through CyberPivot each entry connects to the next. By the time you finish a full role path you have a coherent body of work that tells a story about what you can do.
+
+How you keep it is up to you. Some people use a private document or folder. Some write it up as a blog post or LinkedIn article — "Here is what I found when I analysed my first network capture." The written version has an added benefit: it shows you can explain technical concepts clearly, which employers notice.
+
+Your entry for this module should include:
+
+- Which option you used and your Wireshark version
+- Your answers to all five tasks with screenshots of the relevant packets
+- Your plain language summary
+- Any questions this module raised that you want to explore in later modules
+
+That last point matters. Writing down what confused you or what you want to understand better is part of building real knowledge. Those questions get answered as you progress and being able to connect the dots is what builds expertise.
+
+## What Is Next
+
+You now understand how traffic moves across a network. You can capture it, filter it, read it, and explain what you are looking at. That is the foundation this module was built to give you.
+
+This is the first of six Foundation modules. Each one builds directly on the last.
+
+Foundation Module 2 — Linux Fundamentals — most security tools run on Linux. Most servers run Linux. You will use the command line constantly in every role path.
+
+Foundation Module 3 — Windows and Active Directory — Active Directory is in almost every enterprise network. Essential for SOC, cloud security, and penetration testing work.
+
+Foundation Module 4 — Security Fundamentals — cryptography in practice, authentication, PKI, common protocols and where they fail.
+
+Foundation Module 5 — Cloud Fundamentals — how cloud environments work, the shared responsibility model, and the building blocks of Azure, AWS, and GCP.
+
+Foundation Module 6 — Python for Security — enough Python to automate tasks, write simple tools, and read scripts you will encounter on the job.
+
+If your onboarding placed you at Entry Point B or above, check each module briefly and skip what you already know. Come back when you hit a gap. If you are a complete beginner, work through them in order.
+
+Your role path starts after Foundation. Everything here feeds directly into it.

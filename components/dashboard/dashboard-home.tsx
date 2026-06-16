@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
+import { DashboardFoundationStartCard } from "@/components/dashboard/dashboard-foundation-start-card";
+import { useFoundationProgress } from "@/hooks/use-foundation-progress";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { PATH_LABELS } from "@/lib/onboarding/cabinet-artifacts";
 import { activeRoleForPath } from "@/lib/onboarding/recommendation-engine";
@@ -25,6 +27,7 @@ export function DashboardHome(): React.ReactElement {
   const pathParam = searchParams.get("path");
   const roleParam = searchParams.get("role");
   const { state, ready } = useOnboardingState();
+  const { hasActivity } = useFoundationProgress();
 
   const pathFromUrl = useMemo((): PathSlug | null => {
     if (!pathParam || !isPathSlug(pathParam)) {
@@ -80,6 +83,11 @@ export function DashboardHome(): React.ReactElement {
 
   const hasProgress = Boolean(selectedRole || activeRole);
 
+  const showFoundationStartCard =
+    ready &&
+    state?.recommendation.entryPoint === "A" &&
+    !hasActivity;
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="text-3xl font-bold tracking-tight">Welcome to CyberPivot</h1>
@@ -87,6 +95,12 @@ export function DashboardHome(): React.ReactElement {
         Your home base for learning, labs, and building a real security
         portfolio.
       </p>
+
+      {showFoundationStartCard ? (
+        <div className="mt-12">
+          <DashboardFoundationStartCard />
+        </div>
+      ) : null}
 
       <section className="mt-12 rounded-lg border border-border bg-card p-6">
         <h2 className="text-lg font-semibold">Continue where you left off</h2>

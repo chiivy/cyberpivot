@@ -92,7 +92,7 @@ export function AuthForm({ mode }: AuthFormProps): React.ReactElement {
       return;
     }
 
-    router.push("/dashboard");
+    router.push(searchParams.get("next") ?? "/dashboard");
     router.refresh();
   };
 
