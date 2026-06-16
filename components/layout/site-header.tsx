@@ -1,7 +1,7 @@
 import Link from "next/link";
 
+import { SiteHeaderAuth } from "@/components/layout/site-header-auth";
 import { SiteHeaderNav } from "@/components/layout/site-header-nav";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SiteHeaderProps {
@@ -33,23 +33,7 @@ export function SiteHeader({
         <div className="flex items-center gap-4">
           {marketing ? <SiteHeaderNav /> : null}
           <nav className="flex items-center gap-2" aria-label="Account">
-          <Button
-            variant="ghost"
-            asChild
-            className={marketing ? "text-zinc-300 hover:text-foreground" : ""}
-          >
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button
-            asChild
-            className={
-              marketing
-                ? "bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
-                : ""
-            }
-          >
-            <Link href="/onboarding">Get Started</Link>
-          </Button>
+            <SiteHeaderAuth marketing={marketing} />
           </nav>
         </div>
       </div>
