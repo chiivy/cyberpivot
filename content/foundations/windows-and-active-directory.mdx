@@ -1,0 +1,279 @@
+---
+title: "Windows and Active Directory"
+slug: "windows-and-active-directory"
+module: 3
+level: "Foundation"
+description: "Build a real Active Directory domain from scratch, understand users, groups, OUs, Group Policy, and why Active Directory is one of the most heavily targeted systems in enterprise security."
+readingTime: "60 min"
+labTime: "90-120 min (optional)"
+tools:
+  - name: "VirtualBox"
+    type: "free"
+    url: "https://virtualbox.org"
+  - name: "VMware Workstation Player"
+    type: "free"
+    url: "https://vmware.com"
+  - name: "Windows Server Evaluation"
+    type: "free"
+    url: "https://microsoft.com/evalcenter"
+cabinetArtifact:
+  name: "Active Directory Investigation Notes"
+  description: "Documented Windows and Active Directory lab work, your third portfolio entry"
+  unlocksOn: "completion"
+previousModule: "linux-fundamentals"
+nextModule: "security-fundamentals"
+---
+
+## Before You Start
+
+If your onboarding placed you at Entry Point B or above and you already manage Windows Server environments or Active Directory day to day, skim this module rather than reading every section in depth. The hands-on lab below is genuinely optional, not required reading. If you already have real AD experience and want to use this module to brush up on a specific concept, like the Kerberos and Golden Ticket section, or just want a refresher on OUs versus groups, read that specific section directly and skip the rest, including the lab build, entirely. Every concept section in this module stands on its own.
+
+If you are a complete beginner to Active Directory, read this module in order, and the hands-on lab is genuinely worth doing, since this is one of the highest-value things you can learn in this entire platform. While Linux dominates servers and most security tooling, as covered in Module 2, Active Directory dominates identity and access inside the corporate environments you will actually work in, and an enormous share of real-world breaches involve compromising it.
+
+## Scenario
+
+You are a junior SOC analyst at Quorivane Bank, a fictional bank with branches in three cities: Lagos, Nigeria; Nairobi, Kenya; and Paris, France. An alert fires. A user account belonging to someone on the Finance team in your Nairobi branch just authenticated successfully from an IP address in a country none of your branches operate in, four minutes after a string of failed login attempts from that same address.
+
+Your team lead messages you: "Check the account in AD. What group is it in, what does that group actually have access to, and has anything changed on that account recently."
+
+You open Active Directory Users and Computers. You see a tree of folders, a list of users, and a properties window full of tabs you have never opened. You know this account belongs to someone. You do not yet know what that actually means in terms of what they, or anyone who has stolen their password, can now reach.
+
+This module exists so that moment makes sense to you.
+
+## A Note on the Hands-On Lab in This Module
+
+Unlike Foundation Modules 1 and 2, where the hands-on lab is short enough to be a natural part of reading through the module, this module's lab involves genuinely building a small server environment from scratch, real Windows Server installation, real domain setup, a second machine joining that domain. This takes real time, genuinely 90 minutes to 2 hours depending on download speeds and your own pace, and is presented as optional, recommended hands-on practice rather than a required step to finish reading the module.
+
+If you complete it, you will have built a real, working two-machine Active Directory environment from nothing, using your own fictional company, and you will understand exactly what a domain, a user, a group, and a Group Policy actually are, not as definitions, but as things you configured yourself. If you choose to read the conceptual material only for now and come back to the lab later, every concept below is written to be fully understood on its own.
+
+## Why Active Directory, Specifically
+
+Active Directory matters because it is the system that controls who is allowed to do what across the overwhelming majority of mid-size and large corporate Windows environments in the world, and it has been that way for over two decades.
+
+One honest scoping note before going further: Active Directory specifically is Microsoft's identity system. It is genuinely the dominant one you will encounter in traditional, on-premises corporate environments, which is exactly why this module teaches it specifically. It is not, however, the only identity system that exists in enterprise more broadly. Some organizations, particularly Linux-centric or mixed environments, use LDAP-based systems like OpenLDAP. Many organizations, particularly for cloud application access, also use entirely separate cloud-native identity providers like Okta or Ping Identity, sometimes alongside Active Directory, sometimes instead of it. This module focuses on Microsoft Active Directory because it remains the system you are most likely to meet directly, especially early in a SOC, IR, or general security career.
+
+When you join a company and get an email address, a login for your laptop, access to a shared drive, and permission to print on a specific floor, in most mid-size and large organizations, Active Directory is the system making all of that possible from one central place. A domain controller, a server running Active Directory, is effectively the front door, the staff directory, and the security desk for an entire company's digital identity, all at once.
+
+This is exactly why Active Directory is also one of the most heavily targeted systems in real attacks. If you compromise the right account or the right domain controller, you do not just get access to one machine, you potentially get access to everything that domain controls.
+
+## What a Domain Actually Is
+
+A domain is a collection of computers, users, and other resources that are all managed together, under one set of rules, by one central authority.
+
+Think about the difference between your personal laptop at home and a work laptop at a company. On your home laptop, you are the administrator, you decide what gets installed, what the password rules are, who else can log in. At a company, none of that is decided machine by machine. It is decided once, centrally, for every computer and every user in the domain, and then automatically applied everywhere.
+
+The server that holds and enforces all of that central control is called a domain controller, abbreviated DC. When you see servers named things like DC01 or DC02, that abbreviation is exactly what it stands for, and the number exists because real organizations frequently run more than one domain controller for redundancy, if one fails or is being maintained, others keep the domain running. When your work laptop "joins the domain," you are telling that laptop to stop trusting only its own local rules, and instead trust the domain controller's rules for who can log in, what they are allowed to do, and what settings get applied.
+
+A quick optional note for further digging: a forest is one or more domains that trust each other and share a common structure. For a single small-to-mid-size organization, including the one in this module, a single domain inside a single forest is genuinely sufficient and is what most real organizations of that size actually use. Larger, more complex organizations, particularly ones formed through mergers and acquisitions, or with very strong regulatory separation requirements between regions, sometimes run multiple domains with carefully configured trust relationships between them. This is real, deeper Active Directory architecture, genuinely worth knowing exists, but not something this Foundation module builds hands-on, since it is more complexity than a first AD environment needs. If this interests you, it is worth searching "Active Directory forest trust relationships" once you are comfortable with everything else in this module.
+
+## Meet Quorivane Bank
+
+If you choose to complete the hands-on lab in this module, you will be building the identity structure for the same fictional organization referenced again in later modules and role paths on this platform: Quorivane Bank, a mid-size retail and digital bank.
+
+Quorivane Bank has three branches, identified by city: Lagos, Nigeria; Nairobi, Kenya; and Paris, France. Each branch has the same basic departmental structure, IT, Finance, and Legal.
+
+You are going to build this structure yourself, as the domain quorivane.local, with Organizational Units representing each branch, security groups representing each department, and a handful of real user accounts you create and configure by hand.
+
+## Users, Groups, and Organizational Units
+
+These three concepts are the actual building blocks of everything else in Active Directory, and they map conceptually to ideas you already met in Foundation Module 2, even though the implementation looks completely different.
+
+A user object represents one person who can log in. Every user has a username, a password, and a set of attributes, things like their display name, their email address, their department. This is roughly equivalent to a Linux user account, but with far more structured metadata attached by default.
+
+A group is a named collection of users, exactly the same underlying idea as a Linux group covered in Module 2, a named bucket you put people into so you can grant permissions to many people at once instead of one at a time.
+
+An Organizational Unit, or OU, is a different concept from a group, and the distinction trips up almost everyone the first time they meet it. A group is about granting permissions. An OU is about organizing objects for administration and applying policy. A user can only exist in one OU at a time, reflecting their place in the organizational structure, but that same user can belong to several different groups simultaneously, reflecting the different kinds of access they need.
+
+A practical way to hold this distinction in your head: OUs are about where someone lives in the org chart. Groups are about what someone is allowed to touch.
+
+## Group Policy, Conceptually
+
+Group Policy is how an AD administrator pushes a setting out to many computers or users at once, automatically, without touching each machine individually.
+
+A Group Policy Object, or GPO, is a defined set of configuration settings, anything from requiring a minimum password length to disabling USB storage devices to automatically mapping a network drive on login. A GPO gets linked to an OU, and every computer or user object inside that OU automatically receives those settings the next time it checks in with the domain controller.
+
+This is genuinely one of the most powerful security tools available in a Windows environment, since it means a security team can enforce a consistent baseline across every machine in the company from one central place.
+
+## Authentication, Kerberos, and Why It Matters for Security
+
+When you type your password into your work laptop, Active Directory does not just check it against a stored value and say yes or no. The actual mechanism, called Kerberos, is more involved, and understanding the rough shape of it matters, since a huge category of real AD attacks specifically targets weaknesses in how this process works.
+
+Here is the simplified version. When you log in, your computer sends your credentials to the domain controller, which acts as what Kerberos calls a Key Distribution Center. If your credentials check out, the domain controller issues you a digital ticket, called a Ticket Granting Ticket, proof, valid for a limited time, that you have already authenticated successfully.
+
+From that point on, whenever you try to access something else on the network, your computer presents that ticket to the domain controller, requests a second, more specific ticket for that particular resource, and uses that to gain access. This is why, in a properly functioning AD environment, you typically only type your password once at login, even though you access many different resources throughout your day.
+
+The reason this matters enormously for security is that this entire system depends on trust in those tickets, and on the secrecy of the encryption keys involved in issuing them. If an attacker can extract a valid ticket, or worse, extract the key material that lets them forge tickets of their own, they can potentially impersonate any user in the domain, including highly privileged accounts, without ever needing to know an actual password.
+
+This is exactly the foundation for two of the most well-known and dangerous categories of Active Directory attacks, worth a clear, honest mention here, at an awareness level appropriate for this Foundation module.
+
+Mimikatz is a well-known, publicly available tool that, when run with sufficient privilege on a Windows machine, can extract credentials, password hashes, and Kerberos tickets directly from that machine's memory. Once an attacker has this material, they often do not need your actual password at all, they can authenticate as you using what they extracted.
+
+A Golden Ticket attack is a specific, severe escalation of this same idea. Every domain has one special account, called the KRBTGT account, whose encryption key is used to validate every single Kerberos Ticket Granting Ticket issued in that entire domain. If an attacker manages to extract that one key, often using a tool like Mimikatz on a compromised domain controller, they can forge a Ticket Granting Ticket for any user, including a Domain Administrator, and that forged ticket will be accepted as completely legitimate by the domain, since it is signed with the domain's own trusted key. This is why it is called Golden, it is effectively a master key to the entire domain.
+
+You are not going to run these tools in this Foundation module, both because that level of offensive technique belongs properly in the Penetration Tester role path later, with the right scope and supervision, and because the goal here is conceptual literacy, recognizing these names, understanding why they work, and understanding why protecting domain controllers and privileged credentials is treated with such seriousness in real security teams.
+
+## How Accounts Actually Get Created and Removed in a Real Organization
+
+The hands-on lab below has you create two user accounts by hand, which is realistic for a tiny lab, but real organizations, including one the size of Quorivane Bank, manage far more accounts than any one administrator wants to create and delete manually every single time someone joins, changes role, or leaves.
+
+This is generally called identity lifecycle management, sometimes shortened to joiners, movers, and leavers. When someone joins, their account, group memberships, and access need to be created correctly and promptly. When someone moves to a different role internally, their access needs to change to match, often including removing access they no longer need, not just adding new access. When someone leaves, their account needs to be disabled or removed promptly, since a forgotten, still-active account belonging to a former employee is a real, recurring security risk.
+
+In many organizations, this entire process is connected to HR systems, so that an employee's official start date, role, and termination date automatically trigger the right account actions in Active Directory, rather than relying on someone remembering to do it manually. This connects directly to access governance and identity lifecycle management, covered properly in the GRC Analyst role path later in this platform, where you will look at this from a compliance and process design perspective, not just the technical AD mechanics covered here.
+
+## Setting Up Your Environment
+
+If you already installed VirtualBox or VMware Workstation Player in Foundation Module 2, you already have everything needed to run this module's lab, skip directly to Step 1 below. If you have not yet installed either, go back to Foundation Module 2's Setting Up Your Environment section for full, complete installation instructions for both options, since those steps are not repeated here.
+
+Step 1, get the Windows Server evaluation media
+
+Go to the official Microsoft Evaluation Center at microsoft.com/evalcenter and search for the current version of Windows Server. Microsoft makes a full, genuine 180-day evaluation edition available completely free, this is the same real operating system used in production, not a stripped-down trial.
+
+You will need to fill in a short registration form, this is standard for Microsoft's evaluation programme and does not cost anything. Select the ISO download format. The file is several gigabytes, so this download will take a while depending on your connection.
+
+Important: the evaluation edition must be activated online within the first 10 days after installation, or it will shut down automatically. For the purposes of this lab, which you should be able to complete well within that window, this is not a practical concern.
+
+Step 2, create your domain controller virtual machine
+
+In VirtualBox or VMware, create a new virtual machine with these settings:
+
+Name: QUORIVANE-DC01
+Operating system type: Windows Server (select the closest available version if your exact version is not listed)
+RAM: at least 4096 MB (4GB)
+Virtual hard disk: at least 60GB, dynamically allocated
+CPU: 2 virtual cores if available
+
+Attach the Windows Server ISO you downloaded as the VM's virtual optical drive, then start the VM.
+
+Step 3, install Windows Server
+
+Follow the on-screen installer. When prompted for which edition, choose the Desktop Experience version rather than Server Core, since Server Core has no graphical interface at all, and for this first hands-on AD experience, you want to see what you are doing visually. When asked for a product key, choose the option to skip, since the evaluation edition does not require one upfront. Choose Custom installation rather than Upgrade. Set a strong Administrator password when prompted at the end, and write it down somewhere safe, you will need it constantly throughout this lab.
+
+Step 4, install Guest Additions or VMware Tools
+
+Once Windows Server has booted into its desktop for the first time, install the same integration tools you used in Foundation Module 2's VirtualBox or VMware setup. In VirtualBox, this is under the Devices menu, "Insert Guest Additions CD image." In VMware, it is under the VM menu, "Install VMware Tools." Follow the prompts, which will involve a restart.
+
+Step 5, install the Active Directory Domain Services role
+
+Inside your QUORIVANE-DC01 virtual machine, Server Manager should open automatically. If it does not, open it from the Start menu.
+
+
+Click Manage in the top right, then Add Roles and Features
+Click Next through the introductory screens until you reach Server Roles
+Check the box for Active Directory Domain Services
+When prompted with a popup about adding required features, click Add Features
+Click Next through the remaining screens until you reach Confirmation
+Click Install
+
+
+Once it finishes, look for a yellow warning triangle near the top right of Server Manager.
+
+Step 6, promote the server to a domain controller
+
+
+Click the yellow notification flag in Server Manager, then "Promote this server to a domain controller"
+On Deployment Configuration, choose Add a new forest
+For Root domain name, enter exactly: quorivane.local
+Click Next
+On Domain Controller Options, leave the functional level at its default, ensure DNS server is checked, and set a Directory Services Restore Mode (DSRM) password, write this down separately from your Administrator password
+Click Next through DNS Options (a warning about DNS delegation is normal here in a lab environment), Additional Options (confirm the NetBIOS name shows as QUORIVANE), Paths, and Review Options
+On Prerequisites Check, as long as there are no red errors, click Install
+
+
+The server will restart automatically. After restart, you are running a real, working Active Directory domain controller for quorivane.local.
+
+Step 7, create a second virtual machine as a domain-joined client
+
+Create a second virtual machine running a regular Windows client operating system, to represent an employee's laptop joining the domain. If you have access to a Windows client evaluation edition, use that. If not, a second Windows Server VM configured to act like a client works equally well for this lab's purposes.
+
+Once this second VM is installed and running:
+
+
+Go to Settings → System → About, and click Domain or workgroup (or Rename this PC (advanced), depending on your Windows version)
+Click Change, select Domain, and enter quorivane.local
+When prompted for credentials, use the Administrator account and password you set on QUORIVANE-DC01
+You should receive a welcome message confirming the machine has joined the domain
+Restart the client VM when prompted
+
+
+For this to work, both VMs need to be on the same internal network or host-only network setting (terminology varies slightly between VirtualBox and VMware, check each VM's network adapter settings), and the client VM's DNS server setting needs to point directly at your domain controller's IP address, not a public DNS server, since the domain controller's DNS service is what allows the client to find and resolve the domain. Find your domain controller's IP by running ipconfig inside QUORIVANE-DC01.
+
+## Hands-On Lab
+
+You now have a real, working two-machine Active Directory environment. This lab walks you through building Quorivane Bank's structure inside it, then performing an investigation similar to this module's opening scenario.
+
+**Task 1, build the Organizational Unit structure**
+
+Inside QUORIVANE-DC01, open Active Directory Users and Computers from the Tools menu in Server Manager.
+
+You are the AD administrator setting up Quorivane Bank's structure for the first time. Right-click on quorivane.local, select New → Organizational Unit, and create three top-level OUs: Lagos, Nairobi, and Paris. Inside each, create three further OUs: IT, Finance, and Legal.
+
+Write down: why might a real organization choose to structure OUs by location first, then department, rather than department first, then location?
+
+**Task 2, create security groups**
+
+Right-click on the Finance OU under Nairobi, select New → Group, and create a group named Nairobi-Finance, with Group scope set to Global and Group type set to Security. Repeat to create Nairobi-IT under the Nairobi IT OU.
+
+Write down: what is the practical difference between a Security group and a Distribution group in Active Directory (the group creation dialog itself shows a description of each)?
+
+**Task 3, create user accounts**
+
+Right-click the Finance OU under Nairobi, select New → User, create a user with a realistic fictional name, set a strong password, and uncheck "User must change password at next logon" for this lab. Add them to the Nairobi-Finance group.
+
+Create one more user the same way inside the Nairobi IT OU, and add them to Nairobi-IT.
+
+Write down: log into your client VM using your first new user's credentials. What is different about the login screen compared to logging in locally on a non-domain machine?
+
+**Task 4, configure and apply a Group Policy Object**
+
+Open Group Policy Management from the Tools menu. Right-click Nairobi, select Create a GPO in this domain, and Link it here, name it Nairobi-ScreenLock-Policy.
+
+Right-click and select Edit. Navigate to Computer Configuration → Policies → Windows Settings → Security Settings → Local Policies → Security Options, find Interactive logon: Machine inactivity limit, enable it, set it to 300 seconds.
+
+On your client VM, run gpupdate /force from an administrator command prompt.
+
+Write down: how would you confirm this policy actually applied, rather than just trusting that it worked? Hint, gpresult /r run on the client shows applied policies.
+
+**Task 5, the investigation, tying back to the opening scenario**
+
+You are now the SOC analyst from this module's opening scenario. Open your Nairobi-Finance user's Properties. Check the Account tab for logon hours and restrictions, the Member Of tab to confirm exact group membership, and (after enabling Advanced Features from the View menu) the Object tab to see when this account was created and last modified.
+
+Write down, as if briefing your team lead: what group is this account in, what kind of access do you believe it is meant to have, and what would you check next if you genuinely suspected this account had been compromised?
+
+## Enterprise Equivalent
+
+Everything in this module scales directly into real enterprise environments, and has already evolved further in some genuinely important ways.
+
+Microsoft Entra ID, formerly Azure Active Directory, is the cloud-based evolution of these same identity concepts. Users, groups, and policy enforcement still exist conceptually, but identity lives in Microsoft's cloud rather than a physical or virtual domain controller, and Conditional Access policies and Intune device configuration increasingly do what Group Policy Objects used to do. You will go properly in depth on Entra ID in the Azure Security Engineer role path.
+
+SIEM platforms, covered in depth in the SOC Analyst role path, ingest Active Directory authentication logs as one of their highest-value data sources, since unusual login patterns, exactly like this module's opening scenario, are exactly what a well-tuned SIEM is built to surface.
+
+BloodHound, covered in depth in the Penetration Tester role path, maps the actual relationships between users, groups, and permissions across a real AD environment, visually surfacing attack paths often invisible from browsing Active Directory Users and Computers manually.
+
+Identity lifecycle management and access governance, the joiners-movers-leavers process introduced earlier in this module, is covered in depth from a compliance and process design perspective in the GRC Analyst role path.
+
+## Your Third Portfolio Entry
+
+If you completed the hands-on lab, document:
+
+Screenshots of your completed OU structure
+Screenshots of your groups and at least one user's Member Of tab
+A screenshot confirming your client machine joined quorivane.local
+A screenshot of gpresult /r confirming your Group Policy applied
+Your written answers to all five tasks, particularly Task 5
+Any concepts that confused you, and what you want to dig into further
+
+Writing this up as a blog post or LinkedIn article is a genuinely strong option here, "I built my first Active Directory domain from scratch, including OUs, groups, and Group Policy" is a concrete, specific, verifiable claim.
+
+If you skipped the hands-on lab and focused on the conceptual material only, your portfolio entry for this module can simply be your own written notes on the concepts that mattered most to you, particularly Kerberos, Mimikatz, and Golden Ticket attacks, since understanding why these matter is itself worth recording.
+
+## What Is Next
+
+This is the third of six Foundation modules.
+
+Foundation Module 4, Security Fundamentals goes deeper on cryptography, authentication, and PKI in practice, building directly on the Kerberos concepts covered here.
+
+Foundation Module 5, Cloud Fundamentals covers how identity concepts from this module evolve into Microsoft Entra ID and cloud identity more broadly.
+
+Foundation Module 6, Python for Security teaches you to automate exactly the kind of manual AD investigation you just did in Task 5.
+
+Quorivane Bank, the fictional bank you built identity structure for, shows up again in later modules and role paths, you are not starting from scratch next time.

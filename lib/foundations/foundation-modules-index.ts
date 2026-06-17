@@ -50,15 +50,15 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
     module: 3,
     level: "Foundation",
     description:
-      "How enterprise Windows networks work and why AD appears in almost every security role.",
-    readingTime: "50 min",
-    labTime: "45-60 min",
-    status: "coming-soon",
+      "Build a real Active Directory domain from scratch, understand users, groups, OUs, Group Policy, and why Active Directory is one of the most heavily targeted systems in enterprise security.",
+    readingTime: "60 min",
+    labTime: "90-120 min (optional)",
+    status: "available",
     nextModule: "security-fundamentals",
     cabinetArtifact: {
       name: "Active Directory Investigation Notes",
       description:
-        "Documented Windows and Active Directory lab work from Foundation Module 3",
+        "Documented Windows and Active Directory lab work, your third portfolio entry",
     },
   },
   {
@@ -67,15 +67,15 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
     module: 4,
     level: "Foundation",
     description:
-      "Cryptography in practice, authentication, PKI, and common protocols where they fail.",
-    readingTime: "45 min",
-    labTime: "30-45 min",
-    status: "coming-soon",
+      "Understand encryption, certificates, the TLS handshake, and why hashing a file is not the same as hashing a password, with a real breach case study.",
+    readingTime: "55 min",
+    labTime: "45-60 min",
+    status: "available",
     nextModule: "cloud-fundamentals",
     cabinetArtifact: {
-      name: "Security Fundamentals Brief",
+      name: "Cryptography and Authentication Investigation",
       description:
-        "Documented cryptography, authentication, and PKI lab work from Foundation Module 4",
+        "Documented Security Fundamentals lab work, your fourth portfolio entry",
     },
   },
   {

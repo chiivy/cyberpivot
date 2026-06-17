@@ -34,10 +34,14 @@ function parseTasksSection(
 ): FoundationTasksSection {
   const headingPattern = /^#{1,3} Task (\d+) — (.+)$/gm;
   const boldCommaPattern = /^\*\*Task (\d+), (.+?)\*\*$/gm;
+  const plainCommaPattern = /^Task (\d+), (.+)$/gm;
 
   let matches = Array.from(body.matchAll(headingPattern));
   if (matches.length === 0) {
     matches = Array.from(body.matchAll(boldCommaPattern));
+  }
+  if (matches.length === 0) {
+    matches = Array.from(body.matchAll(plainCommaPattern));
   }
 
   if (matches.length === 0) {

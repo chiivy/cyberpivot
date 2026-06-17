@@ -121,6 +121,16 @@ Theory without real-world context is not permitted on this platform. Every modul
 
 ---
 
+## Content Standard — Second-Person, In-Role Narrative Voice
+
+**Decision:** Content addresses the learner directly and keeps them positioned inside the role throughout, not as a detached observer reading about what someone else does. "You are the AD administrator setting this up," "your colleague in the SOC flags this alert to you," not "the administrator would configure this OU" or "a SOC analyst might investigate this." This applies through the entire body of a module, including hands-on lab instructions, not just the opening scenario.
+
+This is already present in how Foundation Modules 1 and 2 open ("you join a SOC as a junior analyst") and must be carried consistently through every section of every module, and into role path content as it is written, not just the opening hook.
+**Reason:** Keeping the learner inside the scenario as an active participant rather than an outside observer makes the material stick, mirrors how the job actually feels, and is consistent with the platform's whole premise that learners should be doing real work, not reading about real work secondhand.
+**Date:** June 2026
+
+---
+
 ## No Name Collection in Onboarding
 
 **Decision:** Do not ask for the user's name during onboarding.
@@ -575,6 +585,18 @@ Database Security — Inference Attacks and Polyinstantiation | AppSec path + DA
 
 When someone clicks "Start this path" the platform shows a contextual recommendation — not a wall. Framing is "this will make your role path faster and deeper" not "you must complete this first."
 **Reason:** Hard gating patronises people who already have the knowledge. Soft recommendations respect user autonomy while still guiding beginners.
+**Date:** June 2026
+
+---
+
+## Recurring Fictional Company for Lab Scenarios
+
+**Decision:** Foundation Module 3 (Windows and Active Directory) introduces a single, durable fictional company used as the lab environment, and this same company is referenced and built upon in later Foundation modules and role path modules wherever a consistent organizational scenario is useful, rather than inventing a new unrelated fictional company every time.
+
+The company is a fictional bank or fintech, deliberately international/neutral rather than tied to one specific country, with two or three branch locations spread across different recognizable cities rather than clustered in one place, modeled with realistic departments (IT, Finance, Customer Service, HR) represented as OUs and security groups. The exact name, locations, and structure are finalized in the Module 3 draft itself.
+
+Examples and scenario details used across modules more broadly should also rotate naturally across different recognizable cities and countries over time, rather than defaulting to any single country, so the platform reads as broadly relatable to a global audience even though it is built from Lagos.
+**Reason:** A consistent, realistic fictional company gives learners continuity across modules, lets later content build on familiar structure instead of reintroducing a new scenario every time, and a bank/fintech context naturally justifies the kind of multi-branch, multi-department complexity that makes an AD lab feel like a real organization. Keeping it internationally neutral and varying example locations supports the platform's global audience rather than over-indexing on any single market.
 **Date:** June 2026
 
 ---

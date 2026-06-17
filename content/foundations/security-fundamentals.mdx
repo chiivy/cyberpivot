@@ -1,0 +1,183 @@
+---
+title: "Security Fundamentals"
+slug: "security-fundamentals"
+module: 4
+level: "Foundation"
+description: "Understand encryption, certificates, the TLS handshake, and why hashing a file is not the same as hashing a password, with a real breach case study."
+readingTime: "55 min"
+labTime: "45-60 min"
+tools:
+  - name: "Wireshark"
+    type: "free"
+    url: "https://wireshark.org"
+  - name: "Go Tools SHA-256 Generator"
+    type: "free"
+    url: "https://go-tools.org/tools/sha-256-generator"
+cabinetArtifact:
+  name: "Cryptography and Authentication Investigation"
+  description: "Documented Security Fundamentals lab work, your fourth portfolio entry"
+  unlocksOn: "completion"
+previousModule: "windows-and-active-directory"
+nextModule: "cloud-fundamentals"
+---
+
+## Before You Start
+
+If your onboarding placed you at Entry Point B or above and you already have a solid grasp of cryptography and authentication concepts, skim this module and jump straight to the Hands-On Lab. If the lab tasks feel straightforward, particularly the distinction between hashing for integrity versus hashing for passwords, you are ready to move on to Module 5. If anything feels shaky, come back and read that section properly.
+
+If you are a complete beginner, read this module in order. You met HTTPS briefly back in Foundation Module 1, and Kerberos tickets in Foundation Module 3. This module goes underneath both of those, into the actual cryptographic mechanics that make secure communication and trustworthy authentication possible at all.
+
+## Scenario
+
+You are still a junior SOC analyst at Quorivane Bank. A colleague on the fraud team flags something odd, a customer is disputing a transaction, claiming they never authorized it, but the login that approved it came from their usual device, on their usual network, with their correct password.
+
+Your team lead asks you three questions. Was the connection to our banking app actually encrypted at the time, or could someone have intercepted it. Were our customer passwords stored properly, or could this account's password have been recovered from a previous breach somewhere else entirely. And is there any way to prove, after the fact, that a particular piece of evidence, a log file, a screenshot, a transaction record, has not been tampered with since it was captured.
+
+You realize you cannot answer any of these three questions confidently yet. This module exists so you can.
+
+## Revisiting the CIA Triad, Now With Real Examples Behind It
+
+Back in the Introduction, you met the CIA Triad, confidentiality, integrity, and availability, as a definition. You have now done enough hands-on work, packet capture in Module 1, Linux permissions in Module 2, Active Directory in Module 3, to actually see these three properties in action rather than just memorize them.
+
+Confidentiality is what encryption protects, keeping the contents of a transaction private from anyone who should not see it. Integrity is what hashing protects, proving that a piece of data has not been altered, whether that is a file, a software update, or a forensic piece of evidence. Availability is what you saw threatened back in Module 1's WannaCry example, systems being knocked offline entirely. This module is mostly about the first two, confidentiality and integrity, since those are where cryptography does its actual work.
+
+## Encryption, Properly This Time
+
+Foundation Module 1 introduced symmetric and asymmetric encryption briefly. Here is the fuller picture, since this module is where it actually needs to make sense.
+
+Symmetric encryption uses one shared key to both lock and unlock data. It is fast and efficient, which is exactly why it is used for the bulk encryption of actual data once a secure connection is established. The hard problem symmetric encryption has always had is key distribution, how do two parties who have never met agree on a shared secret key over a network that might already be compromised, without an eavesdropper capturing that key in transit.
+
+Asymmetric encryption solves exactly that problem. Each party has a mathematically linked key pair, a public key that can be freely shared with anyone, and a private key that never leaves their own possession. Anything encrypted with your public key can only be decrypted with your matching private key. This is what makes it possible for two strangers, your browser and a bank's web server that has never spoken to it before, to establish trust and agree on a shared secret over an inherently untrusted network.
+
+In practice, real systems use both together, asymmetric encryption to safely establish a shared secret in the first place, then fast symmetric encryption for the actual ongoing data. This is exactly what happens every time you visit an HTTPS website, like Quorivane Bank's login page, the asymmetric part runs once at the start of the connection to safely agree on a shared secret, then everything afterward, your username, your password, your account balance, is protected using fast symmetric encryption with that shared secret. The next section walks through exactly how that handshake happens, step by step.
+
+## What a Certificate Actually Is
+
+A digital certificate is, at its core, a trusted third party's signed statement that a particular public key genuinely belongs to a particular organization or domain.
+
+Here is why that trusted third party matters. If your browser simply accepted any public key claiming to belong to your bank, an attacker could hand you their own public key while pretending to be your bank, and you would have no way to tell the difference. A certificate solves this by being issued and digitally signed by a Certificate Authority, an organization whose job is specifically to verify that whoever is requesting a certificate for `quorivane.com` actually controls that domain, before signing it.
+
+Your browser, and your operating system, come preloaded with a trusted list of Certificate Authorities. When you connect to a website over HTTPS, the server presents its certificate, and your browser checks that it was genuinely signed by one of those trusted authorities, that it has not expired, and that the domain name on the certificate matches the site you are actually visiting. If any of those checks fail, you get the browser warning you have almost certainly seen at some point, the red padlock or the explicit "your connection is not private" page.
+
+This entire system, certificates, certificate authorities, and the trust chain between them, is called PKI, Public Key Infrastructure. It is the trust layer that makes the asymmetric encryption described above actually meaningful in practice, rather than just a clever piece of math.
+
+## The TLS Handshake, and Why It Is Not the Same Thing as the TCP Handshake
+
+This distinction comes up constantly in security interviews, and it trips people up specifically because both are called handshakes, and both happen at the start of a connection, but they are doing genuinely different jobs.
+
+The TCP three-way handshake, which you met in Foundation Module 1, SYN, SYN-ACK, ACK, is purely about establishing a reliable connection. Nothing about it involves encryption, certificates, or agreeing on how to secure anything. It is just two devices confirming they can hear each other and agreeing to start exchanging data reliably.
+
+The TLS handshake happens after that, on top of an already-established TCP connection, and it is genuinely negotiating something, not just confirming a connection exists. Here is what actually happens, in the modern TLS 1.3 version you are most likely to encounter today.
+
+Your browser sends a Client Hello, listing which encryption methods, called cipher suites, it supports, along with some of its own key material for establishing a shared secret. The server replies with a Server Hello, choosing one of the offered cipher suites, sending its own key material back, and crucially, sending its certificate, proof of who it claims to be. Your browser checks that certificate against its trusted Certificate Authority list, exactly as described above. Once that checks out, both your browser and the server independently calculate the same shared secret key, using the key material that was just exchanged, without ever having sent that actual secret key across the network where someone could intercept it. A Finished message confirms both sides now share the same key, and from that point on, every byte of the actual conversation, your login, your transaction, your data, is encrypted using fast symmetric encryption with that newly agreed key.
+
+So to directly answer the interview-style question this section opened with, the TLS handshake genuinely is a negotiation, both sides agreeing on an encryption method and jointly producing a shared secret they never directly transmitted, while the TCP handshake is just confirming a connection exists, with no negotiation of security involved at all.
+
+## Hashing, and Why It Is Not the Same Thing as Encryption
+
+Encryption is reversible, by design, anyone with the correct key can turn ciphertext back into the original plaintext. Hashing is deliberately one-way. A hash function takes any input, of any size, a single word or an entire file, and produces a fixed-length output, called a hash or a digest, and there is no key that reverses it back into the original input.
+
+This one-way property is exactly why hashing is the right tool for proving integrity. If you hash a file the moment you receive it, and you hash it again later, identical hashes prove, with extremely high confidence, that not a single bit of that file has changed in between. Change even one character anywhere in the original input, and the resulting hash comes out completely different, with no predictable pattern connecting the old hash to the new one.
+
+This is also exactly why hashing matters so much in digital forensics and incident response, a connection genuinely worth understanding, not just a tangential mention. When an investigator takes possession of a piece of evidence, a hard drive image, a suspicious file pulled from a compromised machine, a log file, the very first thing done is hash it. That hash becomes a permanent, unforgeable fingerprint, recorded as part of the chain of custody, the documented trail proving exactly who handled a piece of evidence and when. If that file's hash is ever recalculated later, during analysis or in a legal proceeding, and it still matches the original, that proves the evidence was never tampered with. You will go deeper on chain of custody and evidence handling specifically in the GRC Analyst role path. Separately, a SOC analyst encountering a suspicious file on a daily basis does not need to analyze its full contents to get useful information instantly, they can hash it and check that hash against threat intelligence databases like VirusTotal, which instantly reveals whether that exact file has already been identified as malware anywhere else in the world.
+
+## Why Hashing a File Is Not the Same as Hashing a Password, Even Though Both Use the Word Hash
+
+This is the single most important distinction in this entire module, and it is genuinely easy to get wrong, since both situations use the same underlying mathematical idea, but for completely different purposes, with completely different correct answers.
+
+For file integrity, the goal is simple, speed and a reliable, repeatable fingerprint. A fast algorithm like SHA-256 is exactly the right tool, you want to be able to hash a large file quickly and compare it confidently.
+
+For password storage, speed is the enemy, not a feature. If an attacker steals a database of password hashes, and that database used a fast algorithm like SHA-256, modern hardware can attempt billions of password guesses per second against every stolen hash simultaneously, since SHA-256 was deliberately designed to be computationally cheap. This is precisely why purpose-built password hashing algorithms like bcrypt and Argon2id exist, they are deliberately, intentionally slow, often by a factor of thousands compared to SHA-256, specifically so that an attacker attempting billions of guesses per second against a fast hash is reduced to a handful of guesses per second against a properly slow one, turning a brute-force attack that might succeed in hours into one that would take centuries.
+
+A salt, a unique random value added to each password before hashing, is also part of the proper solution, since it ensures two users with the same password do not produce the same stored hash, defeating precomputed lookup tables called rainbow tables. It is worth being honest about one nuance here, since it is exactly the kind of detail that separates a surface-level understanding from a genuinely solid one, salting alone does not fully solve the problem if the salts are stored right alongside the hashes in the same stolen database, which they typically are. The real, durable protection comes from the hashing algorithm itself being deliberately slow, with salting as a complementary defense against precomputed attacks specifically, not a replacement for that slowness.
+
+The real-world example that makes this concrete, and genuinely worth knowing as a piece of security history, is the 2012 LinkedIn breach. Roughly 6.5 million password hashes leaked initially, and it was quickly discovered LinkedIn had been storing them using unsalted SHA-1, a fast, general-purpose hash never intended for password storage. The fuller scope of the breach, eventually over 100 million accounts, surfaced years later in 2016 when the full stolen dataset was sold on. This single incident became one of the most cited real-world wake-up calls in the entire industry for why fast hashing algorithms, salted or not, are the wrong tool for storing passwords specifically, even though those same fast algorithms remain perfectly correct and appropriate for file integrity checking, the other use case covered in this module.
+
+## Multi-Factor Authentication, Conceptually
+
+You met multi-factor authentication briefly in the Introduction, through the online banking example. Now that you understand hashing and encryption, the actual mechanics are worth a closer look.
+
+MFA combines something you know, your password, with something you have, a code generated by an app on your phone, or something you are, a fingerprint or face scan. The security value comes specifically from requiring more than one of these categories simultaneously, since an attacker who has stolen your password through a breach like LinkedIn's, or through phishing, still does not possess your physical phone or your fingerprint.
+
+The authenticator app codes you may have used, the six-digit numbers that refresh every 30 seconds, are generated using a method called TOTP, Time-based One-Time Password, where both your phone and the service you are logging into independently calculate the same code at the same moment, using a shared secret established once when you first set up MFA, combined with the current time. Neither side ever transmits that shared secret again after the initial setup, which is exactly the same underlying principle as the TLS handshake's shared secret, both sides independently arriving at the same value rather than sending it across the network where it could be intercepted.
+
+## Hands-On Lab
+
+This lab is lighter than Module 3's, no new virtual machine required. Everything here uses tools you already have, plus one free, reputable, browser-based tool used purely to make these concepts visible and concrete.
+
+Task 1, inspect a real TLS certificate
+
+Open your browser and go to any HTTPS website, your own bank's website is a good, relevant choice given this module's scenario. Click the padlock icon in the address bar, and look for an option like "Connection is secure" then "Certificate is valid," which opens the certificate details.
+
+Write down:
+Who issued this certificate, the Certificate Authority's name
+The certificate's valid-from and valid-until dates
+The exact domain name the certificate is issued for, and confirm it matches the site you are actually on
+
+Task 2, watch the TLS handshake happen in Wireshark
+
+Open Wireshark, the same tool from Foundation Module 1. Start a capture, then visit an HTTPS website in your browser. Stop the capture and apply the display filter `tls.handshake`.
+
+Write down:
+Find the Client Hello packet and the Server Hello packet, note their packet numbers
+In the Server Hello packet's details, can you find the certificate being sent
+Confirm you cannot see the actual page content anywhere in the capture, only the handshake and encrypted application data afterward
+
+Task 3, hash a file for integrity, the correct use case for a fast hash
+
+Go to a reputable, free, browser-based SHA-256 tool that explicitly states all hashing happens locally in your browser rather than uploading your data anywhere. [go-tools.org/tools/sha-256-generator](https://go-tools.org/tools/sha-256-generator) is a solid option that meets this standard, or use the local command-line equivalent instead if you prefer not to use a browser tool at all, which works exactly as well, `Get-FileHash` in PowerShell on Windows, or `sha256sum` in your Linux terminal from Foundation Module 2.
+
+Pick any file on your computer, hash it once, then make a tiny change to a copy of that file, even adding a single space, and hash the copy.
+
+Write down:
+The two hash values, are they completely different, or only slightly different
+Why a single-bit change producing a completely different hash, rather than a slightly different one, is exactly the property that makes hashing useful for proving integrity
+How this exact technique would let a digital forensics investigator prove a piece of evidence was never altered after it was first collected
+
+Task 4, understand why the same hash is the wrong choice for a password
+
+Using the same SHA-256 tool from Task 3, hash the text `password123`, then hash it again exactly as typed.
+
+Write down:
+Are the two resulting hashes identical
+Knowing that SHA-256 is fast and that this hash is sitting in a stolen database with no salt, in plain language, explain why an attacker could likely determine the original password from this hash relatively quickly, the same situation LinkedIn's users faced in 2012
+What two specific properties, covered in this module, would a properly designed password storage system have used instead
+
+Task 5, the investigation, tying back to the opening scenario
+
+You are now back in the SOC analyst scenario from the start of this module. Based on everything covered, write a short plain-language answer to your team lead's three original questions, as if briefing them directly: how would you confirm the banking connection was genuinely encrypted at the time of the disputed transaction, what would tell you whether the customer's password could plausibly have been recovered from an unrelated breach elsewhere, and what would let you prove, after the fact, that a piece of log evidence you are using in this investigation has not been tampered with since you collected it.
+
+## Enterprise Equivalent
+
+Everything in this module scales directly into real enterprise environments, and connects forward to several role paths you will encounter later.
+
+Certificate management at scale. A bank the size of Quorivane Bank manages certificates across many systems, internal applications, customer-facing websites, internal APIs, and an expired or misconfigured certificate causes real, visible outages. Enterprise certificate management tools handle automated renewal and monitoring, exactly the kind of practical operational concern covered properly in the Cloud Security and Azure Security Engineer role paths.
+
+Password storage and identity systems. The bcrypt and Argon2id concepts covered here are exactly what a properly built authentication system, including Quorivane Bank's own banking app, should use under the hood. You will look at this from a secure development perspective in the AppSec Engineer role path.
+
+Forensic hashing and chain of custody, introduced briefly here, is covered properly from a process and compliance perspective in the GRC Analyst role path, and from a technical incident response perspective in deeper SOC Analyst modules.
+
+Threat intelligence and malware hashing, the VirusTotal-style hash lookup mentioned earlier, is a daily, practical SOC Analyst skill, covered hands-on in that role path.
+
+## Your Fourth Portfolio Entry
+
+Document:
+
+Your certificate inspection findings from Task 1
+Your Wireshark TLS handshake screenshots and findings from Task 2
+Your two file hash comparisons from Task 3, with the actual hash values
+Your password hash explanation from Task 4
+Your plain-language investigation summary from Task 5, answering all three of your team lead's questions
+Any concepts that confused you, particularly the TLS versus TCP handshake distinction or the hashing-for-files versus hashing-for-passwords distinction, and what you want to dig into further
+
+A blog post angle that works particularly well for this module, given how often the TLS handshake question comes up in real interviews, "TCP handshake versus TLS handshake, the distinction every security interview eventually asks about, explained the way I wish someone had explained it to me."
+
+## What Is Next
+
+This is the fourth of six Foundation modules.
+
+Foundation Module 5, Cloud Fundamentals covers how cloud environments work, including how certificate management, encryption, and identity concepts from this module show up in cloud-native form.
+
+Foundation Module 6, Python for Security teaches you to automate exactly the kind of hashing and verification work you just did by hand in this module's lab.
+
+Quorivane Bank's disputed transaction from this module's scenario is exactly the kind of investigation you will get much more hands-on with once you reach the SOC Analyst role path.
