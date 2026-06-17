@@ -1,4 +1,4 @@
-import { activeRoleForPath, computeRecommendation } from "@/lib/onboarding/recommendation-engine";
+import { computeRecommendation } from "@/lib/onboarding/recommendation-engine";
 import type { Database } from "@/types/supabase";
 import type {
   OnboardingAnswers,
@@ -71,18 +71,18 @@ export function onboardingStateFromSupabaseRow(
   };
 
   const recommendation = computeRecommendation(answers);
-  const activeRole = activeRoleForPath(recommendation);
+  const recommendedRole = recommendation.role;
 
   const chosenPath =
     row.chosen_path && isPathSlug(row.chosen_path)
       ? row.chosen_path
-      : activeRole.pathSlug;
+      : recommendedRole.pathSlug;
 
   return {
     answers,
     recommendation,
     chosenPath,
-    chosenDomainId: activeRole.domainId,
-    chosenRoleSlug: activeRole.roleSlug,
+    chosenDomainId: recommendedRole.domainId,
+    chosenRoleSlug: recommendedRole.roleSlug,
   };
 }

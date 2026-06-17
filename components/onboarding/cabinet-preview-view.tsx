@@ -12,7 +12,44 @@ import {
   PATH_COMING_SOON,
   PATH_LABELS,
 } from "@/lib/onboarding/cabinet-artifacts";
-import { resolveCabinetPath } from "@/lib/onboarding/resolve-cabinet-path";
+import { CABINET_PREVIEW_BY_SLUG } from "@/lib/roles/coming-soon-cabinet";
+import { getRoleBySlug } from "@/lib/roles/get-role";
+import { isV1RoleContent } from "@/types/role";
+import type { CabinetPreviewItem, PathSlug } from "@/types/onboarding";
+
+function resolveCabinetPreview(
+  chosenPath: PathSlug,
+  chosenRoleSlug: string | null,
+): {
+  items: readonly CabinetPreviewItem[];
+  pathLabel: string;
+  isComingSoon: boolean;
+} {
+  if (chosenRoleSlug) {
+    const rolePreview = CABINET_PREVIEW_BY_SLUG[chosenRoleSlug];
+    const role = getRoleBySlug(chosenRoleSlug);
+    if (rolePreview && role) {
+      return {
+        items: rolePreview,
+        pathLabel: role.name,
+        isComingSoon: true,
+      };
+    }
+    if (role && isV1RoleContent(role)) {
+      return {
+        items: CABINET_BY_PATH[role.cabinetPath],
+        pathLabel: role.name,
+        isComingSoon: false,
+      };
+    }
+  }
+
+  return {
+    items: CABINET_BY_PATH[chosenPath],
+    pathLabel: PATH_LABELS[chosenPath],
+    isComingSoon: PATH_COMING_SOON[chosenPath] === true,
+  };
+}
 
 export function CabinetPreviewView(): React.ReactElement {
   const router = useRouter();
@@ -38,13 +75,10 @@ export function CabinetPreviewView(): React.ReactElement {
     );
   }
 
-  const cabinetPath = resolveCabinetPath(
+  const { items, pathLabel, isComingSoon } = resolveCabinetPreview(
     state.chosenPath,
     state.chosenRoleSlug,
   );
-  const items = CABINET_BY_PATH[cabinetPath];
-  const pathLabel = PATH_LABELS[cabinetPath];
-  const isComingSoon = PATH_COMING_SOON[cabinetPath] === true;
 
   return (
     <OnboardingShell alignTop wide>

@@ -51,7 +51,7 @@ export default function FoundationsIndexPage(): React.ReactElement {
               variant="outline"
               className="border-white/15 bg-transparent text-zinc-200 hover:bg-white/[0.04]"
             >
-              <Link href="/roles">Browse all roles</Link>
+              <Link href="/paths">Browse all roles</Link>
             </Button>
           </div>
         </section>

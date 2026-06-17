@@ -13,7 +13,7 @@ const PUBLIC_NAV_LINKS = [
     label: "Foundations",
     match: (path: string) => path.startsWith("/foundations"),
   },
-  { href: "/roles", label: "Roles", match: (path: string) => path.startsWith("/roles") },
+  { href: "/paths", label: "Paths", match: (path: string) => path === "/paths" },
 ] as const;
 
 const SIGNED_IN_NAV_LINKS = [

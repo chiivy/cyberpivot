@@ -1,0 +1,183 @@
+---
+title: "Cloud Fundamentals"
+slug: "cloud-fundamentals"
+module: 5
+level: "Foundation"
+description: "Understand what cloud computing actually is, the shared responsibility model, and the major providers, with a hands-on Azure lab covering a real storage misconfiguration."
+readingTime: "60 min"
+labTime: "60-75 min"
+tools:
+  - name: "Microsoft Azure Free Account"
+    type: "free"
+    url: "https://azure.microsoft.com/en-us/free"
+  - name: "AWS Free Tier"
+    type: "free"
+    url: "https://aws.amazon.com/free"
+  - name: "Google Cloud Free Trial"
+    type: "free"
+    url: "https://cloud.google.com/free"
+enterpriseToolsNote: "Enterprise versions of these cloud platforms exist with additional security, compliance, and management features. You will work with these in depth in the cloud security role paths."
+cabinetArtifact:
+  name: "Cloud Setup and Security Investigation"
+  description: "Documented Cloud Fundamentals lab work, your fifth portfolio entry"
+  unlocksOn: "completion"
+previousModule: "security-fundamentals"
+nextModule: "python-for-security"
+---
+
+## Before You Start
+
+If your onboarding placed you at Entry Point B or above and you already work with cloud platforms regularly, skim this module and jump to the Hands-On Lab. If the shared responsibility model and the storage misconfiguration task feel obvious, you are ready for Module 6. If anything feels shaky, particularly the shared responsibility model, come back and read that section properly, since it is genuinely one of the most commonly tested concepts in cloud security interviews.
+
+If you are a complete beginner to cloud computing, read this module in order. Everything you have built so far, Linux in Module 2, Active Directory in Module 3, encryption and certificates in Module 4, exists in both traditional on-premises environments and in the cloud, just packaged differently. This module is about understanding that packaging.
+
+## Scenario
+
+You are still a junior SOC analyst at Quorivane Bank. The bank has been migrating parts of its infrastructure to the cloud over the past year, and today an automated alert fires, a storage container holding customer transaction export files has been flagged as publicly accessible from the internet, no login required.
+
+Your team lead asks you to investigate. Who is actually responsible when something like this happens, the cloud provider or Quorivane Bank itself. What does "publicly accessible" even mean in a cloud context, and how would you check it yourself. And what would you tell the team to prevent this from happening again.
+
+This module exists so you can answer all three.
+
+## What Cloud Computing Actually Is
+
+Strip away the marketing language, and cloud computing means one specific thing: renting computing resources, processing power, storage, networking, from someone else's data center, accessed over the internet, instead of buying and running your own physical servers.
+
+Before cloud computing existed in its current form, a company like Quorivane Bank that needed a new server would have to buy physical hardware, have it shipped, install it in a data center the company owns or rents space in, configure the operating system, and only then start actually using it, a process that could take weeks. With cloud computing, that same company can create a virtual server in a few minutes, through a web console or a single command, running on hardware owned and maintained by a cloud provider, and pay only for the time and resources actually used, the same way an electricity bill charges for actual consumption rather than requiring you to build your own power plant.
+
+This is the fundamental shift worth holding onto through the rest of this module: ownership and maintenance of the physical hardware moves to the cloud provider, while configuration, security, and actual use of that hardware remains substantially the customer's job. Exactly how that responsibility splits is covered properly in the next section, since it is the single most important concept in this entire module.
+
+## Storage in the Cloud, and What a Bucket Actually Is
+
+Since this module's opening scenario involves a storage container, it is worth explaining that term now, before going further.
+
+Cloud object storage is a service for storing files, called objects, in a flat, simple structure, rather than a traditional folder-based filesystem like the one you navigated in Foundation Module 2's Linux work. Each major provider has its own name for the container that holds these objects, AWS calls it an S3 bucket, Azure calls it a Blob Storage container, Google Cloud calls it a Cloud Storage bucket, but the underlying idea is the same across all three, a named container that holds files, with its own access permission settings controlling who can read or write to it.
+
+This is exactly the setting that, when misconfigured, becomes "publicly accessible from the internet," the container's access permission was set, intentionally or by mistake, to allow anyone with the right web address to read its contents, no login or credential required at all.
+
+## IaaS, PaaS, and SaaS, With Concrete Examples
+
+Cloud services are generally grouped into three categories, based on how much the provider manages for you versus how much you manage yourself.
+
+Infrastructure as a Service, or IaaS, gives you the rawest building blocks, virtual servers, storage, and networking, while you handle everything above that, the operating system, security patching, the applications you install. This is the closest cloud equivalent to the Windows Server VM you built by hand in Foundation Module 3, except instead of running on your own laptop inside VirtualBox or VMware, it runs on a cloud provider's physical hardware. A concrete example, an Azure Virtual Machine, an AWS EC2 instance, or a Google Compute Engine instance, are all IaaS, you get a blank virtual server and configure it yourself from there.
+
+Platform as a Service, or PaaS, goes a layer further. The provider manages the underlying operating system and infrastructure entirely, and you simply deploy your application code on top of it. You never patch an operating system or configure a virtual machine, you just provide your code and the platform runs it. A concrete example, Azure App Service, AWS Elastic Beanstalk, or Google App Engine, all let a developer deploy a web application without ever touching a server directly.
+
+Software as a Service, or SaaS, is the layer most people interact with daily without necessarily thinking of it as cloud computing at all. You use a complete, finished application over the internet, with zero infrastructure or platform management visible to you whatsoever. Microsoft 365, Salesforce, and Google Workspace are all SaaS, you simply log in and use the software, the provider handles literally everything underneath it.
+
+A useful way to hold these three in your head, IaaS gives you the building blocks, PaaS gives you a platform to build on top of, and SaaS gives you the finished house, ready to live in.
+
+## The Shared Responsibility Model
+
+This is the most important concept in this entire module, and one of the most frequently tested concepts in real cloud security interviews and certifications, since misunderstanding it is the actual root cause behind an enormous number of real cloud breaches.
+
+The core idea, the cloud provider and the customer each own a portion of overall security, and exactly where that line falls depends on which type of service is being used. The cloud provider is always responsible for the security of the cloud, the physical data centers, the underlying hardware, the virtualization layer that separates one customer's resources from another's, the global network infrastructure. The customer is always responsible for security in the cloud, which covers a varying amount depending on the service type.
+
+With IaaS, since you control nearly everything above the physical hardware, you are responsible for a large share, the guest operating system, security patching, network configuration, identity and access management, and the data itself. With PaaS, the provider takes on more, managing the operating system and runtime for you, but you remain responsible for your application's code, your data, and how you configure access to it. With SaaS, the provider manages almost everything, but you are still responsible for who has access to your account, your data, and how you configure that application's own settings, like sharing permissions.
+
+Here is why this matters so urgently in practice, and exactly what happened in this module's opening scenario. A storage container left open to the public internet is not a failure of the cloud provider's security, the provider's infrastructure worked exactly as designed, securely storing data and correctly applying whatever access permission was configured. The failure is a misconfiguration on the customer's side of the shared responsibility line, someone set that container's access permission incorrectly, and the provider, correctly, did exactly what it was told to do. This single distinction, a fully secure platform combined with an insecure configuration choice made by the customer, is responsible for a genuinely enormous share of real-world cloud data exposures, far more than sophisticated hacking in many documented cases.
+
+## How Cloud Identity Connects Back to What You Already Built
+
+In Foundation Module 3, you built a real, working Active Directory domain by hand, and at the end of that module, Microsoft Entra ID, formerly Azure Active Directory, was forward-referenced as the cloud evolution of those same concepts. Worth being precise here, since this connection extends further than just Azure specifically.
+
+The on-premises Active Directory domain you built is not locked to working with Azure alone. All three major cloud providers offer a way to connect an existing on-premises Active Directory environment to their own cloud identity system, since enterprises overwhelmingly already have AD running internally and need their cloud resources to recognize those same users rather than maintaining a second, separate set of accounts. Azure AD Connect bridges an on-premises AD to Microsoft Entra ID, it is a synchronization tool that copies and keeps user accounts, passwords, and group memberships in sync between the two, rather than replacing either one. AWS Directory Service for Microsoft Active Directory is different in kind, not just in branding, it is an actual managed Microsoft Active Directory domain that AWS runs and maintains for you in the cloud, which can be configured to trust and connect with an existing on-premises AD domain, closer to AWS hosting a real domain controller for you than to AWS's own version of Entra ID. Google Cloud uses Google Cloud Directory Sync, which, like Azure AD Connect, is a synchronization tool rather than a hosted domain, copying users and groups from an existing on-premises AD or LDAP directory into Google's Cloud Identity or Google Workspace.
+
+The genuinely important takeaway, the OU, group, and user concepts from Module 3 are not Azure-specific knowledge, they are foundational identity concepts that connect into whichever cloud provider a real employer happens to use. This is also exactly why Entra ID gets the deeper hands-on follow-through in this module's lab specifically, not because it is the only option, but because it is the most direct, well-documented extension of the AD skills already built, and because it remains the dominant cloud identity platform you are statistically most likely to encounter in a Windows-centric enterprise.
+
+## The Major Cloud Providers, and Setting Up a Free Account on Each
+
+There are three dominant cloud providers worth knowing by name and having genuine hands-on familiarity with, since real job postings and real companies are split across all three, not concentrated in just one.
+
+Microsoft Azure is the strongest fit for continuing directly from this platform's existing Active Directory and Windows content, and is where this module's hands-on lab focuses most deeply.
+
+To create a free Azure account, go to azure.microsoft.com and select the free account option. You will sign in with a Microsoft account, or create one if you do not already have one. You will need to verify your identity with a phone number and a credit or debit card, this is purely for identity verification, you will not be charged unless you explicitly choose to upgrade later. As of this writing, a new Azure free account includes $200 in credit usable within your first 30 days on most services, 12 months of free monthly amounts on a set of popular services, and more than 55 services that remain free permanently regardless of account age. These specific amounts and terms can change over time, so always check the current offer on Microsoft's own Azure free account page rather than assuming these figures stay fixed indefinitely.
+
+Amazon Web Services, or AWS, is the most widely used cloud provider overall, and is genuinely essential to have at least basic familiarity with regardless of which provider a specific employer uses, since it dominates job postings across the industry.
+
+To create a free AWS account, go to aws.amazon.com and select the option to create a free account. You will need an email address, a credit or debit card for identity verification, and a phone number. As of this writing, new AWS accounts choose between a Free plan or a Paid plan at signup, with the Free plan providing $100 in credit immediately, with the option to earn up to $100 more by completing a short set of onboarding tasks, for a total of up to $200 in credit usable over a 6 month window. Separately, AWS maintains more than 30 Always Free services with their own permanent monthly usage limits, available regardless of which plan you choose. As with Azure, these specific terms can change, so check AWS's own Free Tier page for the current offer before relying on these figures.
+
+Google Cloud Platform, or GCP, is the third major provider, particularly strong in data analytics and machine learning workloads, and worth at least basic familiarity with for that reason.
+
+To create a free Google Cloud account, go to cloud.google.com/free and start the Free Trial. You will sign in with a Google account, and verify your identity with a credit or debit card, again purely for verification, not an immediate charge. As of this writing, this gives you $300 in credit valid for 90 days, usable across most Google Cloud products, separate from an ongoing Free Tier offering permanent free usage of select products up to specified monthly limits regardless of the trial.
+
+A genuine word of caution worth taking seriously on all three: while the free tiers and trial credits described above are real and will not result in unexpected charges if you stay within their limits, it is entirely possible to accidentally create a resource that falls outside those limits and starts generating real charges. Before creating anything in any of these consoles, get in the habit of checking what the actual free tier or credit limits are for that specific service, and consider setting up a budget alert, a feature all three providers offer, which notifies you if your spending crosses a threshold you define. This single habit prevents the vast majority of "I got an unexpected cloud bill" stories you may have come across online.
+
+## How Cloud Genuinely Differs From On-Premises, Concretely
+
+Having now built a real on-premises environment by hand in Module 3, and walked through real cloud account setup just now, the differences are worth stating explicitly and concretely, not just asserted.
+
+Ownership and physical maintenance shift entirely to the provider. In Module 3, you, or a real organization, would be responsible for the actual physical server hardware failing, needing replacement parts, or running out of power or cooling capacity. In the cloud, none of that is your concern at all, the provider handles every aspect of the physical infrastructure.
+
+Speed of provisioning changes dramatically. Building your Module 3 lab required downloading an operating system image and waiting through a real installation process. Creating an equivalent virtual machine in any of the three cloud providers above takes minutes, and destroying it when no longer needed is equally fast, with no physical hardware sitting idle afterward.
+
+Billing fundamentally changes from large upfront purchases to ongoing, granular, pay-for-what-you-use charges. A real organization buying physical servers commits significant capital upfront, regardless of how much of that capacity actually gets used. Cloud billing, by contrast, generally charges based on actual consumption, and resources can be scaled up during high demand and back down afterward, something physical hardware fundamentally cannot do on its own.
+
+And finally, as covered in detail above, security responsibility itself shifts and splits, rather than sitting entirely with one party. In Module 3's on-premises lab, you were responsible for every layer, from the physical VM file on your laptop's disk up through the Active Directory configuration. In the cloud, that responsibility is formally divided between you and the provider, in a way that depends specifically on which service type you are using, and misunderstanding exactly where that line falls is precisely what causes incidents like this module's opening scenario.
+
+## Hands-On Lab
+
+This lab has you create a real, free Azure account, configure a basic resource properly, and then deliberately reproduce a simplified version of this module's opening scenario, a misconfigured storage container, so you can see this exact, extremely common real-world security failure firsthand rather than just reading about it.
+
+Task 1, create your free Azure account
+
+Follow the setup steps described above to create your own free Azure account. Once signed in, take a moment to look around the Azure Portal, the main web console.
+
+Write down: name three different categories of services you can see listed in the portal's main menu, even if you do not yet know exactly what each one does.
+
+Task 2, create a storage account and a container
+
+In the Azure Portal search bar, search for and select Storage Accounts, then create a new one, accepting the default settings for region and redundancy unless you have a specific reason to change them. Once created, navigate into it and create a new Container, name it something like `quorivane-exports`, and for now, leave its public access level at the default, private, setting.
+
+Upload a small, harmless test file into this container, anything works, a short text file is fine.
+
+Write down: where in the container's settings did you find the public access level setting, and what were the available options presented to you?
+
+Task 3, deliberately misconfigure it, safely, and observe the result
+
+Now, change that same container's public access level setting to allow anonymous read access to the container and its files, the cloud equivalent of exactly what happened in this module's opening scenario. Once changed, copy the file's full URL from the portal, open a private or incognito browser window, completely signed out of any Microsoft account, and paste that URL in directly.
+
+Write down: were you able to access and view the file with no login of any kind? What does this confirm about what "publicly accessible" genuinely means in a cloud context?
+
+Once you have confirmed this, immediately change the container's access level back to private, and confirm in the same incognito window that the file is no longer accessible. This is exactly the remediation step a real SOC analyst or cloud administrator would take the moment a misconfiguration like this is discovered.
+
+Task 4, set a budget alert
+
+In the Azure Portal, search for and select Cost Management, then Budgets, and create a budget alert set to notify you if your spending crosses a small threshold, for example $5.
+
+Write down: why is a habit like this worth building now, even on a free account where you are not expecting to be charged at all?
+
+Task 5, the investigation, tying back to the opening scenario
+
+You are back in the SOC analyst scenario from the start of this module. Based on everything covered, write a short plain-language answer to your team lead's three original questions, as if briefing them directly: who is actually responsible when a storage container is left publicly accessible, the cloud provider or Quorivane Bank, what does "publicly accessible" concretely mean and how would you personally verify it the way you just did in Task 3, and what specific, concrete step would you recommend to prevent this exact misconfiguration from happening again.
+
+## Enterprise Equivalent
+
+Everything in this module scales directly into real enterprise environments, and connects forward to several role paths you will go deeper in later.
+
+Cloud security posture management is the category of tooling that exists specifically to catch exactly the kind of misconfiguration you deliberately created and then fixed in Task 3, automatically, continuously, across potentially thousands of storage containers and resources, far beyond what any human could check by hand. You will go properly hands-on with this category of tooling in the Azure Security Engineer role path, with AWS Security Engineer and GCP Security Engineer role paths covering the equivalent tooling on those platforms once available.
+
+Identity bridging between on-premises and the cloud, mentioned earlier in this module, splits across more than one place depending on which specific tool is involved, since they are not interchangeable despite solving a similar overall problem. Azure AD Connect, which synchronizes your existing on-premises AD with Microsoft Entra ID, is covered with real depth in the Azure Security Engineer role path, building directly on this module and Module 3's Active Directory work. AWS Directory Service for Microsoft Active Directory is meaningfully different, rather than syncing identities, it is an actual managed Active Directory domain that AWS runs for you, configured to trust your existing on-premises domain, and is covered properly in the AWS Security Engineer role path. Google Cloud Directory Sync, like Azure AD Connect, is a synchronization tool rather than a hosted domain, copying users and groups into Google's Cloud Identity, and is covered properly in the GCP Security Engineer role path.
+
+Cost governance and tagging policies, the enterprise-scale version of the budget alert you just set in Task 4, are covered from a governance and process perspective in the GRC Analyst role path, where unexpected cloud spending is treated as a real organizational risk worth formal controls around, not just an individual habit.
+
+## Your Fifth Portfolio Entry
+
+Document:
+
+Your three observed service categories from Task 1
+Screenshots of your storage account and container setup from Task 2
+Screenshots confirming both the public access state and the file successfully loading in an incognito window from Task 3, and confirmation it was correctly locked back down afterward
+A screenshot of your configured budget alert from Task 4
+Your plain-language investigation summary from Task 5, answering all three of your team lead's questions
+Any concepts that confused you, particularly the shared responsibility model, and what you want to dig into further
+
+A blog post angle that works particularly well for this module, "What 'publicly accessible' actually means in the cloud, and why a single storage permission setting causes more real data exposures than sophisticated hacking," walking through the shared responsibility model and what you found in Task 3 as concrete evidence.
+
+## What Is Next
+
+This is the fifth of six Foundation modules.
+
+Foundation Module 6, Python for Security is the final Foundation module, and teaches you to automate exactly the kind of manual checking you have been doing by hand throughout every module so far, including writing a script that could check a list of storage containers for exactly the kind of public access misconfiguration you just explored here.
+
+Quorivane Bank's cloud migration, and the storage misconfiguration from this module's scenario, connects directly into the Azure Security Engineer, AWS Security Engineer, and GCP Security Engineer role paths, where you will go significantly deeper on securing real cloud environments at enterprise scale.

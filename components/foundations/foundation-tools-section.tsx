@@ -5,10 +5,12 @@ import type { FoundationModuleTool } from "@/types/foundation";
 
 interface FoundationToolsSectionProps {
   tools: readonly FoundationModuleTool[];
+  enterpriseToolsNote?: string;
 }
 
 export function FoundationToolsSection({
   tools,
+  enterpriseToolsNote,
 }: FoundationToolsSectionProps): React.ReactElement {
   const freeTools = tools.filter((tool) => tool.type === "free");
   const enterpriseTools = tools.filter((tool) => tool.type === "enterprise");
@@ -43,13 +45,19 @@ export function FoundationToolsSection({
         </div>
         <div>
           <h3 className="text-sm font-medium text-zinc-400">Enterprise</h3>
-          <ul className="mt-3 space-y-2" role="list">
-            {enterpriseTools.map((tool) => (
-              <li key={tool.name} className="text-sm text-zinc-400">
-                {tool.name}
-              </li>
-            ))}
-          </ul>
+          {enterpriseTools.length > 0 ? (
+            <ul className="mt-3 space-y-2" role="list">
+              {enterpriseTools.map((tool) => (
+                <li key={tool.name} className="text-sm text-zinc-400">
+                  {tool.name}
+                </li>
+              ))}
+            </ul>
+          ) : enterpriseToolsNote ? (
+            <p className="mt-3 text-sm leading-relaxed text-zinc-400">
+              {enterpriseToolsNote}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

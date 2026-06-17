@@ -31,6 +31,7 @@ export interface FoundationModuleMeta {
 
 export interface FoundationModule extends FoundationModuleMeta {
   tools: readonly FoundationModuleTool[];
+  enterpriseToolsNote?: string;
   cabinetArtifact: FoundationCabinetArtifact;
   content: string;
 }

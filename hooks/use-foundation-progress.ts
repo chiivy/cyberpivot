@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
-  isFoundationModuleComplete,
   readFoundationProgress,
 } from "@/lib/foundations/progress";
 
@@ -29,8 +28,7 @@ export function useFoundationProgress(): {
   }, [refresh]);
 
   const isComplete = useCallback(
-    (slug: string): boolean =>
-      completedSlugs.includes(slug) || isFoundationModuleComplete(slug),
+    (slug: string): boolean => completedSlugs.includes(slug),
     [completedSlugs],
   );
 

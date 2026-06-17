@@ -8,80 +8,44 @@ import { Button } from "@/components/ui/button";
 import { DashboardFoundationStartCard } from "@/components/dashboard/dashboard-foundation-start-card";
 import { useFoundationProgress } from "@/hooks/use-foundation-progress";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
-import { PATH_LABELS } from "@/lib/onboarding/cabinet-artifacts";
-import { activeRoleForPath } from "@/lib/onboarding/recommendation-engine";
-import { V1_ROLE_PAGES } from "@/lib/roles/v1-roles";
-import type { PathSlug } from "@/types/onboarding";
-import type { RolePageContent } from "@/types/role";
-
-function isPathSlug(value: string): value is PathSlug {
-  return value in PATH_LABELS;
-}
-
-function findRoleBySlug(slug: string): RolePageContent | null {
-  return V1_ROLE_PAGES.find((role) => role.slug === slug) ?? null;
-}
+import { getRoleBySlug } from "@/lib/roles/get-role";
+import { isV1RoleContent } from "@/types/role";
 
 export function DashboardHome(): React.ReactElement {
   const searchParams = useSearchParams();
-  const pathParam = searchParams.get("path");
   const roleParam = searchParams.get("role");
   const { state, ready } = useOnboardingState();
   const { hasActivity } = useFoundationProgress();
 
-  const pathFromUrl = useMemo((): PathSlug | null => {
-    if (!pathParam || !isPathSlug(pathParam)) {
-      return null;
-    }
-    return pathParam;
-  }, [pathParam]);
-
-  const selectedRole = useMemo((): RolePageContent | null => {
+  const roleSlug = useMemo((): string | null => {
     if (state?.chosenRoleSlug) {
-      const fromStorage = findRoleBySlug(state.chosenRoleSlug);
-      if (fromStorage) {
-        return fromStorage;
-      }
+      return state.chosenRoleSlug;
     }
     if (roleParam) {
-      const fromUrl = findRoleBySlug(roleParam);
-      if (fromUrl) {
-        return fromUrl;
-      }
+      return roleParam;
     }
-    if (pathFromUrl) {
-      return (
-        V1_ROLE_PAGES.find((role) => role.cabinetPath === pathFromUrl) ?? null
-      );
-    }
-    return null;
-  }, [pathFromUrl, roleParam, state?.chosenRoleSlug]);
+    return state?.recommendation?.role.roleSlug ?? null;
+  }, [roleParam, state?.chosenRoleSlug, state?.recommendation?.role.roleSlug]);
 
-  const recommendation = state?.recommendation;
-  const activeRole =
-    recommendation?.role != null ? activeRoleForPath(recommendation) : null;
+  const rolePage = useMemo(
+    () => (roleSlug ? getRoleBySlug(roleSlug) : null),
+    [roleSlug],
+  );
 
-  const displayRole = selectedRole
-    ? selectedRole.name
-    : recommendation?.role.comingSoon && recommendation.role.targetRoleName
-      ? recommendation.role.targetRoleName
-      : activeRole?.roleName;
+  const recommendedRole = state?.recommendation?.role ?? null;
 
-  const displayDomain = selectedRole
-    ? selectedRole.domain
-    : activeRole?.domain;
+  const displayRole = rolePage
+    ? rolePage.name
+    : recommendedRole?.comingSoon && recommendedRole.targetRoleName
+      ? recommendedRole.targetRoleName
+      : recommendedRole?.roleName;
 
-  const displayLevel = selectedRole ? selectedRole.level : activeRole?.level;
+  const displayDomain = rolePage?.domain ?? recommendedRole?.domain;
+  const displayLevel = rolePage?.level ?? recommendedRole?.level;
 
-  const pathSlug =
-    selectedRole?.cabinetPath ??
-    (pathFromUrl ?? state?.chosenPath ?? activeRole?.pathSlug ?? null);
+  const learningHref = roleSlug ? `/roles/${roleSlug}` : "/paths";
 
-  const pathLabel = pathSlug ? PATH_LABELS[pathSlug] : null;
-
-  const learningHref = pathSlug ? `/paths?path=${pathSlug}` : "/paths";
-
-  const hasProgress = Boolean(selectedRole || activeRole);
+  const hasProgress = Boolean(roleSlug && displayRole);
 
   const showFoundationStartCard =
     ready &&
@@ -109,17 +73,15 @@ export function DashboardHome(): React.ReactElement {
           <p className="mt-3 text-sm text-muted-foreground">Loading…</p>
         ) : hasProgress && displayRole ? (
           <div className="mt-4">
-            {pathLabel ? (
-              <p className="text-sm text-muted-foreground">
-                Your selected path:{" "}
-                <span className="text-foreground">{pathLabel}</span>
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Based on your onboarding answers, your recommended starting point
-                is:
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Your selected path:{" "}
+              <span className="text-foreground">{displayRole}</span>
+              {rolePage && !isV1RoleContent(rolePage) ? (
+                <span className="ml-2 text-xs uppercase tracking-wide text-muted-foreground">
+                  Coming soon
+                </span>
+              ) : null}
+            </p>
             <p className="mt-2 font-mono text-xl font-semibold">{displayRole}</p>
             {displayDomain && displayLevel ? (
               <p className="mt-1 text-sm text-muted-foreground">
@@ -127,7 +89,9 @@ export function DashboardHome(): React.ReactElement {
               </p>
             ) : null}
             <Button asChild className="mt-6">
-              <Link href={learningHref}>Start</Link>
+              <Link href={learningHref}>
+                {rolePage && !isV1RoleContent(rolePage) ? "View role page" : "Start"}
+              </Link>
             </Button>
           </div>
         ) : (

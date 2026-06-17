@@ -8,7 +8,6 @@ import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { OnboardingWordmark } from "@/components/onboarding/onboarding-wordmark";
 import { Button } from "@/components/ui/button";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
-import { activeRoleForPath } from "@/lib/onboarding/recommendation-engine";
 import { writeOnboardingState } from "@/lib/onboarding/storage";
 import { cn } from "@/lib/utils";
 import type { OnboardingPersistedState } from "@/types/onboarding";
@@ -33,12 +32,12 @@ export function RecommendationView(): React.ReactElement {
     if (!state) {
       return;
     }
-    const active = activeRoleForPath(state.recommendation);
+    const { role } = state.recommendation;
     const next: OnboardingPersistedState = {
       ...state,
-      chosenPath: active.pathSlug,
-      chosenDomainId: active.domainId,
-      chosenRoleSlug: active.roleSlug,
+      chosenPath: role.pathSlug,
+      chosenDomainId: role.domainId,
+      chosenRoleSlug: role.roleSlug,
     };
     writeOnboardingState(next);
     router.push("/onboarding/cabinet-preview");
@@ -101,6 +100,16 @@ export function RecommendationView(): React.ReactElement {
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
             {role.bridgeRole.explanation}
           </p>
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="mt-4 border-white/15 bg-transparent"
+          >
+            <Link href={`/roles/${role.bridgeRole.slug}`}>
+              Go to {role.bridgeRole.name}
+            </Link>
+          </Button>
         </section>
       ) : null}
 
@@ -140,6 +149,15 @@ export function RecommendationView(): React.ReactElement {
       )}
 
       <div className="mt-10 flex flex-col items-center gap-4">
+        {role.comingSoon ? (
+          <Button
+            size="lg"
+            asChild
+            className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
+          >
+            <Link href={`/roles/${role.roleSlug}`}>View {displayRole} page</Link>
+          </Button>
+        ) : null}
         {isEntryPointA ? (
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
             <Button
@@ -155,9 +173,7 @@ export function RecommendationView(): React.ReactElement {
               className="w-full border-white/15 bg-transparent text-zinc-200 hover:bg-white/[0.04] sm:w-auto"
               onClick={continueToCabinet}
             >
-              {role.comingSoon && role.bridgeRole
-                ? `Preview ${role.bridgeRole.name} cabinet`
-                : "Preview your cabinet"}
+              Preview your cabinet
             </Button>
           </div>
         ) : (
@@ -166,9 +182,7 @@ export function RecommendationView(): React.ReactElement {
             className="w-full bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400 sm:w-auto"
             onClick={continueToCabinet}
           >
-            {role.comingSoon && role.bridgeRole
-              ? `Preview ${role.bridgeRole.name} cabinet`
-              : "Preview your cabinet"}
+            Preview your cabinet
           </Button>
         )}
         <Button
@@ -182,7 +196,7 @@ export function RecommendationView(): React.ReactElement {
 
       <p className={cn("mt-12 text-center text-sm text-zinc-500")}>
         Want to explore before committing?{" "}
-        <Link href="/roles" className="text-zinc-400 underline-offset-4 hover:text-cyan-300 hover:underline">
+        <Link href="/paths" className="text-zinc-400 underline-offset-4 hover:text-cyan-300 hover:underline">
           Browse all 25+ roles across five domains.
         </Link>
       </p>

@@ -34,9 +34,7 @@ export default function HomePage(): React.ReactElement {
             id="hero-heading"
             className="font-mono text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            Your cybersecurity career starts here.
-            <br />
-            Wherever here&nbsp;is.
+            Your cybersecurity career starts on CyberPivot.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
             CyberPivot takes you from where you are now to job-ready in your

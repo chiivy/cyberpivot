@@ -46,6 +46,10 @@ export function getFoundationModuleBySlug(
   const { data, content } = matter(raw);
 
   const tools = data.tools as FoundationModuleTool[];
+  const enterpriseToolsNote =
+    typeof data.enterpriseToolsNote === "string"
+      ? data.enterpriseToolsNote
+      : undefined;
   const cabinetArtifact = data.cabinetArtifact as Omit<
     FoundationCabinetArtifact,
     "slug"
@@ -55,6 +59,7 @@ export function getFoundationModuleBySlug(
     ...meta,
     title: data.title as string,
     tools,
+    enterpriseToolsNote,
     cabinetArtifact: {
       ...cabinetArtifact,
       slug: `${slug}-artifact`,

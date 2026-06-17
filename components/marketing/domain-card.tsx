@@ -21,7 +21,7 @@ export function DomainCard({
     >
       <h3 className="font-mono text-lg font-semibold text-foreground">
         <Link
-          href={`/roles?domain=${domain.id}`}
+          href={`/paths?domain=${domain.id}`}
           className="hover:text-cyan-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
         >
           {domain.name}

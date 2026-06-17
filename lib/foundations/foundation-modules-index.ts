@@ -84,15 +84,15 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
     module: 5,
     level: "Foundation",
     description:
-      "Shared responsibility, cloud building blocks, and how Azure, AWS, and GCP differ.",
-    readingTime: "45 min",
-    labTime: "30-45 min",
-    status: "coming-soon",
+      "Understand what cloud computing actually is, the shared responsibility model, and the major providers, with a hands-on Azure lab covering a real storage misconfiguration.",
+    readingTime: "60 min",
+    labTime: "60-75 min",
+    status: "available",
     nextModule: "python-for-security",
     cabinetArtifact: {
-      name: "Cloud Environment Lab Notes",
+      name: "Cloud Setup and Security Investigation",
       description:
-        "Documented cloud fundamentals lab work from Foundation Module 5",
+        "Documented Cloud Fundamentals lab work, your fifth portfolio entry",
     },
   },
   {
@@ -101,15 +101,15 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
     module: 6,
     level: "Foundation",
     description:
-      "Enough Python to automate tasks, write simple tools, and read scripts on the job.",
-    readingTime: "40 min",
-    labTime: "30-45 min",
-    status: "coming-soon",
+      "Learn enough Python to read, modify, and write small security scripts, then automate the log investigation, file hashing, and cloud storage checks from earlier Foundation modules.",
+    readingTime: "55 min",
+    labTime: "60-75 min",
+    status: "available",
     nextModule: null,
     cabinetArtifact: {
-      name: "Python Security Automation Script",
+      name: "Security Automation Scripts",
       description:
-        "A working Python script produced during Foundation Module 6",
+        "Three working Python scripts and a documented writeup, your sixth and final Foundation portfolio entry",
     },
   },
 ] as const;

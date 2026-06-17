@@ -1,0 +1,269 @@
+---
+title: "Python for Security"
+slug: "python-for-security"
+module: 6
+level: "Foundation"
+description: "Learn enough Python to read, modify, and write small security scripts, then automate the log investigation, file hashing, and cloud storage checks from earlier Foundation modules."
+readingTime: "55 min"
+labTime: "60-75 min"
+tools:
+  - name: "Python"
+    type: "free"
+    url: "https://www.python.org/downloads/"
+  - name: "Visual Studio Code"
+    type: "free"
+    url: "https://code.visualstudio.com"
+cabinetArtifact:
+  name: "Security Automation Scripts"
+  description: "Three working Python scripts and a documented writeup, your sixth and final Foundation portfolio entry"
+  unlocksOn: "completion"
+previousModule: "cloud-fundamentals"
+nextModule: null
+---
+
+## Before You Start
+
+If your onboarding placed you at Entry Point C or D, or you already write Python comfortably, skim this module and jump to the Hands-On Lab. If all three scripts come together without much friction, you have what this module is meant to give you, you are ready to move into a role path. If anything feels shaky, particularly reading and writing files, come back and read that section properly.
+
+If you are a complete beginner to programming, read this module in order. This module is different from the others in one specific way, it does not introduce a new domain of security knowledge the way Modules 1 through 5 did, instead it teaches you to automate everything those five modules already taught you to do by hand.
+
+## Scenario
+
+You are still a junior SOC analyst at Quorivane Bank. It has been a few months since the investigation in Foundation Module 2, the suspicious log file with the failed logins, the successful breach, the suspicious process. Your team lead mentions that this exact pattern, a burst of failed logins followed by a success, then unusual activity right after, keeps showing up in different servers' logs every few weeks. Each time, someone manually opens the file, runs a few `grep` commands, and writes up what they found.
+
+Your team lead asks you directly: "Could this be automated? I do not want to keep doing this by hand every time." You realize you genuinely do not know, since you have never written a program before in your life, only typed commands one at a time.
+
+This module exists to answer that question properly, by the end you will have actually written the automation yourself.
+
+## Why Python, Specifically
+
+Python is overwhelmingly the most common language used for security automation, scripting, and tooling, for a few concrete reasons worth understanding rather than just accepting.
+
+It reads close to plain English compared to many other programming languages, which matters enormously when you are learning your first language and trying to connect code to the actual logic you already understand conceptually. It has a massive ecosystem of security-relevant libraries already built and freely available, for parsing logs, talking to APIs, analyzing files, and far more, meaning you very rarely build something completely from scratch. And it is genuinely everywhere in this field specifically, SOC analysts write Python to parse logs and automate investigations, penetration testers write Python for custom exploitation and reconnaissance tooling, cloud security engineers write Python against cloud provider APIs, and GRC analysts increasingly use Python to automate evidence collection and reporting.
+
+This module is not trying to make you a software engineer. It is trying to get you to the point where you can read a security-related Python script someone else wrote and understand what it does, and write a short script yourself to automate something you would otherwise do by hand, which is exactly what your team lead just asked you to consider.
+
+## Setting Up Your Environment
+
+You need two things, Python itself, and a place to write code. Both are free and the setup is genuinely light compared to Foundation Modules 3 and 5.
+
+Step 1, install Python
+
+If you are on Windows, go to python.org/downloads and download the latest stable installer. Run it, and on the very first screen of the installer, before clicking anything else, check the box labeled "Add Python to PATH." This single checkbox is the most commonly missed step in the entire setup process, and skipping it means your terminal will not be able to find Python afterward, producing an error like "python is not recognized as an internal or external command." If that happens, the fix is to uninstall Python completely and reinstall it, checking that box this time, rather than trying to patch it afterward. Once checked, click Install Now and let it finish.
+
+If you are on a Mac, go to python.org/downloads, download the macOS installer, and run it, clicking through the standard installation steps. There is no equivalent PATH checkbox to worry about on Mac, the installer handles this correctly by default.
+
+Step 2, verify the installation
+
+Open a terminal, Command Prompt or PowerShell on Windows, Terminal on Mac, the same terminal concepts you used throughout Foundation Module 2, and run:
+
+```
+python --version
+```
+
+On some Mac setups, you may need to run `python3 --version` instead, since older versions of macOS shipped with an outdated Python 2 already installed under the plain `python` name. If `python --version` shows a 2.x version or an error, try `python3 --version` instead, and use `python3` in place of `python` throughout the rest of this module if that is what worked for you.
+
+You should see something like `Python 3.13.x` or similar printed back. If you do, Python is installed correctly.
+
+Step 3, install Visual Studio Code
+
+Go to code.visualstudio.com and click the download button, it will automatically detect whether you are on Windows or Mac and offer the right installer.
+
+On Windows, run the downloaded installer, accept the license agreement, and click through the setup wizard accepting the default options throughout, then click Install and Finish.
+
+On Mac, open the downloaded file, which unzips to an application, drag it into your Applications folder the way you would with any Mac application, then open it from there.
+
+Once VS Code is open, create a new file and save it with a `.py` extension, for example `test.py`. The moment you do this, VS Code will very likely show a small popup prompting you to install the Python extension, since it recognizes the file type. Click Install when this happens. If it does not appear automatically, click the Extensions icon in the left hand sidebar (it looks like four small squares), type "Python" into the search bar, and install the official Python extension published by Microsoft, the first result.
+
+Once installed, open that same `test.py` file, type `print("hello")` into it, save it, and run it using the green play button that appears in the top right corner of the editor once a Python file is open. You should see `hello` printed in a terminal panel that opens automatically at the bottom of the screen. If you see that, your full setup, Python plus VS Code plus the Python extension, is working correctly.
+
+## Variables and Basic Data Types
+
+A variable is simply a named container that holds a value you can refer to later. In Python, you create one just by writing a name, an equals sign, and a value:
+
+```
+username = "analyst"
+failed_attempts = 4
+is_suspicious = True
+```
+
+Notice three different kinds of values here. `"analyst"` is a string, text wrapped in quotes. `4` is an integer, a whole number. `True` is a boolean, a value that is either `True` or `False`, which you will use constantly for yes or no logic, exactly like the kind of question you asked yourself throughout every investigation task in Modules 1 through 5, "is this suspicious or not."
+
+## Conditionals, Making Decisions in Code
+
+An `if` statement lets your code make a decision and do something different depending on whether a condition is true. This maps directly onto the kind of reasoning you have been doing by hand throughout this entire platform, "if there are more than three failed logins, that's worth flagging."
+
+```
+failed_attempts = 4
+
+if failed_attempts > 3:
+    print("This account may be under attack")
+else:
+    print("This looks normal")
+```
+
+Two things worth being explicit about here, since they trip up almost every beginner. The colon at the end of the `if` line is required, it tells Python "the instructions for this condition start now." And the indentation, the spaces before `print`, is not just a style choice, it is how Python knows which lines belong inside the `if` block versus which lines come after it. Get the indentation wrong, and the code either fails to run or runs incorrectly.
+
+## Loops, Doing Something Repeatedly
+
+A loop lets you repeat an action across many items without writing the same code over and over. The kind you will use constantly when working with log files is a `for` loop, which goes through a list of items one at a time:
+
+```
+usernames = ["analyst", "root", "admin"]
+
+for name in usernames:
+    print("Checking account:", name)
+```
+
+This runs the `print` line three times, once for each name in that list, with `name` automatically taking on each value in turn. This is exactly the mechanism you will use shortly to go through every line of a log file, one at a time, checking each one.
+
+## Reading and Writing Files
+
+This is the single most directly useful skill in this module, given that nearly every investigation task across Foundation Modules 2 through 5 involved a file, a log file, a hashed file, a storage object.
+
+To read a file in Python:
+
+```
+with open("suspicious.log", "r") as file:
+    contents = file.read()
+    print(contents)
+```
+
+The `with open(...) as file` pattern is the standard, correct way to open a file in Python, the `"r"` means you are opening it to read, and using `with` ensures the file is properly closed automatically once you are done with it, even if something goes wrong while reading it, which is exactly the kind of detail that separates correct code from code that happens to work most of the time.
+
+To go through a file line by line, rather than reading the whole thing as one block, which is what you actually want when checking each log entry individually:
+
+```
+with open("suspicious.log", "r") as file:
+    for line in file:
+        print(line)
+```
+
+To write to a file, the pattern is nearly identical, just with `"w"` instead of `"r"`:
+
+```
+with open("findings.txt", "w") as file:
+    file.write("Investigation complete\n")
+```
+
+The `\n` at the end is not a typo, it represents a line break, telling the file to start a new line after that text, exactly like pressing Enter.
+
+## Functions, Packaging Up Reusable Logic
+
+A function is a named, reusable block of code you can run whenever you need it, instead of copying and pasting the same lines repeatedly. You define one with `def`, followed by a name and parentheses:
+
+```
+def check_for_failures(line):
+    if "Failed password" in line:
+        return True
+    else:
+        return False
+```
+
+This function takes one piece of input, called a parameter, here named `line`, and `return`s a result back, either `True` or `False`, depending on whether the text "Failed password" appears anywhere in that line. Once defined, you can call this function as many times as you want, on as many different lines as you want, without rewriting the logic each time, which is exactly the kind of repetition a script is meant to eliminate.
+
+## Hashing a File With Python, Closing the Loop From Module 4
+
+Back in Foundation Module 4, you manually hashed a file using a browser tool or a command like `Get-FileHash` or `sha256sum`, to verify file integrity. Python's built in `hashlib` library does the exact same thing, in code:
+
+```
+import hashlib
+
+with open("evidence.txt", "rb") as file:
+    contents = file.read()
+    file_hash = hashlib.sha256(contents).hexdigest()
+    print("SHA-256 hash:", file_hash)
+```
+
+A few new things worth explaining here. `import hashlib` brings in Python's built in hashing library, you do not need to install anything extra, it ships with Python itself. The file is opened with `"rb"` instead of `"r"`, the `b` means binary mode, which matters for hashing specifically, since a hash needs the file's exact raw bytes, not text that has been interpreted or reformatted in any way. `hashlib.sha256(contents)` calculates the SHA-256 hash exactly like the hashing concepts covered in Module 4, and `.hexdigest()` converts the result into the readable hexadecimal string you are used to seeing.
+
+This is a genuinely complete, correct, real piece of automation, in five lines of actual code, doing exactly what you did manually with a browser tool back in Module 4.
+
+## Hands-On Lab
+
+You are going to build three real scripts in this lab, automating exactly three manual investigations from earlier in this platform.
+
+Task 1, automate the Module 2 log investigation
+
+Create a new file called `log_checker.py`. Recreate the same suspicious log file from Foundation Module 2's lab, either by copying it over if you still have it, or recreating it with the same heredoc command from that module.
+
+Write a Python script that does the following, building it up piece by piece using everything covered in this module:
+
+1. Opens the log file and reads it line by line
+2. For each line, checks whether it contains the text "Failed password"
+3. Counts how many failed password lines it finds in total
+4. After going through the whole file, checks whether that count is greater than 3
+5. If it is, prints a clear warning message, something like "Warning, X failed login attempts detected, possible brute-force activity"
+6. Also checks whether any line contains the text "Outbound connection established," and if so, prints a separate warning about that specific line
+
+Write down: paste your complete working script, and run it against your log file. Does it correctly print warnings for the same suspicious patterns you identified manually in Module 2? Are there any patterns from that original manual investigation your script does not catch yet, and why not?
+
+One more thing worth reflecting on before moving to Task 2, Foundation Module 2 also covered checking file permissions and investigating running processes, neither of which your script above currently checks. You are not required to automate those here, but write a sentence or two, in plain language, on how you would extend this same script to also flag a file with overly permissive access like `777`, or a suspicious running process, using the same `if` statement pattern you just used for failed logins. You do not need to actually write that code, just describe what the logic would look like.
+
+Task 2, automate the Module 4 file hashing task
+
+Create a new file called `hash_checker.py`, using the `hashlib` pattern covered above. Write a script that hashes any file of your choosing using SHA-256, prints the resulting hash, then hashes a second, slightly modified copy of that same file, and prints that hash too.
+
+Write down: are the two hashes completely different, confirming the same property you observed manually back in Module 4? Now wrap this hashing logic in a function called `hash_file`, that takes a filename as a parameter and returns the hash, rather than printing it directly, then call that function on both files and print the results yourself. What is the actual benefit of wrapping this in a function rather than just writing the same lines twice?
+
+Task 3, automate the Module 5 storage misconfiguration check
+
+Create a new file called `storage_checker.py`. Rather than connecting to your real Azure account again, you are going to represent a small list of Azure Blob Storage containers directly in your script, the same way a real script might after pulling this information from Azure's API, and check each one for the exact misconfiguration you found by hand in Foundation Module 5.
+
+Start with this list already written out for you, including the same `quorivane-exports` container you actually created in that module:
+
+```
+containers = [
+    {"name": "quorivane-exports", "public_access": False},
+    {"name": "quorivane-backups", "public_access": True},
+    {"name": "quorivane-logs", "public_access": False},
+]
+```
+
+Each item in this list is a dictionary, a way of grouping related pieces of information together under named labels, here `"name"` and `"public_access"`, similar in spirit to a single row in a table.
+
+Write a script that loops through this list, and for each container, checks whether `"public_access"` is `True`. If it is, print a clear warning naming that specific container, something like "Warning, quorivane-backups is publicly accessible and should be reviewed immediately." If it is not, you can either print nothing or print a brief confirmation that it is correctly private, your choice.
+
+Write down: run your script and confirm it correctly flags only the one container that should be flagged. Now add a fourth container to your list with `public_access` set to `True`, and run your script again without changing anything else, did it correctly catch that one too? What does this confirm about the real value of writing this check as a loop, rather than writing a separate `if` statement by hand for every single container individually?
+
+Task 4, the investigation, tying back to the opening scenario
+
+You are back in the SOC analyst scenario from the start of this module. Write a short, plain-language message back to your team lead, as if responding directly to their original question: yes, this can be automated, here is what your `log_checker.py` script now does automatically that used to take manual `grep` commands, and here is roughly how long it took you to build it.
+
+## Enterprise Equivalent
+
+Everything in this module scales directly into real enterprise security work, and into the role paths you are about to choose between.
+
+In a real SOC, the kind of log data your script just checked rarely sits in one isolated file. It first gets collected centrally from across the organization into a SIEM, the same concept introduced back in the Introduction and referenced again in Foundation Modules 1 and 2, giving analysts one place to search across thousands of servers' worth of logs at once rather than checking each one individually.
+
+SOAR platforms, Security Orchestration, Automation, and Response, sit on top of that SIEM data and do essentially what your script just did, in Task 1, at a much larger and more automated scale, watch for a defined pattern, and the moment it appears, take action immediately, without a person needing to notice it first. That action is very often exactly what your team lead originally asked about, an automated email or alert sent straight to the SOC team the moment suspicious activity like this is detected, rather than someone discovering it hours or days later during a manual review. In Python specifically, this kind of automated email alert is commonly built using the built in `smtplib` library, which lets a script send a real email directly, the natural next step beyond simply printing a warning to your own terminal the way Task 1 did. You will go deeper on building real SIEM detection logic and SOAR automation in the SOC Analyst role path.
+
+Python based security tooling is genuinely everywhere once you start looking for it, vulnerability scanners, penetration testing frameworks, cloud security automation scripts, GRC evidence collection tools. The five line hashing script you wrote earlier in this module is structurally the same kind of thing as tools used daily in real security teams, just smaller in scope.
+
+Infrastructure as Code and automation scripting, covered in the Azure Security Engineer, AWS Security Engineer, and GCP Security Engineer role paths, often uses Python alongside other tools to automate exactly the kind of cloud configuration checks you did by hand in Foundation Module 5's storage misconfiguration task, the same pattern you just automated yourself in Task 3.
+
+## Your Sixth and Final Foundation Portfolio Entry
+
+Document:
+
+Your complete `log_checker.py` script and its output when run against your log file, along with your reflection on extending it to permissions and process checks
+Your complete `hash_checker.py` script, including the `hash_file` function version, and its output
+Your complete `storage_checker.py` script and its output, including the test with a fourth added container
+Your written answers from all four tasks
+Any concepts that confused you, particularly indentation, the `with open` pattern, dictionaries, or functions, and what you want to dig into further
+
+A blog post angle that works particularly well for this module, and arguably for the whole Foundation layer, "I went from typing one command at a time to writing my first real security automation scripts, here is what changed." This is a genuinely strong post specifically because it can reference the entire journey, Wireshark in Module 1, the manual log investigation in Module 2, all the way through to actually automating that exact investigation here, plus the hashing and cloud storage checks too.
+
+## You Have Completed the Foundation Layer
+
+This is the sixth and final Foundation module. Take a moment with that, you have captured and read real network traffic, built and investigated a Linux environment, constructed a working Active Directory domain from scratch, understood encryption and authentication well enough to explain the TLS handshake correctly in an interview, built and deliberately broke cloud infrastructure to understand a real, common security failure, and just now, written your first working Python automation scripts.
+
+Unlike every previous module, there is no single obvious next module to point you to here, since Foundation is finished. What comes next is a genuine choice, and here are the concrete ways to make it.
+
+If you already have a strong sense of where you want to go, browse the Paths page directly, every role across all five security domains, Defensive Security, Offensive Security, Application and Product Security, Cloud and Infrastructure Security, and Governance Risk and Compliance, is listed there with what is ready to start now and what is coming soon.
+
+If you are genuinely not sure yet, go back through the onboarding questions again. You answered them once before starting Foundation, possibly with very little real experience to base those answers on. You now have actual hands-on experience across networking, Linux, Windows identity, cryptography, and cloud, which may genuinely change how you would answer some of those same questions today. Redoing it now, with real experience behind your answers instead of a guess, often produces a meaningfully better recommendation than the first pass did.
+
+If one specific module genuinely lit something up for you, trust that signal directly. If Module 3's Active Directory work felt the most engaging, the Azure Security Engineer path builds directly on exactly that. If Module 5's cloud misconfiguration task was the one you found yourself most curious about afterward, that same path is the natural next step. If the plain language investigation summaries across every module's final task were consistently the part you cared about most, the GRC Analyst path is built around exactly that kind of clear, structured communication.
+
+There is no wrong choice here. Every path ahead builds on everything you just did across these six modules.

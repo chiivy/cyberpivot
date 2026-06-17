@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
 import { FoundationCabinetPreview } from "@/components/foundations/foundation-cabinet-preview";
+import { FoundationCompleteNextSteps } from "@/components/foundations/foundation-complete-next-steps";
 import { FoundationMarkStarted } from "@/components/foundations/foundation-mark-started";
 import { FoundationModuleRenderer } from "@/components/foundations/foundation-module-renderer";
 import { FoundationToolsSection } from "@/components/foundations/foundation-tools-section";
@@ -79,7 +80,10 @@ export default function FoundationModulePage({
       </header>
 
       <div className="mt-8 space-y-8">
-        <FoundationToolsSection tools={foundationModule.tools} />
+        <FoundationToolsSection
+          tools={foundationModule.tools}
+          enterpriseToolsNote={foundationModule.enterpriseToolsNote}
+        />
         <FoundationCabinetPreview
           name={foundationModule.cabinetArtifact.name}
           description={foundationModule.cabinetArtifact.description}
@@ -127,6 +131,8 @@ export default function FoundationModulePage({
               </div>
             )}
           </div>
+        ) : foundationModule.module === 6 ? (
+          <FoundationCompleteNextSteps />
         ) : null}
       </footer>
     </article>

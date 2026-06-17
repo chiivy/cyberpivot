@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { CabinetArtifactComingSoonCard } from "@/components/roles/cabinet-artifact-coming-soon-card";
 import { NotifyLaunchForm } from "@/components/roles/notify-launch-form";
+import { RoleBridgeSuggestion } from "@/components/roles/role-bridge-suggestion";
 import { SALARY_TABLE_NOTE } from "@/lib/roles/shared-snippets";
 import type { ComingSoonRoleContent } from "@/types/role";
 
@@ -40,7 +41,7 @@ export function RoleComingSoonPage({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:py-14">
       <Link
-        href="/roles"
+        href="/paths"
         className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-amber-300/90"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -63,6 +64,8 @@ export function RoleComingSoonPage({
           </p>
         </div>
       </header>
+
+      <RoleBridgeSuggestion roleSlug={role.slug} />
 
       <Section title="What this role actually does">
         <p className="text-base leading-relaxed text-zinc-400">{role.dayToDay}</p>

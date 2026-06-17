@@ -10,7 +10,7 @@ export default function RoleNotFound(): React.ReactElement {
         That role does not exist yet. Browse the full list instead.
       </p>
       <Link
-        href="/roles"
+        href="/paths"
         className="mt-8 inline-block text-sm text-cyan-400 hover:text-cyan-300"
       >
         View all roles

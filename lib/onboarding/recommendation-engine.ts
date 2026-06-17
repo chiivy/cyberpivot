@@ -1,4 +1,5 @@
 import type {
+  BridgeRole,
   EntryPoint,
   OnboardingAnswers,
   OnboardingRecommendation,
@@ -49,6 +50,15 @@ const ROLES = {
     pathSlug: "soc",
     comingSoon: false,
   },
+  incidentResponder: {
+    roleName: "Incident Responder",
+    roleSlug: "incident-responder",
+    domain: "Defensive Security",
+    domainId: "defensive-security",
+    level: "Mid",
+    pathSlug: "soc",
+    comingSoon: true,
+  },
   edrAnalyst: {
     roleName: "EDR Analyst",
     roleSlug: "edr-analyst",
@@ -94,6 +104,33 @@ const ROLES = {
     pathSlug: "azure",
     comingSoon: true,
   },
+  networkSecurityEngineer: {
+    roleName: "Network Security Engineer",
+    roleSlug: "network-security-engineer",
+    domain: "Cloud and Infrastructure Security",
+    domainId: "cloud-infrastructure-security",
+    level: "Entry to Mid",
+    pathSlug: "azure",
+    comingSoon: true,
+  },
+  identitySecurityEngineer: {
+    roleName: "Identity Security Engineer",
+    roleSlug: "identity-security-engineer",
+    domain: "Cloud and Infrastructure Security",
+    domainId: "cloud-infrastructure-security",
+    level: "Mid",
+    pathSlug: "azure",
+    comingSoon: true,
+  },
+  emailSecurityEngineer: {
+    roleName: "Email Security Engineer",
+    roleSlug: "email-security-engineer",
+    domain: "Cloud and Infrastructure Security",
+    domainId: "cloud-infrastructure-security",
+    level: "Entry to Mid",
+    pathSlug: "azure",
+    comingSoon: true,
+  },
   grcAnalyst: {
     roleName: "GRC Analyst",
     roleSlug: "grc-analyst",
@@ -103,12 +140,39 @@ const ROLES = {
     pathSlug: "grc",
     comingSoon: false,
   },
+  complianceAnalyst: {
+    roleName: "Compliance Analyst",
+    roleSlug: "compliance-analyst",
+    domain: "Governance, Risk and Compliance",
+    domainId: "governance-risk-compliance",
+    level: "Entry to Mid",
+    pathSlug: "grc",
+    comingSoon: true,
+  },
+  riskAnalyst: {
+    roleName: "Risk Analyst",
+    roleSlug: "risk-analyst",
+    domain: "Governance, Risk and Compliance",
+    domainId: "governance-risk-compliance",
+    level: "Entry to Mid",
+    pathSlug: "grc",
+    comingSoon: true,
+  },
   securityAuditor: {
     roleName: "Security Auditor",
     roleSlug: "security-auditor",
     domain: "Governance, Risk and Compliance",
     domainId: "governance-risk-compliance",
     level: "Mid to Senior",
+    pathSlug: "grc",
+    comingSoon: true,
+  },
+  vciso: {
+    roleName: "vCISO",
+    roleSlug: "vciso",
+    domain: "Governance, Risk and Compliance",
+    domainId: "governance-risk-compliance",
+    level: "Senior",
     pathSlug: "grc",
     comingSoon: true,
   },
@@ -127,6 +191,24 @@ const ROLES = {
     domain: "Offensive Security",
     domainId: "offensive-security",
     level: "Entry to Mid",
+    pathSlug: "pentest",
+    comingSoon: true,
+  },
+  redTeamer: {
+    roleName: "Red Teamer",
+    roleSlug: "red-teamer",
+    domain: "Offensive Security",
+    domainId: "offensive-security",
+    level: "Mid to Senior",
+    pathSlug: "pentest",
+    comingSoon: true,
+  },
+  bugBountyHunter: {
+    roleName: "Bug Bounty Hunter",
+    roleSlug: "bug-bounty-hunter",
+    domain: "Offensive Security",
+    domainId: "offensive-security",
+    level: "Entry to Senior",
     pathSlug: "pentest",
     comingSoon: true,
   },
@@ -167,6 +249,127 @@ const ROLES = {
     comingSoon: true,
   },
 } as const satisfies Record<string, RoleDef>;
+
+export type RoleCatalogEntry = {
+  roleName: string;
+  roleSlug: string;
+  domain: string;
+  domainId: string;
+  level: string;
+  comingSoon: boolean;
+};
+
+export const ROLE_DOMAIN_DESCRIPTIONS = {
+  "defensive-security":
+    "The people who detect, investigate, and respond when something goes wrong inside an organization's systems.",
+  "offensive-security":
+    "The people who think like an attacker on purpose, finding weaknesses before someone malicious does.",
+  "application-product-security":
+    "The people who build security into software and APIs from the start, rather than bolting it on afterward.",
+  "cloud-infrastructure-security":
+    "The people who secure the platforms, networks, and identity systems everything else runs on top of.",
+  "governance-risk-compliance":
+    "The people who make sure security decisions are documented, defensible, and aligned with real regulatory and business risk.",
+} as const;
+
+export const ROLE_DOMAIN_ORDER = [
+  "defensive-security",
+  "offensive-security",
+  "application-product-security",
+  "cloud-infrastructure-security",
+  "governance-risk-compliance",
+] as const;
+
+const BRIDGE_SUGGESTIONS_BY_TARGET_SLUG: Record<string, BridgeRole> = {
+  [ROLES.awsEngineer.roleSlug]: {
+    name: ROLES.azureEngineer.roleName,
+    slug: ROLES.azureEngineer.roleSlug,
+    domainId: ROLES.azureEngineer.domainId,
+    pathSlug: ROLES.azureEngineer.pathSlug,
+    explanation: `${ROLES.awsEngineer.roleName} is coming soon. ${ROLES.azureEngineer.roleName} covers the same cloud security fundamentals on Microsoft Azure and is available now. The skills transfer when AWS content ships.`,
+  },
+  [ROLES.gcpEngineer.roleSlug]: {
+    name: ROLES.azureEngineer.roleName,
+    slug: ROLES.azureEngineer.roleSlug,
+    domainId: ROLES.azureEngineer.domainId,
+    pathSlug: ROLES.azureEngineer.pathSlug,
+    explanation: `${ROLES.gcpEngineer.roleName} is coming soon. Start with ${ROLES.azureEngineer.roleName} to build cloud security fundamentals that apply across providers.`,
+  },
+  [ROLES.edrAnalyst.roleSlug]: {
+    name: ROLES.socAnalyst.roleName,
+    slug: ROLES.socAnalyst.roleSlug,
+    domainId: ROLES.socAnalyst.domainId,
+    pathSlug: ROLES.socAnalyst.pathSlug,
+    explanation: `${ROLES.edrAnalyst.roleName} is coming soon. ${ROLES.socAnalyst.roleName} is the practical starting point: alert triage, investigations, and SIEM work. Endpoint depth builds on that foundation.`,
+  },
+  [ROLES.threatHunter.roleSlug]: {
+    name: ROLES.socAnalyst.roleName,
+    slug: ROLES.socAnalyst.roleSlug,
+    domainId: ROLES.socAnalyst.domainId,
+    pathSlug: ROLES.socAnalyst.pathSlug,
+    explanation: `${ROLES.threatHunter.roleName} is coming soon. ${ROLES.socAnalyst.roleName} gets you comfortable with logs, detections, and investigations first. Hunting assumes you already know how a SOC runs.`,
+  },
+  [ROLES.securityAuditor.roleSlug]: {
+    name: ROLES.grcAnalyst.roleName,
+    slug: ROLES.grcAnalyst.roleSlug,
+    domainId: ROLES.grcAnalyst.domainId,
+    pathSlug: ROLES.grcAnalyst.pathSlug,
+    explanation: `${ROLES.securityAuditor.roleName} is coming soon. ${ROLES.grcAnalyst.roleName} builds the control, risk, and evidence skills that audit work depends on.`,
+  },
+  [ROLES.devsecops.roleSlug]: {
+    name: ROLES.appsec.roleName,
+    slug: ROLES.appsec.roleSlug,
+    domainId: ROLES.appsec.domainId,
+    pathSlug: ROLES.appsec.pathSlug,
+    explanation: `${ROLES.devsecops.roleName} is coming soon. ${ROLES.appsec.roleName} covers secure development and testing foundations you need before pipeline security work.`,
+  },
+  [ROLES.aiSecurity.roleSlug]: {
+    name: ROLES.appsec.roleName,
+    slug: ROLES.appsec.roleSlug,
+    domainId: ROLES.appsec.domainId,
+    pathSlug: ROLES.appsec.pathSlug,
+    explanation: `${ROLES.aiSecurity.roleName} is coming soon. ${ROLES.appsec.roleName} covers the secure development foundations you will need and is available now. Start there.`,
+  },
+};
+
+export function getBridgeSuggestionForRoleSlug(
+  roleSlug: string,
+): BridgeRole | null {
+  return BRIDGE_SUGGESTIONS_BY_TARGET_SLUG[roleSlug] ?? null;
+}
+
+export function getRoleCatalogGrouped(): Array<{
+  domainId: (typeof ROLE_DOMAIN_ORDER)[number];
+  domain: string;
+  description: string;
+  roles: RoleCatalogEntry[];
+}> {
+  const byDomain = new Map<string, RoleCatalogEntry[]>();
+
+  for (const role of Object.values(ROLES)) {
+    const entry: RoleCatalogEntry = {
+      roleName: role.roleName,
+      roleSlug: role.roleSlug,
+      domain: role.domain,
+      domainId: role.domainId,
+      level: role.level,
+      comingSoon: role.comingSoon,
+    };
+    const existing = byDomain.get(role.domainId) ?? [];
+    existing.push(entry);
+    byDomain.set(role.domainId, existing);
+  }
+
+  return ROLE_DOMAIN_ORDER.map((domainId) => {
+    const roles = byDomain.get(domainId) ?? [];
+    return {
+      domainId,
+      domain: roles[0]?.domain ?? domainId,
+      description: ROLE_DOMAIN_DESCRIPTIONS[domainId],
+      roles,
+    };
+  });
+}
 
 function withBridge(
   target: RoleDef,
@@ -438,18 +641,6 @@ export function computeRecommendation(
 export function activeRoleForPath(
   recommendation: OnboardingRecommendation,
 ): RoleRecommendation {
-  if (recommendation.role.bridgeRole && recommendation.role.comingSoon) {
-    const bridge = recommendation.role.bridgeRole;
-    return {
-      roleName: bridge.name,
-      roleSlug: bridge.slug,
-      domain: recommendation.role.domain,
-      domainId: bridge.domainId,
-      level: recommendation.role.level,
-      pathSlug: bridge.pathSlug,
-      comingSoon: false,
-    };
-  }
   return recommendation.role;
 }
 
