@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
-const NAV_LINKS = [
+const PUBLIC_NAV_LINKS = [
   { href: "/intro", label: "Introduction", match: (path: string) => path.startsWith("/intro") },
   {
     href: "/foundations",
@@ -15,15 +16,25 @@ const NAV_LINKS = [
   { href: "/roles", label: "Roles", match: (path: string) => path.startsWith("/roles") },
 ] as const;
 
+const SIGNED_IN_NAV_LINKS = [
+  { href: "/dashboard", label: "Dashboard", match: (path: string) => path.startsWith("/dashboard") },
+  { href: "/cabinet", label: "Cabinet", match: (path: string) => path === "/cabinet" },
+] as const;
+
 export function SiteHeaderNav(): React.ReactElement {
   const pathname = usePathname();
+  const { user, ready } = useAuth();
+
+  const links = ready && user
+    ? [...SIGNED_IN_NAV_LINKS, ...PUBLIC_NAV_LINKS]
+    : PUBLIC_NAV_LINKS;
 
   return (
     <nav
       className="flex items-center gap-4 text-sm sm:gap-6"
       aria-label="Main"
     >
-      {NAV_LINKS.map((item) => {
+      {links.map((item) => {
         const active = item.match(pathname);
         return (
           <Link

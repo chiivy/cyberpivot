@@ -84,6 +84,7 @@ export default function FoundationModulePage({
           name={foundationModule.cabinetArtifact.name}
           description={foundationModule.cabinetArtifact.description}
           moduleSlug={foundationModule.slug}
+          contentArea="foundation"
         />
       </div>
 
@@ -93,8 +94,8 @@ export default function FoundationModulePage({
 
       <footer className="mt-16 space-y-8 border-t border-white/[0.08] pt-10">
         <MarkModuleComplete
+          contentArea="foundation"
           moduleSlug={foundationModule.slug}
-          artifactSlug={foundationModule.cabinetArtifact.slug}
           artifactName={foundationModule.cabinetArtifact.name}
         />
 

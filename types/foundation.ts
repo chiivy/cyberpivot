@@ -23,6 +23,10 @@ export interface FoundationModuleMeta {
   labTime: string;
   status: FoundationModuleStatus;
   nextModule: string | null;
+  cabinetArtifact?: {
+    name: string;
+    description: string;
+  };
 }
 
 export interface FoundationModule extends FoundationModuleMeta {

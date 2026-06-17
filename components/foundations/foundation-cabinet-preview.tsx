@@ -1,34 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Lock, Unlock } from "lucide-react";
 
-import { isFoundationModuleComplete } from "@/lib/foundations/progress";
+import { useModuleCompletion } from "@/hooks/use-module-completion";
 import { cn } from "@/lib/utils";
 
 interface FoundationCabinetPreviewProps {
   name: string;
   description: string;
   moduleSlug: string;
+  contentArea: string;
 }
 
 export function FoundationCabinetPreview({
   name,
   description,
   moduleSlug,
+  contentArea,
 }: FoundationCabinetPreviewProps): React.ReactElement {
-  const [unlocked, setUnlocked] = useState(false);
-
-  useEffect(() => {
-    const sync = (): void => {
-      setUnlocked(isFoundationModuleComplete(moduleSlug));
-    };
-    sync();
-    window.addEventListener("cyberpivot-foundation-progress", sync);
-    return () => {
-      window.removeEventListener("cyberpivot-foundation-progress", sync);
-    };
-  }, [moduleSlug]);
+  const { completed, ready } = useModuleCompletion(contentArea, moduleSlug);
+  const unlocked = ready && completed;
 
   return (
     <article

@@ -1,61 +1,233 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/use-auth";
 import {
-  isFoundationModuleComplete,
-  markFoundationModuleComplete,
-} from "@/lib/foundations/progress";
+  notifyCabinetUpdated,
+  useModuleCompletion,
+} from "@/hooks/use-module-completion";
+import { completeModule } from "@/lib/cabinet/complete-module";
+import { validateExternalLinkUrl } from "@/lib/cabinet/validate-link-url";
+import { cn } from "@/lib/utils";
 
 interface MarkModuleCompleteProps {
+  contentArea: string;
   moduleSlug: string;
-  artifactSlug: string;
   artifactName: string;
 }
 
+type CompletePhase = "ready" | "loading" | "details" | "done" | "guest";
+
 export function MarkModuleComplete({
+  contentArea,
   moduleSlug,
-  artifactSlug,
   artifactName,
 }: MarkModuleCompleteProps): React.ReactElement {
-  const [completed, setCompleted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [authed, setAuthed] = useState<boolean | null>(null);
+  const router = useRouter();
+  const { user, ready: authReady } = useAuth();
+  const { completed, ready: completionReady } = useModuleCompletion(
+    contentArea,
+    moduleSlug,
+  );
+  const [phase, setPhase] = useState<CompletePhase>("ready");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [summary, setSummary] = useState("");
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkError, setLinkError] = useState<string | null>(null);
+  const [savingDetails, setSavingDetails] = useState(false);
+  const initialSyncDone = useRef(false);
 
   useEffect(() => {
-    setCompleted(isFoundationModuleComplete(moduleSlug));
-
-    const supabase = createClient();
-    void supabase.auth.getUser().then(({ data }) => {
-      setAuthed(Boolean(data.user));
-    });
-  }, [moduleSlug]);
-
-  const handleComplete = useCallback(async (): Promise<void> => {
-    setLoading(true);
-
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setAuthed(false);
-      setLoading(false);
+    if (!completionReady || initialSyncDone.current) {
       return;
     }
 
-    markFoundationModuleComplete(moduleSlug, artifactSlug);
-    setCompleted(true);
-    window.dispatchEvent(new CustomEvent("cyberpivot-foundation-progress"));
-    setLoading(false);
-  }, [moduleSlug, artifactSlug]);
+    initialSyncDone.current = true;
 
-  if (completed) {
+    if (completed) {
+      setPhase("done");
+    }
+  }, [completed, completionReady]);
+
+  const handleMarkComplete = useCallback(async (): Promise<void> => {
+    setErrorMessage(null);
+    setPhase("loading");
+
+    const result = await completeModule({
+      contentArea,
+      moduleSlug,
+      artifactName,
+    });
+
+    if (!result.success) {
+      setErrorMessage(result.error);
+      setPhase(user ? "ready" : "guest");
+      return;
+    }
+
+    router.refresh();
+    notifyCabinetUpdated();
+    setPhase("details");
+  }, [artifactName, contentArea, moduleSlug, router, user]);
+
+  const handleSaveDetails = useCallback(async (): Promise<void> => {
+    const linkValidation = validateExternalLinkUrl(linkUrl);
+    if (!linkValidation.valid) {
+      setLinkError(linkValidation.error);
+      return;
+    }
+
+    setLinkError(null);
+    setSavingDetails(true);
+    setErrorMessage(null);
+
+    const result = await completeModule({
+      contentArea,
+      moduleSlug,
+      artifactName,
+      summary: summary.trim() || null,
+      linkUrl: linkValidation.normalized,
+    });
+
+    setSavingDetails(false);
+
+    if (!result.success) {
+      setErrorMessage(result.error);
+      return;
+    }
+
+    router.refresh();
+    notifyCabinetUpdated();
+    setPhase("done");
+  }, [artifactName, contentArea, linkUrl, moduleSlug, router, summary]);
+
+  const handleSkipDetails = useCallback((): void => {
+    setPhase("done");
+  }, []);
+
+  if (!authReady || !completionReady) {
+    return (
+      <div className="rounded-lg border border-white/10 bg-white/[0.02] px-6 py-5">
+        <p className="text-sm text-zinc-500">Loading progress…</p>
+      </div>
+    );
+  }
+
+  if (!user || phase === "guest") {
+    return (
+      <div className="rounded-lg border border-white/10 bg-white/[0.02] px-6 py-5">
+        <p className="text-sm leading-relaxed text-zinc-400">
+          You need an account to save progress and unlock cabinet artifacts.
+          Sign in or create a free account to keep your work and build your
+          portfolio.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Button
+            asChild
+            className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
+          >
+            <Link href={`/login?next=/foundations/${moduleSlug}`}>Sign in</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white/15 bg-transparent">
+            <Link href={`/signup?next=/foundations/${moduleSlug}`}>
+              Create account
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "details") {
+    return (
+      <div className="rounded-lg border border-cyan-500/20 bg-cyan-500/[0.04] px-6 py-5">
+        <p className="font-medium text-cyan-100">Module saved</p>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-400">
+          Optional: add a short summary or a link to your writeup. You can skip
+          this now and update it later from your cabinet.
+        </p>
+
+        {errorMessage ? (
+          <p role="alert" className="mt-4 text-sm text-red-300">
+            {errorMessage}
+          </p>
+        ) : null}
+
+        <div className="mt-5 space-y-4">
+          <div>
+            <label
+              htmlFor={`summary-${moduleSlug}`}
+              className="text-sm font-medium text-zinc-300"
+            >
+              Summary
+            </label>
+            <textarea
+              id={`summary-${moduleSlug}`}
+              value={summary}
+              onChange={(event) => setSummary(event.target.value)}
+              rows={3}
+              placeholder="What did you produce or learn?"
+              className={cn(
+                "mt-2 w-full rounded-md border border-white/15 bg-white/[0.02] px-3 py-2 text-sm text-zinc-100",
+                "placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500",
+              )}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor={`link-${moduleSlug}`}
+              className="text-sm font-medium text-zinc-300"
+            >
+              Link to your writeup, blog post, or LinkedIn post, if you have one
+            </label>
+            <Input
+              id={`link-${moduleSlug}`}
+              type="url"
+              value={linkUrl}
+              onChange={(event) => {
+                setLinkUrl(event.target.value);
+                setLinkError(null);
+              }}
+              placeholder="https://"
+              className="mt-2 border-white/15 bg-white/[0.02]"
+            />
+            {linkError ? (
+              <p role="alert" className="mt-2 text-sm text-red-300">
+                {linkError}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Button
+            type="button"
+            onClick={() => void handleSaveDetails()}
+            disabled={savingDetails}
+            className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
+          >
+            {savingDetails ? "Saving…" : "Save details"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="border-white/15 bg-transparent"
+            onClick={handleSkipDetails}
+          >
+            Skip for now
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "done") {
     return (
       <div className="rounded-lg border border-cyan-500/25 bg-cyan-500/[0.06] px-6 py-5">
         <div className="flex items-start gap-3">
@@ -63,27 +235,13 @@ export function MarkModuleComplete({
           <div>
             <p className="font-medium text-cyan-100">Module complete</p>
             <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-              <span className="text-zinc-300">{artifactName}</span> is unlocked
-              in your cabinet.
+              <Link href="/cabinet" className="text-cyan-300 hover:text-cyan-200">
+                {artifactName}
+              </Link>{" "}
+              is unlocked in your cabinet.
             </p>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (authed === false) {
-    return (
-      <div className="rounded-lg border border-white/10 bg-white/[0.02] px-6 py-5">
-        <p className="text-sm leading-relaxed text-zinc-400">
-          Sign in to track progress and unlock your cabinet artifact.
-        </p>
-        <Button
-          asChild
-          className="mt-4 bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
-        >
-          <Link href={`/login?next=/foundations/${moduleSlug}`}>Sign in</Link>
-        </Button>
       </div>
     );
   }
@@ -94,13 +252,20 @@ export function MarkModuleComplete({
         Finished the lab and documented your analysis? Mark this module complete
         to unlock your cabinet artifact.
       </p>
+
+      {errorMessage ? (
+        <p role="alert" className="mt-4 text-sm text-red-300">
+          {errorMessage}
+        </p>
+      ) : null}
+
       <Button
         type="button"
-        onClick={() => void handleComplete()}
-        disabled={loading || authed === null}
+        onClick={() => void handleMarkComplete()}
+        disabled={phase === "loading"}
         className="mt-4 bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
       >
-        {loading ? "Saving…" : "Mark as complete"}
+        {phase === "loading" ? "Saving…" : "Mark as complete"}
       </Button>
     </div>
   );

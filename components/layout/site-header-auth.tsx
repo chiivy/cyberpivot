@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
+import { Archive, ChevronDown, LayoutDashboard, LogOut, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -96,6 +96,13 @@ export function SiteHeaderAuth({
     void signOut();
   };
 
+  const menuItemClass = cn(
+    "flex items-center gap-2 px-3 py-2 text-sm transition-colors",
+    marketing
+      ? "text-zinc-200 hover:bg-white/[0.06] hover:text-cyan-300"
+      : "text-foreground hover:bg-accent",
+  );
+
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -150,26 +157,34 @@ export function SiteHeaderAuth({
           <Link
             href="/dashboard"
             role="menuitem"
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 text-sm transition-colors",
-              marketing
-                ? "text-zinc-200 hover:bg-white/[0.06] hover:text-cyan-300"
-                : "text-foreground hover:bg-accent",
-            )}
+            className={menuItemClass}
             onClick={() => setMenuOpen(false)}
           >
             <LayoutDashboard className="h-4 w-4" aria-hidden />
             Dashboard
           </Link>
+          <Link
+            href="/cabinet"
+            role="menuitem"
+            className={menuItemClass}
+            onClick={() => setMenuOpen(false)}
+          >
+            <Archive className="h-4 w-4" aria-hidden />
+            Cabinet
+          </Link>
+          <Link
+            href="/settings"
+            role="menuitem"
+            className={menuItemClass}
+            onClick={() => setMenuOpen(false)}
+          >
+            <Settings className="h-4 w-4" aria-hidden />
+            Account settings
+          </Link>
           <button
             type="button"
             role="menuitem"
-            className={cn(
-              "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors",
-              marketing
-                ? "text-zinc-200 hover:bg-white/[0.06] hover:text-cyan-300"
-                : "text-foreground hover:bg-accent",
-            )}
+            className={cn(menuItemClass, "w-full text-left")}
             onClick={handleSignOut}
           >
             <LogOut className="h-4 w-4" aria-hidden />

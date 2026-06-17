@@ -14,6 +14,7 @@ const navItems = [
   { href: "/interview", label: "Interview" },
   { href: "/cv", label: "CV" },
   { href: "/cabinet", label: "Cabinet" },
+  { href: "/settings", label: "Settings" },
 ] as const;
 
 export function DashboardShell({

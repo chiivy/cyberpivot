@@ -1,6 +1,15 @@
 import type { FoundationModuleMeta } from "@/types/foundation";
 
-export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
+export interface FoundationCabinetArtifactMeta {
+  name: string;
+  description: string;
+}
+
+export interface FoundationModuleIndexEntry extends FoundationModuleMeta {
+  cabinetArtifact: FoundationCabinetArtifactMeta;
+}
+
+export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
   {
     title: "How the Internet Actually Works",
     slug: "how-the-internet-works",
@@ -12,6 +21,11 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "30-45 min",
     status: "available",
     nextModule: "linux-fundamentals",
+    cabinetArtifact: {
+      name: "Packet Capture Analysis",
+      description:
+        "Documented analysis of a real network capture, your first portfolio entry",
+    },
   },
   {
     title: "Linux Fundamentals",
@@ -24,6 +38,11 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "45-60 min",
     status: "available",
     nextModule: "windows-active-directory",
+    cabinetArtifact: {
+      name: "Linux Investigation Log",
+      description:
+        "Documented Linux filesystem, permissions, and process investigation, your second portfolio entry",
+    },
   },
   {
     title: "Windows and Active Directory",
@@ -36,6 +55,11 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "45-60 min",
     status: "coming-soon",
     nextModule: "security-fundamentals",
+    cabinetArtifact: {
+      name: "Active Directory Investigation Notes",
+      description:
+        "Documented Windows and Active Directory lab work from Foundation Module 3",
+    },
   },
   {
     title: "Security Fundamentals",
@@ -48,6 +72,11 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "30-45 min",
     status: "coming-soon",
     nextModule: "cloud-fundamentals",
+    cabinetArtifact: {
+      name: "Security Fundamentals Brief",
+      description:
+        "Documented cryptography, authentication, and PKI lab work from Foundation Module 4",
+    },
   },
   {
     title: "Cloud Fundamentals",
@@ -60,6 +89,11 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "30-45 min",
     status: "coming-soon",
     nextModule: "python-for-security",
+    cabinetArtifact: {
+      name: "Cloud Environment Lab Notes",
+      description:
+        "Documented cloud fundamentals lab work from Foundation Module 5",
+    },
   },
   {
     title: "Python for Security",
@@ -72,5 +106,10 @@ export const FOUNDATION_MODULES: readonly FoundationModuleMeta[] = [
     labTime: "30-45 min",
     status: "coming-soon",
     nextModule: null,
+    cabinetArtifact: {
+      name: "Python Security Automation Script",
+      description:
+        "A working Python script produced during Foundation Module 6",
+    },
   },
 ] as const;
