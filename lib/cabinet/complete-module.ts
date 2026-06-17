@@ -1,6 +1,7 @@
 "use client";
 
 import { validateExternalLinkUrl } from "@/lib/cabinet/validate-link-url";
+import { validateCabinetSummary } from "@/lib/cabinet/validate-summary";
 import { ensureUserProfile } from "@/lib/cabinet/profile";
 import { createClient } from "@/lib/supabase/client";
 import type { CompleteModuleInput } from "@/types/cabinet";
@@ -34,6 +35,21 @@ function validateLinkInput(
   return { value: validation.normalized, error: null };
 }
 
+function validateSummaryInput(
+  summary: string | null | undefined,
+): { value: string | null; error: string | null } {
+  const validation = validateCabinetSummary(summary);
+  if (!validation.valid) {
+    return { value: null, error: validation.error };
+  }
+
+  return { value: validation.normalized, error: null };
+}
+
+function constraintErrorMessage(): string {
+  return "Summary or link did not pass validation";
+}
+
 export async function completeModule(
   input: CompleteModuleInput,
 ): Promise<CompleteModuleResult> {
@@ -60,6 +76,15 @@ export async function completeModule(
     };
   }
 
+  const summaryValidation = validateSummaryInput(input.summary);
+  if (summaryValidation.error) {
+    return {
+      success: false,
+      alreadyComplete: false,
+      error: summaryValidation.error,
+    };
+  }
+
   await ensureUserProfile(user);
 
   const completionInsert = await supabase.from("module_completions").insert({
@@ -81,7 +106,7 @@ export async function completeModule(
     content_area: input.contentArea,
     module_slug: input.moduleSlug,
     artifact_name: input.artifactName,
-    summary: input.summary?.trim() || null,
+    summary: summaryValidation.value,
     link_url: linkValidation.value,
   });
 
@@ -101,7 +126,7 @@ export async function completeModule(
     return {
       success: false,
       alreadyComplete: false,
-      error: "Link must be a full http:// or https:// URL",
+      error: constraintErrorMessage(),
     };
   }
 
@@ -111,12 +136,12 @@ export async function completeModule(
 
   if (
     alreadyComplete &&
-    (input.summary?.trim() || linkValidation.value)
+    (input.summary !== undefined || input.linkUrl !== undefined)
   ) {
     const updateResult = await supabase
       .from("cabinet_artifacts")
       .update({
-        summary: input.summary?.trim() || null,
+        summary: summaryValidation.value,
         link_url: linkValidation.value,
         updated_at: new Date().toISOString(),
       })
@@ -129,7 +154,7 @@ export async function completeModule(
         return {
           success: false,
           alreadyComplete: true,
-          error: "Link must be a full http:// or https:// URL",
+          error: constraintErrorMessage(),
         };
       }
       return {
@@ -157,11 +182,16 @@ export async function updateCabinetArtifactDetails(input: {
     return { success: false, error: linkValidation.error };
   }
 
+  const summaryValidation = validateSummaryInput(input.summary);
+  if (summaryValidation.error) {
+    return { success: false, error: summaryValidation.error };
+  }
+
   const supabase = createClient();
   const { error } = await supabase
     .from("cabinet_artifacts")
     .update({
-      summary: input.summary?.trim() || null,
+      summary: summaryValidation.value,
       link_url: linkValidation.value,
       updated_at: new Date().toISOString(),
     })
@@ -171,7 +201,7 @@ export async function updateCabinetArtifactDetails(input: {
     if (isCheckViolation(error.code)) {
       return {
         success: false,
-        error: "Link must be a full http:// or https:// URL",
+        error: constraintErrorMessage(),
       };
     }
     return { success: false, error: error.message };

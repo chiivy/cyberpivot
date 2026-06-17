@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Lock, Pencil, RotateCcw, Unlock } from "lucide-react";
 
+import { CabinetSummaryField } from "@/components/cabinet/cabinet-summary-field";
 import { ExternalWriteupLink } from "@/components/cabinet/external-writeup-link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,10 @@ import { notifyCabinetUpdated } from "@/hooks/use-module-completion";
 import { updateCabinetArtifactDetails } from "@/lib/cabinet/complete-module";
 import { resetModuleProgress } from "@/lib/cabinet/reset-module";
 import { moduleSourceLabel } from "@/lib/cabinet/definitions";
+import {
+  CABINET_SUMMARY_MAX_LENGTH,
+  validateCabinetSummary,
+} from "@/lib/cabinet/validate-summary";
 import { validateExternalLinkUrl } from "@/lib/cabinet/validate-link-url";
 import { cn } from "@/lib/utils";
 import type { CabinetModuleCardData } from "@/types/cabinet";
@@ -54,6 +59,12 @@ export function CabinetModuleCard({
       return;
     }
 
+    const summaryValidation = validateCabinetSummary(summary);
+    if (!summaryValidation.valid) {
+      setErrorMessage(summaryValidation.error);
+      return;
+    }
+
     const linkValidation = validateExternalLinkUrl(linkUrl);
     if (!linkValidation.valid) {
       setLinkError(linkValidation.error);
@@ -66,7 +77,7 @@ export function CabinetModuleCard({
 
     const result = await updateCabinetArtifactDetails({
       artifactId: card.artifactId,
-      summary: summary.trim() || null,
+      summary: summaryValidation.normalized,
       linkUrl: linkValidation.normalized,
     });
 
@@ -235,21 +246,11 @@ export function CabinetModuleCard({
             </>
           ) : (
             <div className="space-y-3">
-              <div>
-                <label
-                  htmlFor={`edit-summary-${card.moduleSlug}`}
-                  className="text-sm font-medium text-zinc-300"
-                >
-                  Summary
-                </label>
-                <textarea
-                  id={`edit-summary-${card.moduleSlug}`}
-                  value={summary}
-                  onChange={(event) => setSummary(event.target.value)}
-                  rows={3}
-                  className="mt-2 w-full rounded-md border border-white/15 bg-white/[0.02] px-3 py-2 text-sm text-zinc-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500"
-                />
-              </div>
+              <CabinetSummaryField
+                id={`edit-summary-${card.moduleSlug}`}
+                value={summary}
+                onChange={setSummary}
+              />
               <div>
                 <label
                   htmlFor={`edit-link-${card.moduleSlug}`}
@@ -283,7 +284,7 @@ export function CabinetModuleCard({
                 <Button
                   type="button"
                   size="sm"
-                  disabled={saving}
+                  disabled={saving || summary.trim().length > CABINET_SUMMARY_MAX_LENGTH}
                   onClick={() => void handleSave()}
                   className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
                 >

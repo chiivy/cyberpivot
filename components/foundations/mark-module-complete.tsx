@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 
+import { CabinetSummaryField } from "@/components/cabinet/cabinet-summary-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,8 +14,11 @@ import {
   useModuleCompletion,
 } from "@/hooks/use-module-completion";
 import { completeModule } from "@/lib/cabinet/complete-module";
+import {
+  CABINET_SUMMARY_MAX_LENGTH,
+  validateCabinetSummary,
+} from "@/lib/cabinet/validate-summary";
 import { validateExternalLinkUrl } from "@/lib/cabinet/validate-link-url";
-import { cn } from "@/lib/utils";
 
 interface MarkModuleCompleteProps {
   contentArea: string;
@@ -77,6 +81,12 @@ export function MarkModuleComplete({
   }, [artifactName, contentArea, moduleSlug, router, user]);
 
   const handleSaveDetails = useCallback(async (): Promise<void> => {
+    const summaryValidation = validateCabinetSummary(summary);
+    if (!summaryValidation.valid) {
+      setErrorMessage(summaryValidation.error);
+      return;
+    }
+
     const linkValidation = validateExternalLinkUrl(linkUrl);
     if (!linkValidation.valid) {
       setLinkError(linkValidation.error);
@@ -91,7 +101,7 @@ export function MarkModuleComplete({
       contentArea,
       moduleSlug,
       artifactName,
-      summary: summary.trim() || null,
+      summary: summaryValidation.normalized,
       linkUrl: linkValidation.normalized,
     });
 
@@ -160,25 +170,11 @@ export function MarkModuleComplete({
         ) : null}
 
         <div className="mt-5 space-y-4">
-          <div>
-            <label
-              htmlFor={`summary-${moduleSlug}`}
-              className="text-sm font-medium text-zinc-300"
-            >
-              Summary
-            </label>
-            <textarea
-              id={`summary-${moduleSlug}`}
-              value={summary}
-              onChange={(event) => setSummary(event.target.value)}
-              rows={3}
-              placeholder="What did you produce or learn?"
-              className={cn(
-                "mt-2 w-full rounded-md border border-white/15 bg-white/[0.02] px-3 py-2 text-sm text-zinc-100",
-                "placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-500",
-              )}
-            />
-          </div>
+          <CabinetSummaryField
+            id={`summary-${moduleSlug}`}
+            value={summary}
+            onChange={setSummary}
+          />
           <div>
             <label
               htmlFor={`link-${moduleSlug}`}
@@ -209,7 +205,9 @@ export function MarkModuleComplete({
           <Button
             type="button"
             onClick={() => void handleSaveDetails()}
-            disabled={savingDetails}
+            disabled={
+              savingDetails || summary.trim().length > CABINET_SUMMARY_MAX_LENGTH
+            }
             className="bg-cyan-500 text-[#0a0a0f] hover:bg-cyan-400"
           >
             {savingDetails ? "Saving…" : "Save details"}
