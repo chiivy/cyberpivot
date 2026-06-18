@@ -77,6 +77,15 @@ const ROLES = {
     pathSlug: "soc",
     comingSoon: true,
   },
+  dfirAnalyst: {
+    roleName: "DFIR Analyst",
+    roleSlug: "dfir-analyst",
+    domain: "Defensive Security",
+    domainId: "defensive-security",
+    level: "Mid to Senior",
+    pathSlug: "soc",
+    comingSoon: true,
+  },
   azureEngineer: {
     roleName: "Azure Security Engineer",
     roleSlug: "azure-security-engineer",
@@ -131,6 +140,15 @@ const ROLES = {
     pathSlug: "azure",
     comingSoon: true,
   },
+  securityEngineer: {
+    roleName: "Security Engineer",
+    roleSlug: "security-engineer",
+    domain: "Cloud and Infrastructure Security",
+    domainId: "cloud-infrastructure-security",
+    level: "Mid to Senior",
+    pathSlug: "azure",
+    comingSoon: true,
+  },
   grcAnalyst: {
     roleName: "GRC Analyst",
     roleSlug: "grc-analyst",
@@ -176,6 +194,15 @@ const ROLES = {
     pathSlug: "grc",
     comingSoon: true,
   },
+  privacyAnalyst: {
+    roleName: "Privacy Analyst",
+    roleSlug: "privacy-analyst",
+    domain: "Governance, Risk and Compliance",
+    domainId: "governance-risk-compliance",
+    level: "Entry to Mid",
+    pathSlug: "grc",
+    comingSoon: true,
+  },
   pentest: {
     roleName: "Penetration Tester",
     roleSlug: "penetration-tester",
@@ -209,6 +236,24 @@ const ROLES = {
     domain: "Offensive Security",
     domainId: "offensive-security",
     level: "Entry to Senior",
+    pathSlug: "pentest",
+    comingSoon: true,
+  },
+  malwareAnalyst: {
+    roleName: "Malware Analyst",
+    roleSlug: "malware-analyst",
+    domain: "Offensive Security",
+    domainId: "offensive-security",
+    level: "Mid to Senior",
+    pathSlug: "pentest",
+    comingSoon: true,
+  },
+  aiRedTeamer: {
+    roleName: "AI Red Teamer",
+    roleSlug: "ai-red-teamer",
+    domain: "Offensive Security",
+    domainId: "offensive-security",
+    level: "Mid to Senior",
     pathSlug: "pentest",
     comingSoon: true,
   },
@@ -248,6 +293,24 @@ const ROLES = {
     pathSlug: "ai-security",
     comingSoon: true,
   },
+  otSecurityAnalyst: {
+    roleName: "OT Security Analyst",
+    roleSlug: "ot-security-analyst",
+    domain: "Operational Technology and Industrial Control Systems Security",
+    domainId: "ot-ics-security",
+    level: "Entry to Mid",
+    pathSlug: "ot-security",
+    comingSoon: true,
+  },
+  otSecurityEngineer: {
+    roleName: "OT Security Engineer",
+    roleSlug: "ot-security-engineer",
+    domain: "Operational Technology and Industrial Control Systems Security",
+    domainId: "ot-ics-security",
+    level: "Mid to Senior",
+    pathSlug: "ot-security",
+    comingSoon: true,
+  },
 } as const satisfies Record<string, RoleDef>;
 
 export type RoleCatalogEntry = {
@@ -270,6 +333,8 @@ export const ROLE_DOMAIN_DESCRIPTIONS = {
     "The people who secure the platforms, networks, and identity systems everything else runs on top of.",
   "governance-risk-compliance":
     "The people who make sure security decisions are documented, defensible, and aligned with real regulatory and business risk.",
+  "ot-ics-security":
+    "The people who secure the industrial systems and physical infrastructure behind power, water, manufacturing, and other critical services.",
 } as const;
 
 export const ROLE_DOMAIN_ORDER = [
@@ -278,6 +343,7 @@ export const ROLE_DOMAIN_ORDER = [
   "application-product-security",
   "cloud-infrastructure-security",
   "governance-risk-compliance",
+  "ot-ics-security",
 ] as const;
 
 const BRIDGE_SUGGESTIONS_BY_TARGET_SLUG: Record<string, BridgeRole> = {
@@ -651,6 +717,7 @@ export function domainIdToPathSlug(domainId: string): PathSlug | null {
     "application-product-security": "appsec",
     "cloud-infrastructure-security": "azure",
     "governance-risk-compliance": "grc",
+    "ot-ics-security": "ot-security",
   };
   return map[domainId] ?? null;
 }
@@ -690,6 +757,24 @@ export function pathSlugFromRoleSlug(roleSlug: string): PathSlug | null {
   }
   if (roleSlug.includes("appsec") || roleSlug.includes("devsecops")) {
     return "appsec";
+  }
+  if (roleSlug.includes("ot-security")) {
+    return "ot-security";
+  }
+  if (roleSlug === "security-engineer") {
+    return "azure";
+  }
+  if (roleSlug.includes("dfir")) {
+    return "soc";
+  }
+  if (roleSlug.includes("malware")) {
+    return "pentest";
+  }
+  if (roleSlug.includes("ai-red-teamer")) {
+    return "pentest";
+  }
+  if (roleSlug.includes("privacy-analyst")) {
+    return "grc";
   }
   return null;
 }

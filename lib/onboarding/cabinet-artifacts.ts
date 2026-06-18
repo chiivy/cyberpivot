@@ -8,10 +8,12 @@ export const PATH_LABELS: Record<PathSlug, string> = {
   appsec: "AppSec Engineer",
   "api-security": "API Security Engineer",
   "ai-security": "AI Security Engineer",
+  "ot-security": "OT Security Analyst",
 };
 
 export const PATH_COMING_SOON: Partial<Record<PathSlug, boolean>> = {
   "ai-security": true,
+  "ot-security": true,
 };
 
 export const CABINET_BY_PATH: Record<PathSlug, readonly CabinetPreviewItem[]> = {
@@ -369,6 +371,26 @@ export const CABINET_BY_PATH: Record<PathSlug, readonly CabinetPreviewItem[]> = 
       description:
         "Multi-agent system reviewed for tool misuse, excessive permissions, and trust boundary violations. Agents amplify impact when permissions are too broad.",
       unlocksInModule: "Agentic AI Security",
+    },
+  ],
+  "ot-security": [
+    {
+      name: "ICS network visibility baseline",
+      description:
+        "Passive discovery of PLCs, HMIs, and engineering workstations on a lab OT segment with asset inventory and protocol notes. You cannot protect what you cannot see on the plant floor.",
+      unlocksInModule: "OT Network Discovery",
+    },
+    {
+      name: "Purdue model segmentation review",
+      description:
+        "Lab topology mapped to Purdue levels with documented gaps between IT and OT zones. Segmentation failures are how ransomware reaches production.",
+      unlocksInModule: "OT Architecture",
+    },
+    {
+      name: "Modbus traffic anomaly report",
+      description:
+        "Baseline and deviation analysis on industrial protocol traffic with suspicious write commands flagged. OT attacks often look like normal automation until you know the patterns.",
+      unlocksInModule: "ICS Protocol Analysis",
     },
   ],
 };

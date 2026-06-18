@@ -67,6 +67,7 @@ export const securityDomains: readonly SecurityDomain[] = [
       { name: "Incident Responder", slug: "incident-responder", v1: false },
       { name: "Threat Hunter", slug: "threat-hunter", v1: false },
       { name: "EDR Analyst", slug: "edr-analyst", v1: false },
+      { name: "DFIR Analyst", slug: "dfir-analyst", v1: false },
     ],
   },
   {
@@ -82,6 +83,8 @@ export const securityDomains: readonly SecurityDomain[] = [
       { name: "Penetration Tester", slug: "penetration-tester", v1: true },
       { name: "Red Teamer", slug: "red-teamer", v1: false },
       { name: "Bug Bounty Hunter", slug: "bug-bounty-hunter", v1: false },
+      { name: "Malware Analyst", slug: "malware-analyst", v1: false },
+      { name: "AI Red Teamer", slug: "ai-red-teamer", v1: false },
     ],
   },
   {
@@ -110,6 +113,7 @@ export const securityDomains: readonly SecurityDomain[] = [
       { name: "Network Security Engineer", slug: "network-security-engineer", v1: false },
       { name: "Identity Security Engineer", slug: "identity-security-engineer", v1: false },
       { name: "Email Security Engineer", slug: "email-security-engineer", v1: false },
+      { name: "Security Engineer", slug: "security-engineer", v1: false },
     ],
   },
   {
@@ -122,6 +126,17 @@ export const securityDomains: readonly SecurityDomain[] = [
       { name: "Risk Analyst", slug: "risk-analyst", v1: false },
       { name: "Security Auditor", slug: "security-auditor", v1: false },
       { name: "vCISO", slug: "vciso", v1: false },
+      { name: "Privacy Analyst", slug: "privacy-analyst", v1: false },
+    ],
+  },
+  {
+    id: "ot-ics-security",
+    name: "Operational Technology and Industrial Control Systems Security",
+    description:
+      "The people who secure the industrial systems and physical infrastructure behind power, water, manufacturing, and other critical services.",
+    roles: [
+      { name: "OT Security Analyst", slug: "ot-security-analyst", v1: false },
+      { name: "OT Security Engineer", slug: "ot-security-engineer", v1: false },
     ],
   },
 ] as const;
@@ -161,7 +176,7 @@ export const cabinetArtifacts: readonly CabinetArtifact[] = [
 
 export const openSourceStats = {
   githubStars: "—",
-  rolesAvailable: "25+",
+  rolesAvailable: "30+",
   modulesAvailable: "50+",
 } as const;
 

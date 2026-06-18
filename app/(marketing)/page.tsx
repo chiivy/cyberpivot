@@ -6,7 +6,6 @@ import { CabinetArtifactCard } from "@/components/marketing/cabinet-artifact-car
 import { DomainCard } from "@/components/marketing/domain-card";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   cabinetArtifacts,
   GITHUB_REPO_URL,
@@ -129,23 +128,15 @@ export default function HomePage(): React.ReactElement {
       >
         <div className="mx-auto max-w-6xl">
           <SectionHeading id="roles-heading">
-            25+ roles across five security domains
+            30+ roles across six security domains
           </SectionHeading>
           <p className="mt-4 max-w-2xl text-zinc-400">
             Pick a domain to see roles, modules, and what you will build. V1
             roles are ready to start. Others are listed so you can plan ahead.
           </p>
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-            {securityDomains.map((domain, index) => (
-              <div
-                key={domain.id}
-                className={cn(
-                  "lg:col-span-2",
-                  index === 3 && "lg:col-start-2",
-                  index === 4 &&
-                    "sm:col-span-2 sm:mx-auto sm:max-w-md lg:col-start-4 lg:mx-0 lg:max-w-none",
-                )}
-              >
+            {securityDomains.map((domain) => (
+              <div key={domain.id} className="lg:col-span-2">
                 <DomainCard domain={domain} />
               </div>
             ))}

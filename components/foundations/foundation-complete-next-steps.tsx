@@ -13,7 +13,7 @@ export function FoundationCompleteNextSteps(): React.ReactElement {
         Choose your path
       </h2>
       <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-        Foundation is finished. Browse every role across five security domains,
+        Foundation is finished. Browse every role across six security domains,
         or retake onboarding now that you have real hands-on experience behind
         your answers.
       </p>

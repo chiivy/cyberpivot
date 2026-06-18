@@ -41,6 +41,7 @@ function isPathSlug(value: string): value is PathSlug {
     "appsec",
     "api-security",
     "ai-security",
+    "ot-security",
   ].includes(value);
 }
 

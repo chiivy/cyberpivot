@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Paths",
   description:
-    "Browse cybersecurity learning paths across defensive, offensive, cloud, application security, and GRC.",
+    "Browse cybersecurity learning paths across defensive, offensive, cloud, application security, GRC, and OT/ICS.",
 };
 
 export default function PathsIndexPage(): React.ReactElement {

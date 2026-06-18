@@ -50,7 +50,8 @@ export type PathSlug =
   | "grc"
   | "appsec"
   | "api-security"
-  | "ai-security";
+  | "ai-security"
+  | "ot-security";
 
 export interface OnboardingAnswers {
   q1Background: Q1Background;

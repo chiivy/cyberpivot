@@ -197,7 +197,7 @@ export function RecommendationView(): React.ReactElement {
       <p className={cn("mt-12 text-center text-sm text-zinc-500")}>
         Want to explore before committing?{" "}
         <Link href="/paths" className="text-zinc-400 underline-offset-4 hover:text-cyan-300 hover:underline">
-          Browse all 25+ roles across five domains.
+          Browse all 30+ roles across six security domains.
         </Link>
       </p>
     </OnboardingShell>
