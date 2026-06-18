@@ -17,6 +17,7 @@ import {
   parseQ6Value,
   type FlowQuestion,
 } from "@/lib/onboarding/questions";
+import { writeOnboardingState } from "@/lib/onboarding/storage";
 import { cn } from "@/lib/utils";
 import type { OnboardingAnswers, Q3Environment } from "@/types/onboarding";
 
@@ -51,19 +52,14 @@ export function OnboardingFlow(): React.ReactElement {
   const finishFlow = useCallback(
     (complete: OnboardingAnswers): void => {
       const recommendation = computeRecommendation(complete);
-      void import("@/lib/onboarding/storage")
-        .then(({ writeOnboardingState }) => {
-          writeOnboardingState({
-            answers: complete,
-            recommendation,
-            chosenPath: null,
-            chosenDomainId: null,
-            chosenRoleSlug: null,
-          });
-        })
-        .finally(() => {
-          router.push("/onboarding/recommendation");
-        });
+      writeOnboardingState({
+        answers: complete,
+        recommendation,
+        chosenPath: null,
+        chosenDomainId: null,
+        chosenRoleSlug: null,
+      });
+      router.push("/onboarding/recommendation");
     },
     [router],
   );
