@@ -993,3 +993,38 @@ The real competitive moat is not the licence. It is content quality, community, 
 **Not built in V1.** Resources section is a V2 feature. Flag content as it is identified and store in a resources data file for when it is built.
 **Date:** June 2026
 
+---
+
+## Coming Soon Role Placeholder Pages
+
+**Decision:** Seven new Coming Soon roles added to the ROLES catalog (DFIR Analyst, Security Engineer, Malware Analyst, Privacy Analyst, AI Red Teamer, OT Security Analyst, OT Security Engineer) receive temporary placeholder pages at /roles/{slug} rather than 404ing. These pages show the role's real name, domain, and level, an honest message that the full role page content is still being written, a link back to /paths, and signed-out signup/signin CTAs. No salary data, tools, certs, or other rich sections are included. This is a deliberate temporary measure. Full rich coming-soon content (matching the pattern already built for the 17 existing coming-soon roles) will be written for each of these seven roles in a future dedicated session once proper research per role has been done. The placeholder pages are implemented in lib/roles/placeholder-coming-soon-roles.ts and components/roles/role-placeholder-coming-soon-page.tsx, and are routed via app/roles/[slug]/page.tsx after V1 roles and before the 17 rich coming-soon roles.
+**Date:** June 2026
+
+---
+
+## OT/ICS Security Domain
+
+**Decision:** A sixth domain, Operational Technology and Industrial Control Systems Security (domainId: ot-ics-security, pathSlug: ot-security), was added to the platform alongside two initial roles: OT Security Analyst (Entry to Mid) and OT Security Engineer (Mid to Senior). This domain covers securing industrial control systems, SCADA, PLCs, and the physical infrastructure behind power, water, manufacturing, and critical services. It is distinct from Cloud and Infrastructure Security because OT/ICS security involves genuinely different technology, protocols (Modbus, DNP3), and regulatory frameworks (NERC CIP, ISA/IEC 62443) from standard IT and cloud security. The domain description used everywhere is: "The people who secure the industrial systems and physical infrastructure behind power, water, manufacturing, and other critical services." Real-world data confirms OT Security Analyst is Entry to Mid level, though this entry point is less common than SOC Analyst and often draws people transitioning from general IT or security rather than true career-zero beginners.
+**Date:** June 2026
+
+---
+
+## Onboarding Coming Soon Role Routing Fix
+
+**Decision:** The onboarding recommendation engine previously silently routed users whose recommended role was comingSoon: true into a different, unrelated role's actual content via the bridgeRole and pathSlug mechanism (for example, both gcpEngineer and awsEngineer had pathSlug: "azure" hardcoded, sending GCP-leaning users into Azure Security Engineer content with no explanation). This was identified as a real bug, not an intentional design choice. Fixed so that comingSoon roles now show the user a clear holding page for their actual recommended role, with the existing bridgeRole explanation text displayed as a suggestion with a clickable link, rather than being used for silent auto-redirect. The fix applies consistently to all comingSoon roles: awsEngineer, gcpEngineer, edrAnalyst, threatHunter, securityAuditor, devsecops, and aiSecurity.
+**Date:** June 2026
+
+---
+
+## V1 Role Module False Availability Fix
+
+**Decision:** Six V1 role paths (SOC Analyst, Penetration Tester, Azure Security Engineer, GRC Analyst, AppSec Engineer, API Security Engineer) had their first one or two modules incorrectly marked status: "available" in lib/roles/v1-roles.ts, despite no actual module content, routes, or MDX files existing anywhere in the project for any role-path module. All 12 affected module entries across all six roles were corrected to status: "coming-soon". No module on any role path now shows "Available" status anywhere in the app until real built content exists behind it.
+**Date:** June 2026
+
+---
+
+## Paths Overview Page and URL Structure
+
+**Decision:** A dedicated Paths overview page was built at /paths (moved from its original /roles route, which now redirects to /paths). This page shows all roles grouped by domain with domain descriptions, role levels, and Ready/Coming soon status. Individual role pages remain at /roles/[slug] as before. The naming distinction is deliberate: "path" refers to the structured learning journey CyberPivot provides toward a role, while "role" refers to the real-world job title the path leads toward. The top-level overview uses "Paths" because it lists learning journeys; individual destination pages use "roles" because they describe specific job roles.
+**Date:** June 2026
+

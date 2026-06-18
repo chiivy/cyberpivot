@@ -93,17 +93,19 @@ cyberpivot/
 
 Modules are the core building blocks. Roles are curated collections of modules in a specific order. Some modules appear across multiple role paths — written once, used everywhere.
 
-**Five domains:**
+**Six domains — 30+ roles across six security domains:**
 
-Defensive Security — SOC Analyst (V1), Incident Responder, Threat Hunter, EDR Analyst
+Defensive Security — SOC Analyst (V1), Incident Responder, Threat Hunter, EDR Analyst, DFIR Analyst
 
-Offensive Security — Vulnerability Assessment, Penetration Tester (V1), Red Teamer, Bug Bounty Hunter
+Offensive Security — Vulnerability Assessment, Penetration Tester (V1), Red Teamer, Bug Bounty Hunter, Malware Analyst, AI Red Teamer
 
 Application and Product Security — AppSec Engineer (V1), API Security Engineer (V1), DevSecOps Engineer, AI Security Engineer
 
-Cloud and Infrastructure Security — Azure Security Engineer (V1), AWS Security Engineer, GCP Security Engineer, Network Security Engineer, Identity Security Engineer, Email Security Engineer
+Cloud and Infrastructure Security — Azure Security Engineer (V1), AWS Security Engineer, GCP Security Engineer, Network Security Engineer, Identity Security Engineer, Email Security Engineer, Security Engineer
 
-Governance Risk and Compliance — GRC Analyst (V1), Compliance Analyst, Risk Analyst, Security Auditor, vCISO
+Governance, Risk and Compliance — GRC Analyst (V1), Compliance Analyst, Risk Analyst, Security Auditor, vCISO, Privacy Analyst
+
+Operational Technology and Industrial Control Systems Security — OT Security Analyst, OT Security Engineer
 
 Every role is visible from day one. V1 roles fully built. All others show as Coming Soon with expected dates and a notify option.
 
@@ -217,7 +219,7 @@ Good: "This module is about how traffic moves across a network. Start here befor
 2. Introduction section (all 8 parts)
 3. Onboarding flow
 4. All role pages (V1 full, Coming Soon basic)
-5. Foundation modules
+5. Foundation modules (all 6 complete and live)
 6. Azure Security Engineer path
 7. SOC Analyst path
 8. Penetration Tester path

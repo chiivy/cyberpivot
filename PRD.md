@@ -198,6 +198,10 @@ Level: Mid to Senior
 Specialises in endpoint telemetry and response. Deep expertise in CrowdStrike, SentinelOne, Microsoft Defender.
 Level: Entry to Mid
 
+**DFIR Analyst** — Coming Soon
+Digital forensics and incident response across endpoints, networks, and cloud. Evidence handling, malware triage, breach investigation.
+Level: Mid to Senior
+
 ---
 
 #### DOMAIN 2 — Offensive Security
@@ -218,6 +222,14 @@ Level: Senior
 **Bug Bounty Hunter** — Coming Soon
 Finds vulnerabilities in companies public-facing assets for monetary rewards. Freelance and independent.
 Level: Entry to Senior (self-paced)
+
+**Malware Analyst** — Coming Soon
+Reverse engineers and analyses malicious code. Static and dynamic analysis, sandboxing, reporting.
+Level: Mid to Senior
+
+**AI Red Teamer** — Coming Soon
+Adversarial testing of AI systems. Prompt injection, jailbreaking, and agentic security testing.
+Level: Mid to Senior
 
 ---
 
@@ -269,6 +281,10 @@ Level: Mid to Senior
 SPF, DKIM, DMARC, email gateway management, phishing analysis, email-based IR.
 Level: Entry to Mid
 
+**Security Engineer** — Coming Soon
+Broad cloud and infrastructure security engineering across platforms, networks, and identity systems.
+Level: Mid to Senior
+
 ---
 
 #### DOMAIN 5 — Governance, Risk and Compliance
@@ -293,6 +309,23 @@ Level: Mid to Senior
 **vCISO** — Coming Soon
 Fractional or consulting CISO. Strategy, program building, board communication.
 Level: Senior
+
+**Privacy Analyst** — Coming Soon
+Data protection, privacy impact assessments, consent management, regulatory privacy obligations.
+Level: Entry to Mid
+
+---
+
+#### DOMAIN 6 — Operational Technology and Industrial Control Systems Security
+The people who secure the industrial systems and physical infrastructure behind power, water, manufacturing, and other critical services.
+
+**OT Security Analyst** — Coming Soon
+Monitors and supports industrial control systems and SCADA environments. Entry point into OT/ICS security.
+Level: Entry to Mid
+
+**OT Security Engineer** — Coming Soon
+Designs and implements security for SCADA systems, PLCs, and industrial networks.
+Level: Mid to Senior
 
 ---
 
@@ -467,34 +500,48 @@ Every module follows this structure:
 
 **Welcome screen** — one line, one button, nothing else.
 
-**4 questions — one per screen, slides automatically:**
+**5+1 questions — five core questions on every path, plus an optional sixth follow-up when the answer to Q3 points at cloud, SOC, or application security:**
 
 Q1: Where are you starting from?
-- Complete beginner, no IT background
-- I work in IT already
-- I am a developer moving into security
-- I already work in security
+- No IT or tech background
+- IT or tech background — helpdesk, networking, sysadmin
+- I work as a developer or engineer
+- I already work in cybersecurity
 
-Q2: Have you used Linux before?
-- Yes, comfortably
-- A little
-- Never
+Q2: When something goes wrong in a system, what is your instinct?
+- Investigate it — find out exactly what happened and who did it
+- Fix it before it gets worse — contain the damage fast
+- Figure out how it could have been prevented — process and policy
+- Try to replicate it — understand how an attacker would have done it
+- Make sure the system was built to handle it — secure by design
 
-Q3: Do you understand basic networking?
-- Yes
-- Somewhat
-- Not really
+Q3: Where do you imagine yourself working most?
+- Inside cloud platforms — dashboards, policies, configurations
+- Inside code and applications — reviewing, testing, securing software
+- Inside a security operations centre — monitoring, alerts, investigations
+- Across the business — policies, audits, risk conversations
+- On the attack side — finding weaknesses before attackers do
 
-Q4: Do you have a path in mind?
-- Yes, show me the roles
-- Not yet, help me choose
+Q4: How comfortable are you working in a terminal or command line?
+- Very comfortable — I live in the terminal
+- Somewhat — I can get by
+- Not really — I prefer GUIs and dashboards
+- Never used one
 
-**Recommendation logic using all 4 answers:**
+Q5: What does success look like for you in 12 months?
+- I have a job in cybersecurity — starting from scratch
+- I have moved from IT into a security role
+- I have levelled up — more senior or more specialised
+- I understand this field well enough to make a decision
+
+Q6 (conditional, shown only when Q3 is cloud, SOC, or code): Follow-up question specific to that environment — cloud platform preference, SOC focus area, or application security focus area.
+
+**Recommendation logic using all answers:**
 - Q1 Complete beginner → Entry A, Foundation Module 1
-- Q1 IT background + Q3 Yes/Somewhat → Entry B, Foundation Module 3
-- Q1 IT background + Q3 Not really → Entry B, Foundation Module 2
-- Q1 Developer → Entry C, AppSec or DevSecOps highlighted
+- Q1 IT background → Entry B, Foundation Module 3 (or Module 2 when terminal comfort is low)
+- Q1 Developer → Entry C, Application and Product Security paths highlighted
 - Q1 Already in security → Entry D, straight to role selection
+- Q2–Q5 and conditional Q6 refine role and path recommendation via `lib/onboarding/recommendation-engine.ts`
 
 **Cabinet preview** — locked artifact cards for chosen or recommended role.
 

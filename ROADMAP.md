@@ -24,16 +24,17 @@ This is the public roadmap for CyberPivot. It shows what is built, what is in pr
 - ✅ Dashboard skeleton
 - ✅ All V1 role pages — SOC Analyst, Penetration Tester, Azure Security Engineer, GRC Analyst, AppSec Engineer, API Security Engineer
 - ✅ All Coming Soon role pages — 17 roles with honest descriptions, salary data, notify me
+- ✅ Seven additional Coming Soon roles have live placeholder pages at `/roles/{slug}` (not 404): DFIR Analyst (`/roles/dfir-analyst`), Security Engineer (`/roles/security-engineer`), Malware Analyst (`/roles/malware-analyst`), Privacy Analyst (`/roles/privacy-analyst`), AI Red Teamer (`/roles/ai-red-teamer`), OT Security Analyst (`/roles/ot-security-analyst`), OT Security Engineer (`/roles/ot-security-engineer`). Full rich coming-soon content for these seven is still to be written.
 - ✅ Supabase connection — auth and database configured
 
 ### Content — In Progress
 - 🔄 Introduction section — 8-part ungated content covering what cybersecurity is, CIA triad, how attacks work, team structures, career realities
-- 📋 Foundation Module 1 — How the Internet Actually Works
-- 📋 Foundation Module 2 — Linux Fundamentals
-- 📋 Foundation Module 3 — Windows and Active Directory
-- 📋 Foundation Module 4 — Security Fundamentals
-- 📋 Foundation Module 5 — Cloud Fundamentals
-- 📋 Foundation Module 6 — Python for Security
+- ✅ Foundation Module 1 — How the Internet Actually Works
+- ✅ Foundation Module 2 — Linux Fundamentals
+- ✅ Foundation Module 3 — Windows and Active Directory
+- ✅ Foundation Module 4 — Security Fundamentals
+- ✅ Foundation Module 5 — Cloud Fundamentals
+- ✅ Foundation Module 6 — Python for Security
 
 ### First Complete Role Path — SOC Analyst
 - 📋 Module 1 — SOC Fundamentals
@@ -159,7 +160,7 @@ This is the public roadmap for CyberPivot. It shows what is built, what is in pr
 - 💡 Physical Security and Social Engineering
 - 💡 Digital Forensics and DFIR
 - 💡 Threat Intelligence and CTI
-- 💡 OT/ICS/SCADA Security
+- 💡 OT/ICS Security
 - 💡 Mobile Application Security
 - 💡 Cryptography in Practice
 - 💡 Zero Trust Architecture
