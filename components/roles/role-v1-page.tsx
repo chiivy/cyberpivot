@@ -95,6 +95,14 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
         ) : null}
       </header>
 
+      <div className="mt-8">
+        <StartPathButton
+          roleSlug={role.slug}
+          cabinetPath={role.cabinetPath}
+          domainId={role.domainId}
+        />
+      </div>
+
       <Section title="What you actually do">
         <p className="text-base leading-relaxed text-zinc-400">{role.dayToDay}</p>
       </Section>

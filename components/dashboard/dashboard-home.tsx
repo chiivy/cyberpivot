@@ -4,16 +4,20 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
+import { RolePathNotReadyMessage } from "@/components/roles/role-path-not-ready-message";
 import { Button } from "@/components/ui/button";
 import { DashboardFoundationStartCard } from "@/components/dashboard/dashboard-foundation-start-card";
+import { useAuth } from "@/hooks/use-auth";
 import { useFoundationProgress } from "@/hooks/use-foundation-progress";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { getRoleBySlug } from "@/lib/roles/get-role";
+import { v1RoleHasAvailableModule } from "@/lib/roles/role-path-availability";
 import { isV1RoleContent } from "@/types/role";
 
 export function DashboardHome(): React.ReactElement {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get("role");
+  const { user, ready: authReady } = useAuth();
   const { state, ready } = useOnboardingState();
   const { hasActivity } = useFoundationProgress();
 
@@ -42,6 +46,10 @@ export function DashboardHome(): React.ReactElement {
 
   const displayDomain = rolePage?.domain ?? recommendedRole?.domain;
   const displayLevel = rolePage?.level ?? recommendedRole?.level;
+
+  const isV1Role = rolePage != null && isV1RoleContent(rolePage);
+  const pathHasAvailableModule =
+    roleSlug != null && v1RoleHasAvailableModule(roleSlug);
 
   const learningHref = roleSlug ? `/roles/${roleSlug}` : "/paths";
 
@@ -88,11 +96,22 @@ export function DashboardHome(): React.ReactElement {
                 {displayDomain} · {displayLevel}
               </p>
             ) : null}
-            <Button asChild className="mt-6">
-              <Link href={learningHref}>
-                {rolePage && !isV1RoleContent(rolePage) ? "View role page" : "Start"}
-              </Link>
-            </Button>
+            {isV1Role && !pathHasAvailableModule ? (
+              <div className="mt-6">
+                <RolePathNotReadyMessage
+                  roleName={displayRole}
+                  signedIn={authReady && user != null}
+                />
+              </div>
+            ) : (
+              <Button asChild className="mt-6">
+                <Link href={learningHref}>
+                  {rolePage && !isV1RoleContent(rolePage)
+                    ? "View role page"
+                    : "Start"}
+                </Link>
+              </Button>
+            )}
           </div>
         ) : (
           <div className="mt-4">
