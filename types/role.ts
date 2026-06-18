@@ -119,10 +119,27 @@ export interface ComingSoonRoleContent {
   cabinetPreview: readonly CabinetPreviewItem[];
 }
 
-export type RolePageData = RolePageContent | ComingSoonRoleContent;
+export interface PlaceholderComingSoonRoleContent {
+  slug: string;
+  name: string;
+  domain: string;
+  level: RoleLevel;
+  placeholder: true;
+}
+
+export type RolePageData =
+  | RolePageContent
+  | ComingSoonRoleContent
+  | PlaceholderComingSoonRoleContent;
 
 export function isV1RoleContent(
   role: RolePageData,
 ): role is RolePageContent {
   return "v1" in role && role.v1 === true;
+}
+
+export function isPlaceholderComingSoonRole(
+  role: RolePageData,
+): role is PlaceholderComingSoonRoleContent {
+  return "placeholder" in role && role.placeholder === true;
 }

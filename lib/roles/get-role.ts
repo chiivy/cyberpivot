@@ -1,10 +1,12 @@
 import { COMING_SOON_ROLE_PAGES } from "@/lib/roles/coming-soon-roles";
+import { PLACEHOLDER_COMING_SOON_ROLES } from "@/lib/roles/placeholder-coming-soon-roles";
 import { V1_ROLE_PAGES } from "@/lib/roles/v1-roles";
 import type { RolePageData } from "@/types/role";
 
 const ALL_ROLES: readonly RolePageData[] = [
   ...V1_ROLE_PAGES,
   ...COMING_SOON_ROLE_PAGES,
+  ...PLACEHOLDER_COMING_SOON_ROLES,
 ];
 
 const BY_SLUG = new Map<string, RolePageData>(
