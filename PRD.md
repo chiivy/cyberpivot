@@ -9,6 +9,8 @@
 
 CyberPivot is a free, open source cybersecurity learning platform built for anyone who wants to break into or level up in cybersecurity — regardless of where they are starting from.
 
+Note: the free platform model described here was superseded by the Paid Platform Launch Model decision logged in DECISIONS.md in July 2026. The platform now operates on a paid subscription model with free Foundation modules. Open source status of the codebase remains under review.
+
 Core philosophy: **Start where you are.**
 
 Not everyone begins at zero. Not everyone wants the same role. CyberPivot meets you at your current level, puts you on the right path, and walks you through building real skills using real tools — the same ones used on the job. By the time you are done you have a working home lab, a portfolio of real artifacts, and the knowledge to back it up in an interview.
@@ -38,6 +40,8 @@ This is not a course platform. Not a CTF platform. Not another place to watch vi
 - Free and enterprise. Learn on open source tools, understand the enterprise equivalents.
 - Honest. What certs matter, what jobs pay, what interviews actually look like.
 - Open source. Free forever. Community can contribute modules, paths, topics and tools.
+
+Note: superseded by the Paid Platform Launch Model decision in DECISIONS.md, July 2026.
 
 ---
 

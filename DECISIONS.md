@@ -668,6 +668,8 @@ Examples and scenario details used across modules more broadly should also rotat
 **Reason:** The platform exists to help people get into cybersecurity regardless of financial situation. Paywalling content contradicts that mission.
 **Date:** June 2026
 
+Note: this entry was superseded by the Paid Platform Launch Model decision added July 2026. See that entry for the current business model.
+
 ---
 
 *Add new decisions to this log as they are made. Format: Decision, Reason, Date.*
@@ -951,6 +953,8 @@ The real competitive moat is not the licence. It is content quality, community, 
 **Reason:** Keeping core content free serves the mission of accessible security education. Premium features create revenue without compromising that mission. B2B revenue is the largest opportunity and most aligned with the platform's purpose — connecting skilled people with employers who need them.
 **Date:** June 2026
 
+Note: this entry was superseded by the Paid Platform Launch Model decision added July 2026. See that entry for the current business model.
+
 ---
 
 ## Certification Strategy
@@ -1086,4 +1090,33 @@ The real competitive moat is not the licence. It is content quality, community, 
 
 **Decision:** OT Security Analyst level framing: the Entry to Mid level label is confirmed correct but must be accompanied by explicit honesty on the role page. The Background that fits section and any misconceptions section must state clearly that OT Security Analyst is an entry point into OT security for people transitioning from SOC work, network engineering, IT administration, or control systems engineering, and is rarely a first job in the industry. This is distinct from SOC Analyst which is a genuine career-zero entry point. The onboarding recommendation engine, when it eventually routes to OT, should not recommend OT Security Analyst as a primary recommendation for Entry Point A users.
 **Date:** July 2026
+
+---
+
+## Secondary Fictional Organizations for OT and Specialist Content
+
+**Decision:** Quorivane Bank remains the primary recurring fictional company across the entire platform and is the primary scenario anchor and deliverable target for all modules. However, some OT and specialist modules require scenario contexts that a bank does not realistically have, such as SCADA processes, power generation, or water treatment infrastructure. For these cases, two secondary fictional organizations are approved for use as named examples within specific modules where the scenario genuinely requires them. These organizations are not built out as recurring scenarios and are used for illustrative examples only, with Quorivane always remaining the primary deliverable anchor. The two approved secondary organizations are: Velorin Energy, used for power generation or electrical grid scenarios, and Candrel Water Services, used for water treatment or utility scenarios. Both names were selected following the same verification principles applied to Quorivane Bank, checked for real-world name collisions, Urban Dictionary, and translation issues. Modules using these secondary organizations must clearly return to Quorivane as the primary deliverable context and must not build extended narratives around the secondary organizations.
+**Date:** July 2026
+
+---
+
+## OT Lab Hardware Requirements and Three-Route Access Model
+
+**Decision:** The OT Security Analyst path uses GRFICS as the live process simulation lab and Malcolm as the OT traffic analysis platform. Both are resource-intensive. Three clearly labelled access routes exist for build and analysis modules, and the shared OT lab setup guide must present all three honestly at the top of each relevant module rather than assuming all learners have the same hardware.
+
+Route 1, local lab. Minimum 16GB RAM recommended to run GRFICS and Malcolm simultaneously. Best experience, no ongoing cost. Full build instructions follow this route.
+
+Route 2, cloud VPS. For learners who want the full hands-on experience but do not have sufficient local hardware. A VPS with 8GB RAM on DigitalOcean, Hetzner, or Linode costs approximately $12 to $20 per month and is sufficient for running GRFICS or Malcolm individually. Running both simultaneously may require a 16GB VPS tier. The setup guide must be honest about this cost and recommend spinning up the VPS for the lab duration and tearing it down afterward to control spend. This is explicitly an optional paid route, not the default, and must never be presented as required.
+
+Route 3, log-package only. No hardware constraints, no cost. Learners work from provided PCAP and log files from public datasets including the 4SICS Geek Lounge captures, DigitalBond S4x15, and the automayt/ICS-pcap and Malcolm-PCAP repositories. Covers all analysis and detection skills. The only experience missed is building the environment itself, which matters most in Modules 2 and 4. This route must be complete and fully usable as a standalone path without any live environment.
+
+Every build and analysis module must open with a clearly bounded callout presenting all three routes, then proceed with the local lab as the primary instruction flow, with log-package divergences handled by the single callout box pattern established for the platform.
+**Date:** July 2026
+
+---
+
+## GRFICS Version Selection
+
+**Decision:** The OT lab setup guide will recommend either GRFICSv2 (VirtualBox VMs) or GRFICSv3 (containerized). The specific version to recommend must be verified at setup guide drafting time by checking the current stability and maintenance status of both versions on their respective GitHub repositories. Do not assume either version's stability from memory or training data. This decision is logged as pending and must be resolved before the shared OT lab setup guide is written.
+**Date:** July 2026 (pending verification)
 
