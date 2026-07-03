@@ -193,6 +193,8 @@ This is already present in how Foundation Modules 1 and 2 open ("you join a SOC 
 **Reason:** Critical infrastructure security is a real and growing discipline with significantly different skills from IT security. V1 covers it as a specialist module. Full OT path is V2.
 **Date:** June 2026
 
+Note: this decision was partially superseded by the OT/ICS Security Domain decision added June 2026, which established a full sixth domain with two role paths. The specialist module plan from this entry still applies and is now part of that domain's content plan.
+
 ---
 
 ## Compliance Frameworks Coverage
@@ -365,6 +367,33 @@ Add this note under every salary table on every role page:
 - EU: €90k–€180k+
 - Nigeria (monthly): ₦800k–₦3m+ (fractional, consulting)
 - Note: vCISO is almost always a senior consulting role. Display a note explaining day rates and fractional engagement model rather than standard entry/mid/senior salary bands.
+
+**OT Security Analyst and OT Security Engineer — Verified Salary Data (July 2026):**
+
+Sources: Glassdoor July 2026, ZipRecruiter April 2026, GE Vernova live posting May 2026, Profolio Nigeria salary guide 2026, fibertrain.net Nigeria cybersecurity salary guide 2026.
+
+**OT Security Analyst**
+
+United Kingdom: average £54,472 per year. Typical range £38,306 (25th percentile) to £79,503 (75th percentile). Source: Glassdoor UK, July 2026, based on 1,998 salary submissions.
+
+United States: average $153,260 per year. Typical range $122,893 (25th percentile) to $193,146 (75th percentile). Source: Glassdoor US, June 2026, based on 4 salary submissions (small sample, treat as directional). ZipRecruiter data for OT Cyber Security broadly shows average $132,962 with most roles between $111,000 and $150,000, which is consistent with the Glassdoor analyst-specific figure for less senior positions.
+
+Europe (EU): no direct OT Security Analyst figure was found in verified sources. OT/ICS security commands a specialization premium of 15 to 25% over standard cybersecurity roles per ISC2 2025 Cybersecurity Workforce Study. Applying this to EU cybersecurity analyst averages of €50,000 to €80,000 suggests a range of approximately €58,000 to €100,000. Flag this as inferred, not directly verified, on the role page.
+
+Nigeria: no specific OT Security Analyst monthly figure exists in verified sources, consistent with the finding that OT Security Analyst is rarely a true entry-level role in Nigeria and dedicated OT security salary data is limited. The oil and gas sector, which employs the majority of Nigerian OT/ICS security practitioners, offers the highest cybersecurity salaries in Nigeria. Experienced OT/ICS security specialists in Nigeria earn ₦600,000 to ₦1,500,000 per month, per Profolio Nigeria 2026 and fibertrain.net 2026. Entry-level OT analyst figures in Nigeria are genuinely not available since this is rarely a career-zero starting point. The role page should note this honestly rather than inventing a figure.
+
+**OT Security Engineer**
+
+United Kingdom: £50,100 to £75,100 plus car allowance at early-career level per a verified GE Vernova ICS OT Cyber Security Engineer posting dated May 2026. Senior engineer roles push to £80,000 to £120,000 based on market positioning relative to analyst roles. Treat the senior range as directional pending more direct verification.
+
+United States: average $184,212 per year. Typical range $151,371 (25th percentile) to $227,230 (75th percentile). Source: Glassdoor US, February 2026, based on 2 salary submissions (very small sample, treat as directional). ZipRecruiter data for ICS Cyber Security Engineer shows average $122,890 with most roles between $102,000 and $142,000, suggesting significant variation by seniority and employer type. Use a range of $110,000 to $180,000 for the role page as a defensible, honest span.
+
+Europe (EU): same methodology as OT Security Analyst. No direct verified figure. Apply 15 to 25% specialization premium to EU security engineer averages of €60,000 to €100,000, suggesting approximately €70,000 to €125,000. Flag as inferred on the role page.
+
+Nigeria: OT Security Engineer salary data for Nigeria is genuinely not available in current verified sources. The oil and gas sector equivalent (senior OT/ICS security) falls within the experienced specialist range of ₦900,000 to ₦2,000,000 per month for security engineers in well-funded sectors per fibertrain.net 2026. Flag this as an approximation on the role page, with a note that dedicated OT security engineering roles are uncommon in the Nigerian market outside of international oil companies and telecoms.
+
+Key notes for role page copy:
+Both roles command meaningful premiums over standard IT security roles due to the scarcity of combined IT and OT knowledge. OT/ICS security commands specialization premiums of 15 to 25% per ISC2 research. Defence, energy, utilities, oil and gas, and critical infrastructure sectors pay at the top end of all ranges. Security clearance requirements in some markets (particularly US defence sector) add 10 to 20% to base salary. Remote OT security roles are less common than in IT security due to the hands-on nature of OT environments, though remote advisory and architecture roles exist.
 
 **Date:** June 2026
 
@@ -1027,4 +1056,34 @@ The real competitive moat is not the licence. It is content quality, community, 
 
 **Decision:** A dedicated Paths overview page was built at /paths (moved from its original /roles route, which now redirects to /paths). This page shows all roles grouped by domain with domain descriptions, role levels, and Ready/Coming soon status. Individual role pages remain at /roles/[slug] as before. The naming distinction is deliberate: "path" refers to the structured learning journey CyberPivot provides toward a role, while "role" refers to the real-world job title the path leads toward. The top-level overview uses "Paths" because it lists learning journeys; individual destination pages use "roles" because they describe specific job roles.
 **Date:** June 2026
+
+---
+
+## Paid Platform Launch Model
+
+**Decision:** CyberPivot will launch as a paid platform, not a free platform. The core access model is a subscription, monthly or annual with annual at a discount, covering access to role path content and the cabinet artifact system. Foundation modules remain free and ungated as a genuine taste of the platform before payment is required. Role path content sits behind the subscription paywall. A short free trial period, likely seven days or similar, will be offered at launch with card details required upfront rather than after the trial, consistent with standard subscription conversion practice. The open source status of the codebase is under review, the code may remain open source while the content itself stays proprietary and private, since the content is the core product. This decision supersedes all prior references to CyberPivot as a free platform with B2B and premium AI tool revenue.
+**Reason:** Building and maintaining high-quality, verified, hands-on cybersecurity content at this depth requires sustainable revenue. Charging from launch rather than transitioning from free to paid avoids the well-documented difficulty of converting a user base accustomed to free access. The platform's differentiation, real job-role content with verified labs and portfolio artifacts, justifies a subscription model.
+**Date:** July 2026
+
+---
+
+## Onboarding OT/ICS Routing Gap
+
+**Decision:** Known gap: onboarding cannot currently route any user to the Operational Technology and Industrial Control Systems Security domain. Q3's five environment options (cloud, code, soc, business, attack) do not include industrial systems or physical infrastructure. This is acceptable while OT roles remain at placeholder stage, but must be addressed before OT role paths go live. The eventual fix is a sixth Q3 option, suggested phrasing: 'Around physical systems, plants, and critical infrastructure.' This is logged here so it is not forgotten when OT content development begins.
+**Date:** July 2026
+
+---
+
+## NERC CIP Cross-Path Specialist Module
+
+**Decision:** NERC CIP compliance will not become a third OT role path. Instead it will be treated as a cross-path specialist module titled "NERC CIP in Practice" that lives inside both the GRC Analyst path and the OT Security domain, following the existing pattern of modules that serve multiple paths.
+**Reason:** NERC CIP compliance work is genuinely GRC work with an OT flavor, it typically reports into compliance or legal teams rather than SOC or engineering teams, and real postings for NERC CIP Compliance Analyst sit inside regulatory compliance functions. Creating a separate role path would misrepresent where this work actually sits in organizations. Additionally, NERC CIP is a North American standard only, making it less appropriate as a standalone role path on a global platform. ISA/IEC 62443 is the global equivalent and carries more weight in the core OT module content. NERC CIP will be framed as a regional regulatory layer, consistent with how CBN and NDPR are treated as regional layers in the GRC Analyst path. This decision means the OT domain remains a two-role domain: OT Security Analyst and OT Security Engineer.
+**Date:** July 2026
+
+---
+
+## OT Security Analyst Level Framing
+
+**Decision:** OT Security Analyst level framing: the Entry to Mid level label is confirmed correct but must be accompanied by explicit honesty on the role page. The Background that fits section and any misconceptions section must state clearly that OT Security Analyst is an entry point into OT security for people transitioning from SOC work, network engineering, IT administration, or control systems engineering, and is rarely a first job in the industry. This is distinct from SOC Analyst which is a genuine career-zero entry point. The onboarding recommendation engine, when it eventually routes to OT, should not recommend OT Security Analyst as a primary recommendation for Entry Point A users.
+**Date:** July 2026
 

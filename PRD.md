@@ -391,7 +391,9 @@ Filterable reference page. Select by role, category, or free vs enterprise. Each
 - How to get started — trial link, free download, or setup guide
 - Which CyberPivot modules use this tool
 
-Categories: SIEM, EDR/XDR, Vulnerability Management, Penetration Testing, Web Application Testing, Network Security, Cloud Security, Identity and PAM, GRC and Compliance, Forensics and IR, Threat Intelligence, Email Security, AppSec and DevSecOps, AI Security.
+Categories: SIEM, EDR/XDR, Vulnerability Management, Penetration Testing, Web Application Testing, Network Security, Cloud Security, Identity and PAM, GRC and Compliance, Forensics and IR, Threat Intelligence, Email Security, AppSec and DevSecOps, AI Security, OT/ICS Security.
+
+Tools in the OT/ICS Security category include Claroty, Nozomi Networks, Dragos, and similar industrial security platforms.
 
 ---
 
@@ -493,6 +495,9 @@ Every module follows this structure:
 - RAG system security assessment — retrieval-augmented generation pipeline assessed for data poisoning, prompt leakage and unauthorised data access
 - AI governance policy — organisational policy for responsible AI use, risk assessment process for new AI tools, EU AI Act compliance considerations
 - Agentic AI security review — multi-agent system assessed for tool misuse, excessive permissions and trust boundary violations
+
+### OT Security Analyst and OT Security Engineer (Coming Soon — cabinet to be defined)
+OT Security Analyst and OT Security Engineer cabinet artifacts: TO BE DEFINED during OT content development. Will follow the same structure as other role cabinet artifacts once module content is planned.
 
 ---
 

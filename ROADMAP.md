@@ -149,6 +149,13 @@ This is the public roadmap for CyberPivot. It shows what is built, what is in pr
 - 💡 GRC — Compliance Analyst
 - 💡 GRC — Risk Analyst
 - 💡 GRC — Security Auditor
+- 💡 DFIR Analyst (Defensive Security)
+- 💡 Security Engineer (Cloud and Infrastructure Security)
+- 💡 Malware Analyst (Offensive Security)
+- 💡 Privacy Analyst (Governance, Risk and Compliance)
+- 💡 AI Red Teamer (Offensive Security)
+- 💡 OT Security Analyst (Operational Technology and Industrial Control Systems Security)
+- 💡 OT Security Engineer (Operational Technology and Industrial Control Systems Security)
 
 ### Specialist Modules
 - 💡 M365 Security
