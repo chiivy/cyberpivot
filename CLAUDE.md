@@ -57,7 +57,7 @@ cyberpivot/
 │   ├── modules/                  # All role modules — shared building blocks
 │   │   ├── networking-fundamentals/
 │   │   ├── linux-fundamentals/
-│   │   ├── windows-active-directory/
+│   │   ├── windows-and-active-directory/
 │   │   ├── identity-access-management/
 │   │   ├── cloud-fundamentals/
 │   │   ├── log-analysis/

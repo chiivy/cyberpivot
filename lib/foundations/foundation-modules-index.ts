@@ -37,7 +37,7 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
     readingTime: "50 min",
     labTime: "45-60 min",
     status: "available",
-    nextModule: "windows-active-directory",
+    nextModule: "windows-and-active-directory",
     cabinetArtifact: {
       name: "Linux Investigation Log",
       description:
@@ -46,7 +46,7 @@ export const FOUNDATION_MODULES: readonly FoundationModuleIndexEntry[] = [
   },
   {
     title: "Windows and Active Directory",
-    slug: "windows-active-directory",
+    slug: "windows-and-active-directory",
     module: 3,
     level: "Foundation",
     description:
