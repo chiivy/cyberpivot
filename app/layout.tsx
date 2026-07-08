@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | CyberPivot",
   },
   description:
-    "Free, open source cybersecurity learning — start where you are, build real skills and a real portfolio.",
+    "Cybersecurity learning built around real skills and a real portfolio — start where you are, go as deep as the job requires.",
 };
 
 export default function RootLayout({

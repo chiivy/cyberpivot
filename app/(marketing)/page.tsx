@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = {
   title: "CyberPivot — Start your cybersecurity career",
   description:
-    "Free, open source cybersecurity learning platform. Real tools, real labs, real portfolio. Find your path.",
+    "Cybersecurity learning built around real tools, real labs, and a real portfolio. Find your path.",
 };
 
 export default function HomePage(): React.ReactElement {
@@ -171,11 +171,13 @@ export default function HomePage(): React.ReactElement {
       >
         <div className="mx-auto max-w-6xl">
           <SectionHeading id="opensource-heading">
-            Free. Open source. No catch.
+            Built by practitioners. For practitioners.
           </SectionHeading>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-zinc-400">
-            CyberPivot is free forever. Self-host it if you want. Content and
-            code improve through community pull requests. MIT licensed.
+            CyberPivot was built by a working cybersecurity professional who got
+            tired of courses that stop at certification prep. Foundation modules
+            are free to start. Role paths are available on subscription.
+            Everything is built around what the job actually requires.
           </p>
           <dl className="mt-10 grid grid-cols-3 gap-6 py-10">
             <div>

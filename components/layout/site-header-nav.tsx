@@ -14,6 +14,7 @@ const PUBLIC_NAV_LINKS = [
     match: (path: string) => path.startsWith("/foundations"),
   },
   { href: "/paths", label: "Paths", match: (path: string) => path === "/paths" },
+  { href: "/about", label: "About", match: (path: string) => path === "/about" },
 ] as const;
 
 const SIGNED_IN_NAV_LINKS = [

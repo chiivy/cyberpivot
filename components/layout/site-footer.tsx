@@ -48,7 +48,7 @@ export function SiteFooter({
               License
             </Link>
           </nav>
-          <p className="text-sm text-zinc-500">Free and open source</p>
+          <p className="text-sm text-zinc-500">Start with Foundation — free</p>
         </div>
       </footer>
     );
@@ -57,7 +57,7 @@ export function SiteFooter({
   return (
     <footer className="border-t border-border">
       <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-muted-foreground">
-        <p>CyberPivot — free, open source cybersecurity learning.</p>
+        <p>CyberPivot — cybersecurity learning built around real skills.</p>
       </div>
     </footer>
   );
