@@ -81,7 +81,7 @@ export const securityDomains: readonly SecurityDomain[] = [
         v1: false,
       },
       { name: "Penetration Tester", slug: "penetration-tester", v1: true },
-      { name: "Red Teamer", slug: "red-teamer", v1: false },
+      { name: "Red Teamer", slug: "red-teamer", v1: true },
       { name: "Bug Bounty Hunter", slug: "bug-bounty-hunter", v1: false },
       { name: "Malware Analyst", slug: "malware-analyst", v1: false },
       { name: "AI Red Teamer", slug: "ai-red-teamer", v1: false },
@@ -94,7 +94,7 @@ export const securityDomains: readonly SecurityDomain[] = [
     roles: [
       { name: "AppSec Engineer", slug: "appsec-engineer", v1: true },
       { name: "API Security Engineer", slug: "api-security-engineer", v1: true },
-      { name: "DevSecOps Engineer", slug: "devsecops-engineer", v1: false },
+      { name: "DevSecOps Engineer", slug: "devsecops-engineer", v1: true },
       { name: "AI Security Engineer", slug: "ai-security-engineer", v1: false },
     ],
   },
@@ -108,7 +108,7 @@ export const securityDomains: readonly SecurityDomain[] = [
         slug: "azure-security-engineer",
         v1: true,
       },
-      { name: "AWS Security Engineer", slug: "aws-security-engineer", v1: false },
+      { name: "AWS Security Engineer", slug: "aws-security-engineer", v1: true },
       { name: "GCP Security Engineer", slug: "gcp-security-engineer", v1: false },
       { name: "Network Security Engineer", slug: "network-security-engineer", v1: false },
       { name: "Identity Security Engineer", slug: "identity-security-engineer", v1: false },
@@ -122,7 +122,7 @@ export const securityDomains: readonly SecurityDomain[] = [
     description: "Frameworks, risk registers, policies, and audit evidence.",
     roles: [
       { name: "GRC Analyst", slug: "grc-analyst", v1: true },
-      { name: "Compliance Analyst", slug: "compliance-analyst", v1: false },
+      { name: "Compliance Analyst", slug: "compliance-analyst", v1: true },
       { name: "Risk Analyst", slug: "risk-analyst", v1: false },
       { name: "Security Auditor", slug: "security-auditor", v1: false },
       { name: "vCISO", slug: "vciso", v1: false },
@@ -135,7 +135,7 @@ export const securityDomains: readonly SecurityDomain[] = [
     description:
       "The people who secure the industrial systems and physical infrastructure behind power, water, manufacturing, and other critical services.",
     roles: [
-      { name: "OT Security Analyst", slug: "ot-security-analyst", v1: false },
+      { name: "OT Security Analyst", slug: "ot-security-analyst", v1: true },
       { name: "OT Security Engineer", slug: "ot-security-engineer", v1: false },
     ],
   },

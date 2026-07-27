@@ -6,6 +6,8 @@ import type {
   ModuleCompletionRow,
 } from "@/types/cabinet";
 import { FOUNDATION_MODULES } from "@/lib/foundations/foundation-modules-index";
+import { OT_SECURITY_MODULES } from "@/lib/roles/ot-security/ot-modules-index";
+import { OT_SECURITY_CONTENT_AREA } from "@/types/role-path";
 
 export function getFoundationCabinetDefinitions(): CabinetModuleDefinition[] {
   return FOUNDATION_MODULES.map((module) => ({
@@ -17,6 +19,25 @@ export function getFoundationCabinetDefinitions(): CabinetModuleDefinition[] {
     artifactDescription: module.cabinetArtifact.description,
     status: module.status,
   }));
+}
+
+export function getOtSecurityCabinetDefinitions(): CabinetModuleDefinition[] {
+  return OT_SECURITY_MODULES.map((module) => ({
+    contentArea: OT_SECURITY_CONTENT_AREA,
+    moduleSlug: module.slug,
+    moduleTitle: module.title,
+    moduleNumber: module.module,
+    artifactName: module.cabinetArtifact.name,
+    artifactDescription: module.cabinetArtifact.description,
+    status: module.status,
+  }));
+}
+
+export function getAllCabinetDefinitions(): CabinetModuleDefinition[] {
+  return [
+    ...getFoundationCabinetDefinitions(),
+    ...getOtSecurityCabinetDefinitions(),
+  ];
 }
 
 export function buildCabinetModuleCards(input: {
@@ -71,6 +92,10 @@ export function groupCabinetCardsByContentArea(
 export function contentAreaLabel(contentArea: string): string {
   if (contentArea === CONTENT_AREA_FOUNDATION) {
     return "Foundation";
+  }
+
+  if (contentArea === "ot-security-analyst") {
+    return "OT Security Analyst";
   }
 
   return contentArea

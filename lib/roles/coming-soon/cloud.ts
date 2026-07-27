@@ -2,7 +2,6 @@ import type { ComingSoonRoleContent } from "@/types/role";
 
 import { CABINET_PREVIEW_BY_SLUG } from "@/lib/roles/coming-soon-cabinet";
 import {
-  SALARY_AWS,
   SALARY_EMAIL_SECURITY,
   SALARY_GCP,
   SALARY_IDENTITY,
@@ -10,76 +9,6 @@ import {
 } from "@/lib/roles/coming-soon-salaries";
 
 export const CLOUD_COMING_SOON_ROLES: readonly ComingSoonRoleContent[] = [
-  {
-    slug: "aws-security-engineer",
-    name: "AWS Security Engineer",
-    domain: "Cloud and Infrastructure Security",
-    domainId: "cloud-infrastructure-security",
-    level: "Mid",
-    v1: false,
-    dayToDay:
-      "You secure AWS accounts day to day. GuardDuty findings, IAM reviews, Security Hub scores, and misconfigured S3 buckets fill most of your queue. You also write CloudTrail queries, tune Config rules, and help application teams deploy without opening the network to the internet.",
-    differentiator:
-      "Azure security engineers live in Entra ID and Sentinel. You live in IAM, GuardDuty, and the AWS shared responsibility model. Network security engineers own firewalls and segmentation. You own cloud-native controls and account hygiene.",
-    background:
-      "Cloud administration or sysadmin background with AWS exposure is the usual path. You need IAM fluency, basic networking, and comfort reading CloudTrail. AWS certifications help but labs matter more at interview.",
-    salaryDisplay: { type: "table", salaries: SALARY_AWS },
-    industries: [
-      "Technology and SaaS",
-      "Fintech",
-      "Retail and e-commerce",
-      "Consultancies",
-      "Startups on AWS-native stacks",
-    ],
-    toolsFree: [
-      "Prowler",
-      "ScoutSuite",
-      "CloudTrail Lake queries",
-      "Steampipe",
-      "aws-nuke (lab only)",
-    ],
-    toolsEnterprise: [
-      "AWS Security Hub",
-      "GuardDuty and Detective",
-      "Wiz or Prisma Cloud",
-      "Splunk or Datadog for CloudTrail",
-      "Terraform with Checkov",
-    ],
-    certs: [
-      {
-        name: "AWS Certified Security – Specialty",
-        note: "The hire signal for dedicated AWS security roles. Covers IAM, logging, and incident response in AWS.",
-      },
-      {
-        name: "AWS Solutions Architect Associate",
-        note: "Foundation cert. Shows you understand the services you are securing, not just the security tools.",
-      },
-      {
-        name: "CCSP",
-        note: "Vendor-neutral cloud security. Useful for roles spanning AWS and hybrid environments.",
-      },
-    ],
-    careerProgression: [
-      "Senior AWS security engineer or cloud security architect",
-      "Cloud incident responder",
-      "Multi-cloud security lead",
-    ],
-    relatedRoles: [
-      {
-        name: "Azure Security Engineer",
-        note: "Same job, different cloud. Many engineers learn one deeply then pick up the second.",
-      },
-      {
-        name: "GCP Security Engineer",
-        note: "Google Cloud equivalent with SCC and Chronicle in the mix.",
-      },
-      {
-        name: "DevSecOps Engineer",
-        note: "When your AWS work centres on pipelines and IaC rather than account operations.",
-      },
-    ],
-    cabinetPreview: CABINET_PREVIEW_BY_SLUG["aws-security-engineer"],
-  },
   {
     slug: "gcp-security-engineer",
     name: "GCP Security Engineer",

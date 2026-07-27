@@ -1,0 +1,179 @@
+---
+title: "What OT Security Actually Is, and Why IT Playbooks Break"
+slug: "module-01-what-ot-security-is"
+module: 1
+level: "OT Security Analyst"
+roleSlug: "ot-security-analyst"
+pathSlug: "ot-security"
+description: "Understand why OT security is not IT security applied to building systems, read industrial Modbus traffic in Wireshark, and produce a one-page brief your manager can act on."
+readingTime: "50 min"
+labTime: "45 min"
+tools:
+  - name: "Wireshark"
+    type: "free"
+    url: "https://wireshark.org"
+  - name: "Nozomi Networks"
+    type: "enterprise"
+  - name: "Claroty"
+    type: "enterprise"
+  - name: "Dragos"
+    type: "enterprise"
+cabinetArtifact:
+  name: "OT versus IT decision brief"
+  description: "One-page brief for Quorivane's IT security manager explaining why the IT incident playbook cannot be applied unchanged to building systems"
+  unlocksOn: "completion"
+nextModule: "module-02-purdue-model-and-network-architecture"
+---
+
+## Where you are
+
+You have just joined the security team at Delvara Energy, a fictional oil and gas company that operates pipelines and a refinery, as an OT security analyst. You already know what an energy company looks like from the IT side, the servers, the laptops, the customer and billing systems, the SOC watching for phishing and malware. That is not the job you are here to do.
+
+Delvara moves crude and refined product through pipelines and processes it at a refinery, and running both of those safely depends on a second, quieter network you have probably never thought hard about. The flow controllers and pressure sensors that keep a pipeline within safe operating limits. The process control systems and safety instrumented systems that run the refinery's distillation units, reactors, and separation equipment. The pump stations that keep product moving. These are operational technology, or OT. They are computers too, but they control physical things, and when they go wrong the consequence is not a slow database, it is an overpressure event, an uncontrolled release, or a process upset that can hurt people and the environment.
+
+Your manager has handed you a first task that sounds simple and is not. She wants a one-page brief explaining, in plain terms, why Delvara cannot just point its existing IT security process at the pipeline and refinery control systems and call it done. To write that brief honestly, you first need to understand what makes OT different. That is what this module is for.
+
+By the end of this module you will be able to:
+
+- Explain why the priorities that drive IT security get reordered in OT, and what that means in practice.
+- Describe why you cannot simply patch, reboot, or scan an OT device the way you would a server.
+- Recognise industrial protocol traffic when you see it, starting with Modbus.
+- Produce a short, credible brief that a non-specialist manager can act on.
+
+---
+
+## Section 1: The scenario
+
+On 7 May 2021, the Colonial Pipeline company in the United States learned it had been hit by ransomware. The DarkSide group had gotten into the company's IT systems, the billing and business side, using a stolen VPN password on an account that had no multi-factor authentication. The ransomware encrypted data on those IT systems.
+
+Here is the part worth sitting with. The pipeline itself, the operational side that actually moves fuel, was not confirmed to have been touched. Colonial stated the attack affected only IT. And yet the company shut the entire pipeline down for six days, roughly 45 percent of the fuel supply to the US East Coast, triggering panic buying and a national state of emergency.
+
+Why shut down the physical pipeline over an attack on the billing systems? Because Colonial could not be sure the two were properly separated, and in OT the cost of being wrong is measured in physical damage and safety, not in lost records. Faced with uncertainty about whether the attacker could reach the control systems, shutting down was the safe choice. That single decision, shutting down operations because you cannot prove the attacker did not reach them, is the entire mindset of OT security in one move.
+
+Now bring it home, because at Delvara this is not a distant hypothetical, it is the exact shape of business you are in. Ransomware lands on the corporate IT network. Somewhere on that network, poorly separated, sits the gateway to the SCADA system that monitors and controls pipeline flow and pressure, or to the refinery's process control network. You are the analyst who has to answer one question fast: can this attacker reach the flow controllers, the pressure sensors, the pumps that keep product moving safely? If you cannot answer with confidence, someone senior has to decide whether to start shutting pipeline segments or process units down to be safe, and that decision depends on the work you and your team did long before today. That is the job. This module is where you start being able to do it.
+
+Delvara's own footprint already sits about as close to physical consequence as OT gets, pipeline pressure and flow directly, and refinery process equipment handling hazardous hydrocarbons under heat and pressure. Other sectors carry the same discipline in different physical form. At a power generation operator, a manipulated setpoint on a turbine governor is a grid stability problem. At a water treatment facility, a manipulated chemical dosing controller changes what comes out of people's taps. In telecoms, diesel generators at remote tower sites are increasingly monitored and controlled over IP networks, and an attacker who can reach that controller can drain a generator dry during a power outage, taking down the cell site at the worst possible moment. The equipment differs, the discipline does not: understand what the physical thing on the other end actually does before you can assess what compromising it means.
+
+Two more incidents are worth knowing because they show the far end of the risk. In 2010, Stuxnet damaged centrifuges at an Iranian nuclear enrichment site by quietly manipulating the controllers that ran them, the first widely known case of malware causing real physical destruction. In 2017, malware known as TRITON targeted the safety instrumented systems at a petrochemical plant in Saudi Arabia, specifically Schneider Electric Triconex controllers. Safety instrumented systems are the last automated line of defence that shuts a process down before it becomes dangerous, exactly the kind of system that protects Delvara's own refinery units. TRITON was built to interfere with exactly that. Nobody was hurt, but the intent was to disable the safety net around a hazardous process. These are rare. You will spend far more of your career on ransomware and IT-origin incidents like Colonial than on bespoke OT malware. But they define why the field takes physical consequence so seriously, and TRITON in particular should sit uncomfortably close to home given the kind of facility you now work for.
+
+---
+
+## Section 2: The concept, why the IT playbook does not transfer
+
+You have probably met the CIA triad in IT security: Confidentiality, Integrity, Availability, usually in that order of emphasis. Protect the data first. Keep secrets secret.
+
+In OT the order flips. What matters most is that the physical process keeps running safely and correctly. Practitioners often reframe the priorities as safety first, then availability, then integrity, with confidentiality last. Nobody is trying to keep a pipeline's flow rate a secret. Everybody cares that the pipeline keeps running within safe limits and that the pressure reading the operator sees is the real number. Once you internalise that reordering, most of the strange-looking rules of OT start to make sense.
+
+Here is what that reordering means on the ground.
+
+**You often cannot patch.** In IT, patching promptly is basic hygiene. In OT, the controller running a pump station or a distillation unit may need to run without interruption for months or years. Taking it offline to patch can mean interrupting product flow or a refinery process. Many OT devices also run old software that the vendor no longer updates, or that only runs on an operating system long past end of life, because the physical equipment has a twenty-year lifespan and the controller was never designed to be replaced on an IT schedule. A five-year-old unpatched controller in OT is not automatically negligence, it is often the normal state of a working pipeline or refinery. Your job is frequently to protect a device you are not allowed to fix, which is why so much of OT security is about controlling what can reach the device rather than hardening the device itself.
+
+**You often cannot reboot on demand.** Rebooting a misbehaving server is routine in IT. Rebooting a controller mid-process can interrupt something physical, like a pump sequence or a reactor's control loop. You do not get to treat "turn it off and on again" as a free action.
+
+**You do not scan freely.** A standard IT move is to run an active vulnerability scan across the network. In OT, some devices are so fragile that the traffic from an ordinary scan can knock them offline or make them behave unpredictably. This is why OT monitoring leans heavily on passive techniques, watching a copy of the traffic rather than actively probing devices. You will build exactly that kind of passive monitoring later in this path.
+
+The consequences are physical. An IT incident usually costs data, money, and time. An OT incident can do that and also cause a pipeline overpressure event, an uncontrolled product release, a refinery process upset, or in the worst case harm people and the environment. When you assess an OT alert, you are not just asking how bad it is for the data. You are asking what it could do to the physical thing on the other end.
+
+**The traffic looks different.** IT networks are full of web, email, file sharing, and the like. OT networks carry industrial protocols with names like Modbus, BACnet, DNP3, and S7comm. Many were designed decades ago for isolated networks where everyone on the wire was trusted, so they were built with no authentication and no encryption. A device receiving a command over these protocols typically has no way to check who sent it or whether it should be trusted. It just does what it is told. That design choice, trusting anything on the network, is the single most important thing to understand about why OT is exposed, and you are about to see it with your own eyes.
+
+One quick note on layout so the rest of the path makes sense. OT environments are usually thought of as a stack of levels, from the physical equipment at the bottom up to the business IT at the top, with the dangerous ground being the places where the OT levels touch the IT levels. That layered model has a name, the Purdue model, and it gets a full treatment in Module 2. You do not need it in detail here. You only need the idea that OT and IT are supposed to be separated into zones, and that attacks like Colonial happen at the seam between them.
+
+---
+
+## Section 3: Hands-on, seeing industrial traffic for the first time
+
+You are going to open a real capture of industrial network traffic and find commands being sent to industrial devices in plain, unauthenticated view. The goal is not mastery. It is recognition. After this you will never mistake OT traffic for ordinary IT traffic again.
+
+> **Which route are you taking?**
+> This module is analysis only. You are reading a capture file, not building anything, so every route below reaches the same result and none of them needs special hardware.
+>
+> **Route 1, local:** You already have Wireshark installed on your own machine. Use it. Nothing else is required.
+>
+> **Route 2, cloud:** Not needed for this module. There is nothing here heavy enough to justify a paid VPS. Save that for the build modules later in the path.
+>
+> **Route 3, no live environment needed:** This is the default and it is complete. Download Wireshark, which is free, and the capture file linked in Step 1 below. That is everything you need.
+>
+> Whichever route you are on, from here the instructions are identical. Back to the main flow.
+
+### Step 1: Get the tools and the file
+
+Install Wireshark from the official site at wireshark.org if you do not already have it. Wireshark is free and reads capture files without you needing any live network.
+
+Download the capture file from the automayt/ICS-pcap repository on GitHub. The file is called MODBUS-TestDataPart1.pcap and it is at this path in the repository: MODBUS/MODBUS-TestDataPart1/MODBUS-TestDataPart1.pcap. The direct page is at https://github.com/automayt/ICS-pcap/blob/master/MODBUS/MODBUS-TestDataPart1/MODBUS-TestDataPart1.pcap.
+
+One important note on downloading. This repository uses Git LFS to store the actual capture files. If you click the raw file link or use curl or wget against the raw URL, you will get a small 129-byte text pointer, not the real capture, and Wireshark will not be able to open it. Use the Download button on the GitHub page itself instead, which resolves the LFS file correctly. Alternatively, if you have Git LFS installed, you can clone the repository with git lfs clone https://github.com/automayt/ICS-pcap.git and navigate to the file from there. The file is approximately 10KB, trivial to download on any connection once you have the right link.
+
+The file contains real Modbus traffic originally from DigitalBond's Modbus test dataset, which is a well-known public resource in the OT security field. It is a short capture, twelve packets, which makes it ideal for a first look: you can examine every single packet individually.
+
+### Step 2: Filter for Modbus
+
+In the Wireshark filter bar at the top, type the following and press enter:
+
+```
+modbus
+```
+
+Wireshark hides everything except Modbus traffic. If you prefer to filter by the network port instead, `tcp.port == 502` does almost the same job, because Modbus over TCP uses port 502 by convention. Port 502 is the registered standard port for Modbus, so seeing traffic on it is itself a strong hint that you are looking at industrial equipment.
+
+### Step 3: Read a single request
+
+Click any Modbus packet. In the middle pane, expand the Modbus section. You are looking for a field called the **function code**. This is the heart of the protocol. It tells the receiving device what action to take.
+
+Focus on these four function codes, which are the ones present in this capture:
+
+- `1` Read Coils
+- `3` Read Holding Registers
+- `5` Write Single Coil
+- `6` Write Single Register
+
+For orientation, a coil is a single on-or-off value, think of it as a switch that can be read or set. A register is a sixteen-bit number that can hold a measurement, a setpoint, or a configuration value. Reading tells you the state of the process. Writing changes it.
+
+You may also see function codes 8 and 17 in the capture. These are Diagnostics and Report Slave ID, which are housekeeping messages rather than process commands. You can note them if you spot them, but they are not the focus here.
+
+### Step 4: Find the security story
+
+Notice what is not there. There is no login. No password. No certificate. No encryption. The function code, the target address, and the value are all sitting in the packet in the clear. Anyone who can put traffic on this network can read these messages and, just as easily, send their own.
+
+Now sort or scan for the write function codes, `5` and `6`. A read is a device being asked for information. A write is a device being told to change something physical, flip an output, move a setpoint, alter a configuration. In a real investigation, an unexpected write is the kind of thing that makes you sit up. Ask yourself as you look: if you were watching Delvara's pipeline SCADA traffic and saw an unexpected write to a device controlling a pressure setpoint or a flow control valve, coming from a machine that has no business sending it, would you be able to spot it? That recognition is the skill this whole path is building.
+
+### Step 5: Write down what you saw
+
+Before you move on, note three things from the capture: one read function code you found, one write function code you found, and one observation about what was missing from the traffic that an IT protocol like HTTPS would have had. You will reuse these observations in your brief.
+
+
+
+---
+
+## Section 4: The enterprise equivalent
+
+Wireshark shows you one capture at a time, by hand. That is perfect for learning and far too slow for watching Delvara's pipeline and refinery operations around the clock. On the job, OT environments are monitored by dedicated passive-monitoring platforms that watch a mirrored copy of the network traffic continuously, identify the industrial devices talking on it, understand protocols like Modbus and DNP3 automatically, and raise alerts when something abnormal happens, all without sending a single probe that could disturb a fragile device.
+
+The three names you will hear most in OT are [Nozomi Networks](https://www.nozominetworks.com/resources), [Claroty](https://claroty.com/resources), and [Dragos](https://www.dragos.com/resources). Each provides passive OT and ICS monitoring, asset discovery, and threat detection built specifically for industrial environments, rather than IT tools with OT labels bolted on. You will not install these. They are commercial platforms aimed at large operators, and Delvara would buy one rather than build it. What matters at this stage is that you know they exist, that they do passively and at scale what you just did by hand, and that the underlying skill, reading industrial traffic and knowing a dangerous command when you see it, is the same whether the tool costs nothing or costs a fortune.
+
+If you want to understand what these platforms claim to do and how they describe their own capabilities, read the official product documentation from each vendor's own site. Treat vendor material as marketing as much as fact, and compare the claims against what you now know about how OT traffic actually works.
+
+---
+
+## Section 5: Your cabinet artifact
+
+Time to produce the brief your manager asked for. This is the artifact you keep. It is a one-page document, written for Delvara's IT security manager, a smart person who knows IT security well and OT barely at all. Your job is to explain, without drama and without jargon, why the existing IT incident process cannot be pointed straight at the pipeline and refinery control systems.
+
+Keep it to a single page. Managers read one page. Write it in plain language. Use what you saw in the capture as concrete evidence rather than speaking in generalities.
+
+A structure that works:
+
+1. **One-line summary.** State the point up front. For example, that Delvara's pipeline and refinery control systems need a security approach adapted for OT, and applying the IT playbook unchanged introduces real risk.
+2. **What the OT environment is.** Two or three sentences naming Delvara's OT footprint in concrete terms: pipeline SCADA covering flow controllers, pressure sensors, and pump stations, and refinery process control covering the distributed control system and safety instrumented systems on the process units.
+3. **The three differences that matter most.** Pick the three from this module that best make the case to a manager. Strong candidates are the reordered priorities of safety and availability over confidentiality, the reality that these devices often cannot be patched or rebooted on demand, and the fact that the traffic itself is unauthenticated and unencrypted, which you can now state from first-hand observation.
+4. **The concrete consequence.** One short, real example. The Colonial Pipeline shutdown is the natural anchor here, since Delvara is in the same business: an attack that stayed on IT still forced a shutdown of physical operations because the separation could not be trusted. Tie it directly to Delvara's own seam between corporate IT and the pipeline SCADA or refinery process control network.
+5. **What you are asking for.** Close with the practical ask, that OT be treated as its own domain with monitoring and response designed for it, which is what the rest of your work will build.
+
+Save this brief. It is the first entry in your cabinet, and it is the kind of clear, credible, one-page communication that OT security work constantly demands.
+
+---
+
+## What you can now do
+
+You can explain why OT security is not just IT security applied to a pipeline or a refinery. You can describe why patching, rebooting, and scanning are not free actions in OT. You have seen unauthenticated industrial commands with your own eyes and you know why that design makes OT exposed. And you have written a brief that turns all of that into something a manager can act on.
+
+If you want the next piece, Module 2 takes the idea of separating OT from IT and turns it into real network architecture, the Purdue model and the zones and conduits that decide whether an attack like Colonial can cross from the billing systems to the pipeline flow controllers. You do not need to have done this module to start it, but they sit naturally together.

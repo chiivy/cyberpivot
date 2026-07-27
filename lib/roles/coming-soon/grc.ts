@@ -2,83 +2,12 @@ import type { ComingSoonRoleContent } from "@/types/role";
 
 import { CABINET_PREVIEW_BY_SLUG } from "@/lib/roles/coming-soon-cabinet";
 import {
-  SALARY_COMPLIANCE,
   SALARY_RISK,
   SALARY_SECURITY_AUDITOR,
   VCISO_SALARY_NOTE,
 } from "@/lib/roles/coming-soon-salaries";
 
 export const GRC_COMING_SOON_ROLES: readonly ComingSoonRoleContent[] = [
-  {
-    slug: "compliance-analyst",
-    name: "Compliance Analyst",
-    domain: "Governance, Risk and Compliance",
-    domainId: "governance-risk-compliance",
-    level: "Entry to Mid",
-    v1: false,
-    dayToDay:
-      "You map controls to frameworks and chase evidence. Most weeks are spreadsheets, policy reviews, and meetings with teams who forgot to upload their screenshots. You track gaps, update registers, and prepare materials for internal or external audits. Detail work. Steady deadlines.",
-    differentiator:
-      "GRC analysts often span governance, risk, and compliance together. You focus on whether the organisation meets specific regulatory and contractual obligations. Risk analysts quantify threats. You verify controls against requirements.",
-    background:
-      "Business, law, or IT background all work. You need strong writing, attention to detail, and patience for documentation. Technical depth helps but you do not need to run exploits. Foundation modules in risk and policy are a good start.",
-    salaryDisplay: { type: "table", salaries: SALARY_COMPLIANCE },
-    industries: [
-      "Financial services",
-      "Healthcare",
-      "SaaS and technology",
-      "Retail with card data",
-      "Government contractors",
-    ],
-    toolsFree: [
-      "OpenSCAP",
-      "Eramba (community)",
-      "Spreadsheets and shared drives",
-      "NIST CSF publications",
-      "GDPR and PCI public guidance",
-    ],
-    toolsEnterprise: [
-      "ServiceNow GRC",
-      "Archer or MetricStream",
-      "Vanta or Drata for SaaS compliance",
-      "OneTrust",
-      "LogicGate",
-    ],
-    certs: [
-      {
-        name: "CISA",
-        note: "Audit and control focus. Well recognised for compliance-heavy roles.",
-      },
-      {
-        name: "CRISC",
-        note: "Risk and control alignment. Useful when compliance work includes risk register input.",
-      },
-      {
-        name: "ISO 27001 Lead Implementer",
-        note: "Practical framework cert. Common in UK and EU compliance hiring.",
-      },
-    ],
-    careerProgression: [
-      "Senior compliance analyst or compliance manager",
-      "GRC analyst with broader portfolio",
-      "Privacy officer or DPO track",
-    ],
-    relatedRoles: [
-      {
-        name: "GRC Analyst",
-        note: "Broader role covering governance and risk alongside compliance.",
-      },
-      {
-        name: "Security Auditor",
-        note: "When you want to test controls instead of mapping them.",
-      },
-      {
-        name: "Risk Analyst",
-        note: "If quantifying risk interests you more than framework mapping.",
-      },
-    ],
-    cabinetPreview: CABINET_PREVIEW_BY_SLUG["compliance-analyst"],
-  },
   {
     slug: "risk-analyst",
     name: "Risk Analyst",

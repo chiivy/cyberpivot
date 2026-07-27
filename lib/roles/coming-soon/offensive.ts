@@ -3,7 +3,6 @@ import type { ComingSoonRoleContent } from "@/types/role";
 import { CABINET_PREVIEW_BY_SLUG } from "@/lib/roles/coming-soon-cabinet";
 import {
   BUG_BOUNTY_SALARY_NOTE,
-  SALARY_RED_TEAMER,
   SALARY_VA_ANALYST,
 } from "@/lib/roles/coming-soon-salaries";
 
@@ -77,76 +76,6 @@ export const OFFENSIVE_COMING_SOON_ROLES: readonly ComingSoonRoleContent[] = [
       },
     ],
     cabinetPreview: CABINET_PREVIEW_BY_SLUG["vulnerability-assessment-analyst"],
-  },
-  {
-    slug: "red-teamer",
-    name: "Red Teamer",
-    domain: "Offensive Security",
-    domainId: "offensive-security",
-    level: "Mid to Senior",
-    v1: false,
-    dayToDay:
-      "You run simulated attacks over weeks, not hours. Most of your time is planning, maintaining access, and avoiding detection while you work toward an objective. Reporting happens at the end. Between engagements you build tooling, refine TTPs, and brief blue team on what they missed.",
-    differentiator:
-      "Penetration testers find and report vulnerabilities in a scoped test. Red teamers emulate real adversaries with stealth and persistence as goals. Bug bounty hunters work alone on public scopes. You work as part of an internal or consulting team with defined objectives.",
-    background:
-      "Strong pentest background is expected. OSCP or equivalent practical experience, comfort with C2 frameworks, and understanding of blue team detection are baseline. You need discretion and good written communication for debriefs.",
-    salaryDisplay: { type: "table", salaries: SALARY_RED_TEAMER },
-    industries: [
-      "Banks and defence",
-      "Large technology companies",
-      "Consultancies",
-      "Critical infrastructure",
-      "Insurance and pharma",
-    ],
-    toolsFree: [
-      "Kali Linux",
-      "Sliver or Havoc C2",
-      "BloodHound",
-      "Impacket",
-      "Caldera",
-    ],
-    toolsEnterprise: [
-      "Cobalt Strike (licensed)",
-      "Mandiant Advantage",
-      "Palo Alto Cortex XDR (for purple team)",
-      "SafeBreach or AttackIQ",
-      "Internal purple team platforms",
-    ],
-    certs: [
-      {
-        name: "OSCP",
-        note: "Still the baseline practical offensive cert. Red team hires expect it or something equivalent.",
-      },
-      {
-        name: "CRTO",
-        note: "Red team operations focus. Cheaper than advanced SANS and well regarded in the community.",
-      },
-      {
-        name: "OSEP",
-        note: "Evasion and advanced exploitation. Natural step after OSCP for red team work.",
-      },
-    ],
-    careerProgression: [
-      "Lead red team operator",
-      "Purple team lead bridging offensive and defensive",
-      "Adversary emulation consultant",
-    ],
-    relatedRoles: [
-      {
-        name: "Penetration Tester",
-        note: "The usual path in. Scoped tests before long-running adversary simulations.",
-      },
-      {
-        name: "Threat Hunter",
-        note: "Blue team side of the same coin. Some operators move between both.",
-      },
-      {
-        name: "Bug Bounty Hunter",
-        note: "Independent hunting on programmes. Different economics, overlapping skills.",
-      },
-    ],
-    cabinetPreview: CABINET_PREVIEW_BY_SLUG["red-teamer"],
   },
   {
     slug: "bug-bounty-hunter",

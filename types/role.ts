@@ -23,6 +23,7 @@ export interface RoleCert {
 export interface RoleModuleItem {
   name: string;
   status: "available" | "coming-soon";
+  slug?: string;
 }
 
 export interface RoleMisconception {

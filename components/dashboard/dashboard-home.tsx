@@ -11,7 +11,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useFoundationProgress } from "@/hooks/use-foundation-progress";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { getRoleBySlug } from "@/lib/roles/get-role";
-import { v1RoleHasAvailableModule } from "@/lib/roles/role-path-availability";
+import {
+  getV1RoleLearningHref,
+  v1RoleHasAvailableModule,
+} from "@/lib/roles/role-path-availability";
 import { isV1RoleContent } from "@/types/role";
 
 export function DashboardHome(): React.ReactElement {
@@ -51,7 +54,11 @@ export function DashboardHome(): React.ReactElement {
   const pathHasAvailableModule =
     roleSlug != null && v1RoleHasAvailableModule(roleSlug);
 
-  const learningHref = roleSlug ? `/roles/${roleSlug}` : "/paths";
+  const learningHref = roleSlug
+    ? isV1Role
+      ? getV1RoleLearningHref(roleSlug)
+      : `/roles/${roleSlug}`
+    : "/paths";
 
   const hasProgress = Boolean(roleSlug && displayRole);
 

@@ -1,10 +1,12 @@
 import { COMING_SOON_ROLE_PAGES } from "@/lib/roles/coming-soon-roles";
+import { OT_SECURITY_ANALYST_ROLE } from "@/lib/roles/ot-security/ot-security-analyst-role";
 import { PLACEHOLDER_COMING_SOON_ROLES } from "@/lib/roles/placeholder-coming-soon-roles";
 import { V1_ROLE_PAGES } from "@/lib/roles/v1-roles";
 import type { RolePageData } from "@/types/role";
 
 const ALL_ROLES: readonly RolePageData[] = [
   ...V1_ROLE_PAGES,
+  OT_SECURITY_ANALYST_ROLE,
   ...COMING_SOON_ROLE_PAGES,
   ...PLACEHOLDER_COMING_SOON_ROLES,
 ];

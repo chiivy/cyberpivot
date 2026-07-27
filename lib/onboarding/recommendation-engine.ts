@@ -102,7 +102,7 @@ const ROLES = {
     domainId: "cloud-infrastructure-security",
     level: "Mid to Senior",
     pathSlug: "azure",
-    comingSoon: true,
+    comingSoon: false,
   },
   gcpEngineer: {
     roleName: "GCP Security Engineer",
@@ -165,7 +165,7 @@ const ROLES = {
     domainId: "governance-risk-compliance",
     level: "Entry to Mid",
     pathSlug: "grc",
-    comingSoon: true,
+    comingSoon: false,
   },
   riskAnalyst: {
     roleName: "Risk Analyst",
@@ -228,7 +228,7 @@ const ROLES = {
     domainId: "offensive-security",
     level: "Mid to Senior",
     pathSlug: "pentest",
-    comingSoon: true,
+    comingSoon: false,
   },
   bugBountyHunter: {
     roleName: "Bug Bounty Hunter",
@@ -282,7 +282,7 @@ const ROLES = {
     domainId: "application-product-security",
     level: "Mid to Senior",
     pathSlug: "appsec",
-    comingSoon: true,
+    comingSoon: false,
   },
   aiSecurity: {
     roleName: "AI Security Engineer",
@@ -300,7 +300,7 @@ const ROLES = {
     domainId: "ot-ics-security",
     level: "Entry to Mid",
     pathSlug: "ot-security",
-    comingSoon: true,
+    comingSoon: false,
   },
   otSecurityEngineer: {
     roleName: "OT Security Engineer",

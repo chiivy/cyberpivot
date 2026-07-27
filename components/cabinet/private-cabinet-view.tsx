@@ -8,7 +8,7 @@ import { clearCabinetSessionSyncFlag } from "@/components/cabinet/cabinet-sessio
 import {
   buildCabinetModuleCards,
   contentAreaLabel,
-  getFoundationCabinetDefinitions,
+  getAllCabinetDefinitions,
   groupCabinetCardsByContentArea,
 } from "@/lib/cabinet/definitions";
 import type {
@@ -38,7 +38,7 @@ export function PrivateCabinetView({
   }, []);
 
   const cards = useMemo(() => {
-    const definitions = getFoundationCabinetDefinitions();
+    const definitions = getAllCabinetDefinitions();
     return buildCabinetModuleCards({
       definitions,
       completions,

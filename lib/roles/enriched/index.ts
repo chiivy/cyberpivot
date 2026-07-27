@@ -1,6 +1,11 @@
+export { OT_SECURITY_ANALYST_ENRICHED } from "@/lib/roles/enriched/ot-security-analyst";
 export { API_SECURITY_ENGINEER_ENRICHED } from "@/lib/roles/enriched/api-security-engineer";
 export { APPSEC_ENGINEER_ENRICHED } from "@/lib/roles/enriched/appsec-engineer";
+export { AWS_SECURITY_ENGINEER_ENRICHED } from "@/lib/roles/enriched/aws-security-engineer";
 export { AZURE_SECURITY_ENGINEER_ENRICHED } from "@/lib/roles/enriched/azure-security-engineer";
+export { COMPLIANCE_ANALYST_ENRICHED } from "@/lib/roles/enriched/compliance-analyst";
+export { DEVSECOPS_ENGINEER_ENRICHED } from "@/lib/roles/enriched/devsecops-engineer";
 export { GRC_ANALYST_ENRICHED } from "@/lib/roles/enriched/grc-analyst";
 export { PENTESTER_ENRICHED } from "@/lib/roles/enriched/penetration-tester";
+export { RED_TEAMER_ENRICHED } from "@/lib/roles/enriched/red-teamer";
 export { SOC_ANALYST_ENRICHED } from "@/lib/roles/enriched/soc-analyst";

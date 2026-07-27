@@ -7,7 +7,6 @@ export const PLACEHOLDER_COMING_SOON_ROLE_SLUGS = [
   "malware-analyst",
   "privacy-analyst",
   "ai-red-teamer",
-  "ot-security-analyst",
   "ot-security-engineer",
 ] as const;
 
@@ -49,13 +48,6 @@ export const PLACEHOLDER_COMING_SOON_ROLES: readonly PlaceholderComingSoonRoleCo
       name: "AI Red Teamer",
       domain: "Offensive Security",
       level: "Mid to Senior",
-      placeholder: true,
-    },
-    {
-      slug: "ot-security-analyst",
-      name: "OT Security Analyst",
-      domain: "Operational Technology and Industrial Control Systems Security",
-      level: "Entry to Mid",
       placeholder: true,
     },
     {

@@ -24,7 +24,7 @@ This is the public roadmap for CyberPivot. It shows what is built, what is in pr
 - ✅ Dashboard skeleton
 - ✅ All V1 role pages — SOC Analyst, Penetration Tester, Azure Security Engineer, GRC Analyst, AppSec Engineer, API Security Engineer
 - ✅ All Coming Soon role pages — 17 roles with honest descriptions, salary data, notify me
-- ✅ Seven additional Coming Soon roles have live placeholder pages at `/roles/{slug}` (not 404): DFIR Analyst (`/roles/dfir-analyst`), Security Engineer (`/roles/security-engineer`), Malware Analyst (`/roles/malware-analyst`), Privacy Analyst (`/roles/privacy-analyst`), AI Red Teamer (`/roles/ai-red-teamer`), OT Security Analyst (`/roles/ot-security-analyst`), OT Security Engineer (`/roles/ot-security-engineer`). Full rich coming-soon content for these seven is still to be written.
+- ✅ Seven additional Coming Soon roles have live placeholder pages at `/roles/{slug}` (not 404): DFIR Analyst (`/roles/dfir-analyst`), Security Engineer (`/roles/security-engineer`), Malware Analyst (`/roles/malware-analyst`), Privacy Analyst (`/roles/privacy-analyst`), AI Red Teamer (`/roles/ai-red-teamer`), OT Security Engineer (`/roles/ot-security-engineer`). Full rich coming-soon content for these six is still to be written. OT Security Analyst has a full role page and two live modules at `/roles/ot-security-analyst/[slug]`.
 - ✅ Supabase connection — auth and database configured
 
 ### Content — In Progress
@@ -56,6 +56,15 @@ This is the public roadmap for CyberPivot. It shows what is built, what is in pr
 - 📋 Interview prep — general + SOC Analyst specific
 - 📋 CV builder — SOC Analyst template
 - 📋 Cert roadmap — SOC Analyst path
+
+### OT Security Analyst Path
+- ✅ Module 1 — What OT Security Actually Is, and Why IT Playbooks Break
+- ✅ Module 2 — The Purdue Model and OT Network Architecture
+- 📋 Module 3 — Industrial Protocols on the Wire
+- 📋 Module 4 — OT Monitoring Lab with Malcolm
+- 📋 Module 5 — OT Asset Discovery and Inventory
+- 📋 Module 6 — OT Incident Response
+- 📋 Module 7 — OT Security Analyst Capstone
 
 ---
 

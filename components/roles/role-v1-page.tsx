@@ -1,8 +1,11 @@
+import Link from "next/link";
+
 import { CabinetArtifactCard } from "@/components/onboarding/cabinet-artifact-card";
 import { StartPathButton } from "@/components/roles/start-path-button";
 import { CABINET_BY_PATH } from "@/lib/onboarding/cabinet-artifacts";
 import { SALARY_TABLE_NOTE } from "@/lib/roles/shared-snippets";
 import type { RoleLabRequirements, RolePageContent } from "@/types/role";
+import { getRolePathModuleHref } from "@/types/role-path";
 import { cn } from "@/lib/utils";
 
 interface RoleV1PageProps {
@@ -310,27 +313,51 @@ export function RoleV1Page({ role }: RoleV1PageProps): React.ReactElement {
 
       <Section title="Modules on this path">
         <ul className="space-y-2" role="list">
-          {role.modules.map((mod, index) => (
-            <li
-              key={mod.name}
-              className="flex items-center justify-between gap-4 rounded-md border border-white/[0.06] bg-white/[0.02] px-4 py-3"
-            >
-              <span className="text-sm text-zinc-300">
-                <span className="font-mono text-zinc-500">{index + 1}.</span>{" "}
-                {mod.name}
-              </span>
-              <span
-                className={cn(
-                  "shrink-0 rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
-                  mod.status === "available"
-                    ? "bg-cyan-500/15 text-cyan-300"
-                    : "bg-zinc-800 text-zinc-500",
-                )}
+          {role.modules.map((mod, index) => {
+            const moduleHref =
+              mod.status === "available" && mod.slug
+                ? getRolePathModuleHref(role.slug, mod.slug)
+                : null;
+
+            return (
+              <li
+                key={mod.slug ?? mod.name}
+                className="rounded-md border border-white/[0.06] bg-white/[0.02]"
               >
-                {mod.status === "available" ? "Available" : "Coming soon"}
-              </span>
-            </li>
-          ))}
+                {moduleHref ? (
+                  <Link
+                    href={moduleHref}
+                    className="flex items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-white/[0.03]"
+                  >
+                    <span className="text-sm text-zinc-300">
+                      <span className="font-mono text-zinc-500">{index + 1}.</span>{" "}
+                      {mod.name}
+                    </span>
+                    <span className="shrink-0 rounded bg-cyan-500/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-cyan-300">
+                      Available
+                    </span>
+                  </Link>
+                ) : (
+                  <div className="flex items-center justify-between gap-4 px-4 py-3">
+                    <span className="text-sm text-zinc-300">
+                      <span className="font-mono text-zinc-500">{index + 1}.</span>{" "}
+                      {mod.name}
+                    </span>
+                    <span
+                      className={cn(
+                        "shrink-0 rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                        mod.status === "available"
+                          ? "bg-cyan-500/15 text-cyan-300"
+                          : "bg-zinc-800 text-zinc-500",
+                      )}
+                    >
+                      {mod.status === "available" ? "Available" : "Coming soon"}
+                    </span>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </Section>
 

@@ -1,0 +1,187 @@
+---
+title: "The Purdue Model and OT Network Architecture"
+slug: "module-02-purdue-model-and-network-architecture"
+module: 2
+level: "OT Security Analyst"
+roleSlug: "ot-security-analyst"
+pathSlug: "ot-security"
+description: "Learn the Purdue model and zones and conduits, practise network segmentation in GRFICS, and produce a Purdue-aligned segmentation diagram for Quorivane's OT environment."
+readingTime: "55 min"
+labTime: "60-90 min"
+tools:
+  - name: "GRFICS"
+    type: "free"
+    url: "https://github.com/nsacyber/GRFICS"
+  - name: "diagrams.net"
+    type: "free"
+    url: "https://diagrams.net"
+  - name: "Fortinet"
+    type: "enterprise"
+  - name: "Palo Alto Networks"
+    type: "enterprise"
+  - name: "Cisco"
+    type: "enterprise"
+  - name: "Nozomi Networks"
+    type: "enterprise"
+  - name: "Claroty"
+    type: "enterprise"
+  - name: "Dragos"
+    type: "enterprise"
+cabinetArtifact:
+  name: "Purdue-aligned network segmentation diagram"
+  description: "Network segmentation design for Quorivane's OT environment with Purdue levels, zones, conduits, and IT/OT DMZ labelled"
+  unlocksOn: "completion"
+previousModule: "module-01-what-ot-security-is"
+nextModule: null
+---
+
+## Where you are
+
+You are an OT security analyst at Delvara Energy, a fictional oil and gas company that operates pipelines and a refinery. Delvara has two physical surfaces you are responsible for. The pipeline side runs on SCADA, flow controllers, pressure sensors, and pump stations spread across long distances. The refinery side runs a distributed control system and safety instrumented systems managing distillation units, reactors, and separation equipment in one dense site. Both are computers controlling physical things, and when either fails the result is a pressure excursion, an uncontrolled release, or a process upset, not a slow spreadsheet.
+
+Last week you wrote a brief explaining why OT cannot be secured with the IT playbook. Your manager agreed, and now she wants the next thing. Someone drew Delvara's pipeline and refinery network years ago and nobody has looked at it properly since. She suspects, and you share the suspicion, that it is flat, that a laptop on the corporate network can, if it wanted to, talk straight to a flow controller or a refinery process controller. She wants to know what good looks like, and she wants a diagram of how Delvara's OT network should be laid out so that a problem on the business side cannot walk straight into the pipeline or the plant.
+
+To produce that, you need the reference architecture the whole industry uses to answer exactly this question. That is the Purdue model, and its partner idea, zones and conduits. This module teaches both, has you practise segmentation hands-on, and ends with you producing the design your manager asked for.
+
+By the end of this module you will be able to:
+
+- Describe the levels of the Purdue model and what lives at each one.
+- Explain where the boundary between IT and OT sits, and why the industrial DMZ exists.
+- Explain zones and conduits and how they relate to the Purdue levels.
+- Configure basic network segmentation in a lab and see it block traffic that should not cross.
+- Produce a Purdue-aligned segmentation design for a real environment.
+
+---
+
+## Section 1: The scenario
+
+Think back to how attacks on OT actually tend to unfold. An attacker rarely lands directly on a controller. They land somewhere ordinary, a phished laptop, a compromised remote-access account, a server on the business network, and then they move. Whether they can reach anything physical depends entirely on one thing: how well the network between where they landed and the equipment is divided up.
+
+When that network is flat, meaning everything can talk to everything, one foothold is enough. This is not hypothetical. In the 2021 Colonial Pipeline incident, ransomware hit the company's business IT systems, and because the company could not be confident the attacker was walled off from the operational side, it shut the entire pipeline down as a precaution. A big part of what makes that call so hard, and so expensive, is poor separation between the business network and the control network. Analysts and industry bodies repeatedly point out that many industrial networks stay flat, so a breach in one part can reach control devices it should never have been able to touch. For Delvara, the same question applies twice over, once for the pipeline SCADA network and once for the refinery's process control network, and the refinery side carries an extra weight because a safety instrumented system sits at the bottom of it, the last automated line of defence before a process becomes dangerous. That is the layer TRITON was built to reach.
+
+Now picture Delvara. Ransomware lands on a corporate laptop, the same way it lands anywhere. The question you will be asked, probably at speed, is whether that laptop can reach the controllers running pipeline flow, or the distributed control system running the refinery. If Delvara's OT network is flat, the honest answer is a shrug, and a shrug means someone has to consider shutting pipeline segments or process units down to be safe, the same call Colonial had to make. If the network is properly divided into layers with controlled crossing points, you can say with confidence that the laptop sits several enforced boundaries away from the flow controllers and the reactors, and nobody has to make a panic decision. The difference between those two outcomes is architecture, and architecture is what you are about to design.
+
+---
+
+## Section 2: The concept
+
+### The Purdue model
+
+The Purdue model is the reference map for how an industrial network should be laid out. Its full name is the Purdue Enterprise Reference Architecture. It came out of Purdue University around 1991, originally as a way to describe data flows in computer-integrated manufacturing, and it has since become the standard reference for industrial network design. It is endorsed by bodies including CISA and NIST.
+
+The core idea is simple and powerful. You divide the environment into numbered levels, from the physical process at the bottom to the business and internet at the top, and you insist that data flows vertically between adjacent levels rather than jumping across the whole stack. A machine at the top should never talk straight to a device at the bottom. It has to pass through every checkpoint in between. Each boundary between levels then becomes a natural place to put a control: a firewall, a filter, an access restriction.
+
+The levels, from the bottom up:
+
+- **Level 0, the physical process.** The actual equipment and the sensors and actuators wired to it. At Delvara this is the pressure and flow transmitters on the pipeline, the control valves and pump motors, and on the refinery side the reactor and distillation column instrumentation, the actuated valves, the temperature and level sensors. The things that touch the physical product.
+- **Level 1, basic control.** The controllers that read those sensors and drive those actuators. PLCs and RTUs on the pipeline, the distributed control system's field controllers and the safety instrumented system logic solvers on the refinery side. This is where the logic that runs the process lives.
+- **Level 2, supervisory control.** The systems that let a human watch and steer an area. The pipeline SCADA master station and operator screens, the refinery's DCS operator workstations and HMIs.
+- **Level 3, site operations.** Systems that manage operations across the whole site rather than one area. Historians that record process data over time, batch and operations management, and the servers that keep the OT environment patched and protected.
+- **Level 3.5, the industrial DMZ.** A buffer zone sitting between OT and IT. This level was not in the original model. It was added because experience showed you need a controlled no-man's-land between the two worlds. Remote access terminates here rather than reaching into OT directly, and data that IT needs from OT, pipeline throughput figures for the business side, for example, is published here rather than IT reaching down to fetch it. Modern guidance treats this DMZ as essential for any connected OT environment.
+- **Level 4, business logistics.** The site's business IT. Enterprise resource planning, scheduling and nomination systems, email, the ordinary corporate systems.
+- **Level 5, enterprise and internet.** The wider corporate network, internet-facing systems, and cloud.
+
+Two groupings matter for the rest of your career. Levels 0 to 3 are the OT zone, the operational side. Levels 4 and 5 are the IT zone, the business side. Level 3.5, the DMZ, is the deliberate barrier between them, and the firewall between Level 3 and Level 4 is one of the most important controls you own. When people say an attack on IT should not be able to reach OT, this separation is what they mean in practice.
+
+One honest caveat. The Purdue model is a reference, not a rulebook, and real organisations adapt it. Some combine levels, some place a given device a level higher or lower depending on how it is used. Delvara's pipeline and refinery will not map onto it perfectly, and pipeline SCADA in particular is sometimes drawn as its own parallel stack rather than sitting neatly alongside the refinery's levels, because the two environments are geographically and operationally separate even though they belong to the same company. That is fine. The value of the model is the discipline of layering and controlled crossing points, not pedantry about which level a specific transmitter belongs to.
+
+### Zones and conduits
+
+The Purdue model gives you the layered picture. A standard called IEC 62443 gives you the method for turning that picture into security decisions, and it is worth knowing because you will see it referenced constantly in OT.
+
+First, a point that trips people up. IEC 62443 is not a single document. It is a family of standards organised into several parts, covering general concepts, policies and procedures, system-level requirements, and component-level requirements. When someone says "62443" they mean the family, and different parts apply to different jobs. You do not need the whole family. You need two ideas from it.
+
+A **zone** is a group of assets that share the same security requirements. You draw a boundary around things that need to be protected to the same degree and call it a zone. Delvara's refinery safety instrumented system might be its own zone, held to a higher standard than the rest of the DCS. The pipeline SCADA network might be another zone entirely, physically distant and operationally separate from the refinery. The corporate IT network is another again.
+
+A **conduit** is the controlled communication path between zones. If two zones need to talk, they do it through a conduit, and the conduit is where you enforce what is allowed to cross: which devices, which protocols, in which direction. Everything not explicitly permitted through the conduit is denied. A conduit is not just a cable. It is a deliberately controlled channel, and it is where much of your defensive effort concentrates.
+
+The part of the standard that deals with dividing a system into zones and conduits, IEC 62443-3-2, does it through risk assessment. You group assets by the consequence of their compromise, and you decide how strongly each zone and conduit needs to be protected. The standard expresses that required strength as a security level, running from SL1 for protection against casual or accidental misuse up to SL4 for protection against a well-resourced, determined attacker. A safety instrumented system, given what a compromise of it could do, is exactly the kind of zone that gets assessed toward the higher end of that scale. You do not need to assign security levels as an analyst, that is more the OT engineer's job and it appears later in this path, but you should recognise the terms when you see them.
+
+Here is how the two ideas fit together, because the standing rule in OT is to use them side by side rather than treating them as rivals. The Purdue model gives you the horizontal-versus-vertical layered architecture. Zones and conduits give you the risk-based method for deciding where the boundaries go and how hard each crossing point is defended. In fact IEC 62443 uses the Purdue model to describe how data flows. You lay out the network in Purdue levels, then you define zones and conduits across and within those levels. That is the combined mental model you will design with in this module and reference for the rest of the path.
+
+---
+
+## Section 3: Hands-on, building segmentation you can see work
+
+You are going to take a lab environment that starts flat, or nearly flat, and divide it so that traffic which should not cross a boundary genuinely cannot. The tool is GRFICS, a free and open source industrial control system lab. GRFICS was built specifically so people can practise both attacking an ICS and defending it by segmenting the network with firewall rules, which is exactly the skill here.
+
+One thing worth being straight about, and it works in your favour this time. GRFICS simulates a chemical process, a tank system with a PLC and a control loop. That is not some unrelated stand-in you have to squint to connect to your job, a refinery is a chemical process, so the lab you are about to run is closer to Delvara's actual refinery environment than most training labs get. The pipeline side of your job is still a step removed, GRFICS does not model long-haul flow and pressure across distance, but the mechanics of segmentation, a control network, an enterprise network, and a firewall between them, transfer directly regardless of which physical process sits behind the PLC.
+
+> **Which route are you taking?**
+> This module builds and configures a live environment, so the routes differ in what hardware they need. Read all three and pick one. The main instructions below assume you are running the lab locally.
+>
+> **Route 1, local lab.** Run GRFICS on your own machine. GRFICS runs comfortably on a laptop with 8GB of RAM, and 16GB is worth having because later modules in this path add a monitoring platform you will want running at the same time. This is the best experience and it costs nothing.
+>
+> **Route 2, cloud VPS.** If your machine cannot run it, a virtual server with about 8GB of RAM from a provider such as DigitalOcean, Hetzner, or Linode runs GRFICS for roughly 12 to 20 US dollars a month. Spin it up for the time you spend on the lab and shut it down afterwards so you are not paying while you are not using it. This route is entirely optional, it is the only paid option anywhere in this path, and it is never required. If cost is a concern, ignore it and use Route 1 or Route 3.
+>
+> **Route 3, design only, no live lab.** You can still complete this module's real deliverable, the Delvara segmentation design, using the concepts and the reference architecture in Section 2, without running GRFICS at all. What you miss is the hands-on experience of configuring a boundary and watching it block traffic. This module and Module 4 are the two where the live lab adds the most, so use Route 1 or Route 2 if you possibly can, but if you cannot, this route is complete enough to produce the artifact and move on.
+>
+> Whichever route you chose, if you are running the lab the steps below are the same. Back to the main flow.
+
+### Step 1: Get GRFICS running
+
+GRFICS is a free, open source industrial control system simulation built specifically for security training. It gives you a PLC, an operator interface, a simulated process, and a network you can attack and defend. The repository is at github.com/nsacyber/GRFICS.
+
+Two versions exist. Version 2 uses separate VirtualBox virtual machines with a pfSense firewall between the control network and the enterprise network. Version 3 is container-based and uses a different firewall interface. The setup steps differ between versions, so before going further, check the repository's README and releases page to identify which version is currently recommended and actively maintained, then follow its own installation instructions. The README is the authoritative source for the exact download, network layout, subnet addresses, and base configuration, since these details change between releases.
+
+Once GRFICS is running you will have, at minimum, a control network containing a PLC and an operator interface talking to a simulated process, and a separate upper network standing in for the enterprise side, with a firewall between the two. You will also have an attacker machine you can use to test whether a boundary really holds.
+
+A note on the lab steps below. Steps 2 through 6 describe what to do conceptually. The exact firewall interface, menu names, and subnet addresses depend on the version you installed. Match the concepts below to what you see in your running environment, using the GRFICS documentation as your reference. If something does not match, the documentation is right and this module is describing the wrong version for your install.
+
+### Step 2: Watch the network before you segment it
+
+Before you change anything, look at what talks to what. Observe the operator interface communicating with the PLC. Note that, in a flat or permissive setup, a machine on the upper network can reach devices on the control network directly. That reachability is the problem you are about to fix. This is the flat network your manager is worried about, in miniature, whether you picture it sitting under Delvara's refinery or its pipeline control centre.
+
+### Step 3: Define your zones
+
+Decide, on paper first, what should be allowed to cross. A sound starting position is that the control network and the enterprise network are two separate zones, and the only traffic permitted between them is the specific, necessary communication, for example a historian or operator function that genuinely needs it. Everything else is denied. That specific permitted path is your conduit. Everything you are about to block is what a flat network would have left wide open.
+
+### Step 4: Enforce the boundary
+
+Using the firewall in the lab, apply rules that allow only the traffic you decided on in Step 3 and deny the rest between the two zones. The exact interface depends on your GRFICS version, refer to the GRFICS README for the specific firewall controls in the version you installed. The principle is the same regardless of version: default to deny, then permit only the specific conduit you need.
+
+### Step 5: Test that it actually holds
+
+This is the step that turns a diagram into a skill. From the attacker machine on the upper network, try to reach a device on the control network that your rules should now block. Confirm it fails. Then confirm that the traffic you did allow, the legitimate conduit, still works and the process still runs. A boundary you have not tested is an assumption, not a control. You want to see both halves with your own eyes: the bad path blocked, the good path intact.
+
+### Step 6: Record it
+
+Note what you allowed, what you denied, and the result of your test. You will fold this experience into the design you produce next, and being able to say you have actually configured and tested a segment, not just read about it, is exactly the kind of thing that stands out in an interview.
+
+---
+
+## Section 4: The enterprise equivalent
+
+In the lab you configured one firewall between two networks. Delvara's real pipeline and refinery operations are bigger and more distributed, but the principle scales directly, and the job title that owns the detailed build is the OT security engineer rather than the analyst. Still, you should know what the grown-up version looks like, because you will be monitoring it.
+
+In production, the boundaries between Purdue levels are enforced with industrial firewalls, and the most important of them sits between Level 3 and Level 4, separating OT from IT, with the Level 3.5 DMZ built out as a real set of systems rather than a single rule. Remote vendor access, for example a control system vendor troubleshooting the refinery's DCS, lands in that DMZ and goes no further without passing another control. Where data only ever needs to travel one way, some environments use hardware that physically enforces one-way flow. Vendors you will hear associated with OT-aware firewalls and segmentation include [Fortinet](https://www.fortinet.com/solutions/industries/scada-industrial-control-systems), [Palo Alto Networks](https://www.paloaltonetworks.com/network-security/industrial-ot-security), and [Cisco](https://www.cisco.com/c/en/us/solutions/industries/industrial-automation-iot.html), and the OT monitoring platforms from [Nozomi Networks](https://www.nozominetworks.com/resources), [Claroty](https://claroty.com/resources), and [Dragos](https://www.dragos.com/resources) will automatically place the devices they discover onto Purdue levels for you, which is one reason the model is worth knowing cold.
+
+You will not build these here, and you do not need a licence to any of them to learn the architecture. If you want to see how each vendor frames its OT segmentation and Purdue support, read their official documentation and compare the claims against the layered model you now understand.
+
+---
+
+## Section 5: Your cabinet artifact
+
+Now you produce the design your manager asked for: a Purdue-aligned network segmentation diagram for Delvara's OT environment, with zones, conduits, and the IT/OT DMZ clearly labelled. This is the artifact you keep, and it is a genuinely useful portfolio piece because it shows you can turn a reference model into a concrete design for a real organisation.
+
+You can draw it in any free diagramming tool. A common choice is diagrams.net, also known as draw.io, which is free and needs no account.
+
+What the diagram must show:
+
+1. **The Purdue levels as horizontal bands,** from Level 0 at the bottom to Level 5 at the top, with the Level 3.5 industrial DMZ drawn as its own band between Level 3 and Level 4.
+2. **Delvara's real OT assets placed on the right levels.** Put the pressure and flow transmitters, control valves, pump motors, and refinery instrumentation at Level 0. Put the pipeline PLCs and RTUs, the refinery DCS field controllers, and the safety instrumented system logic solvers at Level 1. Put the pipeline SCADA master station and the refinery DCS operator workstations at Level 2. Put the historians and OT support servers at Level 3. Put corporate IT and business systems at Levels 4 and 5. Where you are unsure, make a reasonable choice and note your reasoning, because adapting the model to the real environment is the actual skill.
+3. **Zones,** drawn as boundaries grouping assets that share security needs. At a minimum, separate the OT zone from the IT zone. If it helps, break the OT side into smaller zones, for example keeping the safety instrumented system separate from the rest of the refinery DCS, and keeping pipeline SCADA separate from the refinery entirely, since they are different sites with different risk profiles.
+4. **Conduits,** drawn as the only permitted crossing points between zones, each labelled with what is allowed through it and in which direction. The crossing between OT and IT should pass through the Level 3.5 DMZ, not around it.
+5. **The IT/OT boundary and DMZ called out explicitly,** since that is the single most important part of the design and the thing your manager most needs to see.
+
+Add two or three sentences beneath the diagram explaining, in plain language, how this layout means a ransomware infection on a corporate laptop at Level 4 cannot reach a flow controller or a reactor at Level 1. That sentence is the whole point of the exercise, and it is the answer to the question you will one day be asked in a hurry.
+
+Save the diagram and the note. It is your second cabinet entry, and together with your Module 1 brief it shows you can both explain why OT is different and design for it.
+
+---
+
+## What you can now do
+
+You can lay out an OT network the way the industry expects, using the Purdue model. You can explain where IT ends and OT begins, and why the industrial DMZ sits between them. You can talk about zones and conduits without bluffing, and you know how they relate to the Purdue levels. You have configured a real segment and watched it block traffic that should not cross. And you have produced a design that answers the question every energy company eventually asks: if something gets onto the business network, can it reach the equipment that matters.
+
+From here, Module 3 goes down onto the wire itself and teaches you to read the industrial protocols, Modbus, DNP3, and others, that flow across the network you have just learned to lay out. Module 4 builds the monitoring lab you will use to watch it. You can take either next, and neither assumes you have done this one.
