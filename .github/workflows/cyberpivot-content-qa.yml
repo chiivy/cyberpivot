@@ -67,7 +67,6 @@ jobs:
         with:
           # Align with @types/node ^20 used by this repository.
           node-version: 20
-          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
