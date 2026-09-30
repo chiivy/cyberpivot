@@ -1,0 +1,133 @@
+# CyberPivot Content QA — GitHub PR gate (CP-AUTO-010)
+#
+# Stable check / job name for branch protection:
+#   cyberpivot-content-qa
+#
+# Blocks only HARD + FAIL (QA exit code 1).
+# WARNING and NEEDS_HUMAN_REVIEW remain non-blocking (exit code 0).
+# QA execution/configuration failures use exit code 2 and fail the check
+# with an infrastructure message (not presented as a content rule violation).
+#
+# Security:
+# - Uses pull_request (not pull_request_target) so fork PRs do not get write tokens.
+# - No repository secrets are required or exposed.
+# - MDX/content is parsed as data only; this workflow never executes content commands.
+# - Least-privilege permissions: contents: read only.
+# - No auto-edit, auto-commit, auto-approve, or auto-merge.
+
+name: CyberPivot Content QA
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "content/**"
+      - "lib/content-assurance/**"
+      - "lib/foundations/**"
+      - "lib/roles/ot-security/**"
+      - "lib/cabinet/**"
+      - "types/foundation.ts"
+      - "types/role-path.ts"
+      - "types/cabinet.ts"
+      - "scripts/cyberpivot.ts"
+      - "scripts/content-assurance/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - ".github/workflows/cyberpivot-content-qa.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cyberpivot-content-qa-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cyberpivot-content-qa:
+    name: cyberpivot-content-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # Needed to list changed content files against the PR base.
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # LockfileVersion 9.0 requires pnpm 9.x.
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Align with @types/node ^20 used by this repository.
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: List changed content files
+        id: changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          git diff --name-only --diff-filter=ACMR "${BASE_SHA}"...HEAD -- 'content/**/*.mdx' \
+            > changed-content-files.txt || true
+          COUNT="$(wc -l < changed-content-files.txt | tr -d ' ')"
+          echo "count=${COUNT}" >> "${GITHUB_OUTPUT}"
+          echo "Changed content MDX files (${COUNT}):"
+          cat changed-content-files.txt || true
+
+      - name: Run CyberPivot Content QA
+        id: qa
+        shell: bash
+        run: |
+          set +e
+          pnpm cyberpivot qa --json > cyberpivot-qa-results.json
+          QA_EXIT=$?
+          set -e
+          echo "exit_code=${QA_EXIT}" >> "${GITHUB_OUTPUT}"
+          echo "QA exit code: ${QA_EXIT}"
+
+          if [[ ! -s cyberpivot-qa-results.json ]]; then
+            echo "::error::CyberPivot Content QA could not complete. No QA JSON output was produced. This appears to be a QA execution/configuration failure rather than a content finding."
+            exit 1
+          fi
+
+          pnpm exec tsx scripts/content-assurance/github-pr-summary.ts \
+            cyberpivot-qa-results.json \
+            --changed-files changed-content-files.txt \
+            --qa-exit-code "${QA_EXIT}"
+
+          if [[ "${QA_EXIT}" -eq 0 ]]; then
+            exit 0
+          fi
+
+          if [[ "${QA_EXIT}" -eq 1 ]]; then
+            echo "::error::CyberPivot Content QA failed. One or more blocking HARD findings must be resolved before merge."
+            exit 1
+          fi
+
+          if [[ "${QA_EXIT}" -eq 2 ]]; then
+            echo "::error::CyberPivot Content QA could not complete. This appears to be a QA execution/configuration failure rather than a content finding."
+            exit 1
+          fi
+
+          echo "::error::CyberPivot Content QA returned unexpected exit code ${QA_EXIT}."
+          exit 1
+
+      - name: Upload QA results artifact
+        if: always() && hashFiles('cyberpivot-qa-results.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberpivot-qa-results
+          path: cyberpivot-qa-results.json
+          if-no-files-found: ignore
+          retention-days: 14

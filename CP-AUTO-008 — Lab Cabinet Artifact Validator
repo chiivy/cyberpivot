@@ -1,0 +1,761 @@
+# CP-AUTO-008 — Lab / Cabinet / Artifact Validator
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-008  
+**Status:** Implementation specification  
+**Depends on:** CP-AUTO-002, CP-AUTO-003, CP-AUTO-004, CP-AUTO-005  
+**Next ticket:** CP-AUTO-009 Test Against Existing Content
+
+---
+
+## 1. Purpose
+
+Build the deterministic validator for the relationship between:
+
+```text
+Module
+  ↓
+Hands-On Work
+  ↓
+Cabinet Artifact
+  ↓
+Module Progression
+```
+
+The validator checks whether the structural promises made by CyberPivot's content metadata and module structure are internally consistent.
+
+It does **not** judge whether a lab is realistic, whether the learner experience is good, or whether an artifact is strong enough for a portfolio.
+
+Those remain AI-assisted or human-review concerns.
+
+---
+
+# 2. Why This Validator Matters
+
+CyberPivot's product model is not simply a collection of articles.
+
+A module is intended to connect learning to practical work and, where applicable, a tangible Cabinet artifact.
+
+The QA engine therefore needs to detect structural situations such as:
+
+- a module declares a Cabinet artifact but the artifact metadata is incomplete
+- an artifact points to a previous or next module that does not exist
+- a module claims a progression relationship that cannot be resolved
+- a hands-on module has metadata indicating a lab but no corresponding practical section where the rule requires one
+- a Cabinet artifact is referenced inconsistently
+
+The validator should protect the integrity of this learning progression without trying to evaluate educational quality automatically.
+
+---
+
+# 3. Source of Truth
+
+Before implementation, inspect and reuse the existing repository definitions.
+
+Relevant known locations include:
+
+```text
+lib/cabinet/
+types/cabinet.ts
+lib/foundations/
+lib/roles/ot-security/
+types/foundation.ts
+types/role-path.ts
+content/foundations/
+content/paths/ot-security/
+```
+
+The existing Cabinet definitions and module loaders are authoritative where applicable.
+
+Do not create a parallel Cabinet schema.
+
+---
+
+# 4. Current Content Structures
+
+The current implemented content has two related but different module structures.
+
+## Foundation
+
+Foundation modules use frontmatter containing a `cabinetArtifact` object and a trailing portfolio section such as:
+
+```text
+Your First Portfolio Entry
+Your Second Portfolio Entry
+```
+
+The exact numbering varies by module.
+
+The validator must not require identical heading structures across all Foundation modules.
+
+## OT Security
+
+OT modules use a different structure, including a dedicated Cabinet section.
+
+The known pattern is conceptually:
+
+```text
+Where you are
+Section 1 scenario
+Section 2 concept
+Section 3 hands-on
+Section 4 enterprise
+Section 5 cabinet
+What you can now do
+```
+
+Again, the validator must validate supported structural expectations rather than enforcing identical headings across module families.
+
+---
+
+# 5. Rules in Scope
+
+CP-AUTO-008 should implement the deterministic portions of the following rule groups from CP-AUTO-002/003:
+
+### Foundation
+
+- `CP-FOUND-004` — structural portion only
+- `CP-FOUND-005`
+- `CP-FOUND-008`
+
+### OT
+
+- `CP-OT-006`
+- `CP-OT-007`
+- `CP-OT-008`
+
+### Cabinet
+
+- `CP-CAB-001`
+- `CP-CAB-002`
+- `CP-CAB-003`
+- `CP-CAB-004`
+- `CP-CAB-005`
+- `CP-CAB-006`
+- `CP-CAB-007`
+
+The exact rule wording from the rule inventory remains authoritative.
+
+Where a rule contains both structural and semantic portions, implement only the structural portion in this ticket.
+
+---
+
+# 6. Important Boundary
+
+The validator can determine:
+
+```text
+Does the artifact metadata exist?
+Does the referenced module exist?
+Does the expected section/marker exist?
+Does the relationship resolve?
+```
+
+It cannot reliably determine:
+
+```text
+Is this artifact actually impressive?
+Is the lab realistic?
+Is the lab sufficiently difficult?
+Would an employer value the artifact?
+Is the exercise pedagogically excellent?
+```
+
+Those questions must not become deterministic failures.
+
+---
+
+# 7. Cabinet Artifact Metadata
+
+The current frontmatter pattern includes a `cabinetArtifact` object.
+
+Known fields include:
+
+```yaml
+cabinetArtifact:
+  name:
+  description:
+  unlocksOn:
+  previousModule:
+  nextModule:
+```
+
+The implementation must inspect the live TypeScript types and actual modules before enforcing optionality.
+
+The validator should distinguish:
+
+- missing artifact object
+- malformed artifact object
+- missing required artifact field
+- invalid relationship
+- valid artifact metadata
+
+Do not assume every field is mandatory if the repository does not require it.
+
+---
+
+# 8. Artifact Name
+
+Where an artifact name is required:
+
+```yaml
+cabinetArtifact:
+  name: ...
+```
+
+validate that:
+
+- the field exists
+- it is a string
+- it is not empty after trimming
+
+Do not judge whether the name is descriptive enough.
+
+For example:
+
+```text
+Network Traffic Analysis Report
+```
+
+and:
+
+```text
+Lab Report
+```
+
+may both be structurally valid even if one is less informative.
+
+---
+
+# 9. Artifact Description
+
+Where a description is required:
+
+```yaml
+cabinetArtifact:
+  description: ...
+```
+
+validate that:
+
+- the field exists
+- it is a string
+- it is not empty
+
+Do not assess the quality of the description.
+
+Semantic quality belongs to later review.
+
+---
+
+# 10. Unlock Relationship
+
+Where the metadata contains:
+
+```yaml
+unlocksOn:
+```
+
+the validator should verify that the referenced unlock condition is structurally valid according to the existing Cabinet definitions.
+
+The implementation must use the existing Cabinet source of truth.
+
+Do not invent a new unlock-state model.
+
+If `unlocksOn` maps to a known Cabinet state or artifact definition, verify that the referenced identifier exists.
+
+If the repository uses another representation, follow the repository representation instead.
+
+---
+
+# 11. Previous Module
+
+Where:
+
+```yaml
+previousModule:
+```
+
+is present, the validator should check:
+
+- the referenced module can be resolved
+- the module exists
+- the relationship is internally consistent where the repository provides enough information to establish that
+
+A missing previous module reference should produce a deterministic finding when the rule requires it.
+
+A module with no previous module may be valid if it is the first module in its path.
+
+Do not assume every module must have a previous module.
+
+---
+
+# 12. Next Module
+
+Where:
+
+```yaml
+nextModule:
+```
+
+is present, validate:
+
+- the referenced module exists
+- the reference uses the expected repository identifier
+- the relationship is internally consistent where deterministically verifiable
+
+A final module may legitimately have no next module.
+
+Do not create a failure merely because `nextModule` is absent unless the applicable rule explicitly requires it.
+
+---
+
+# 13. Self-Reference
+
+The validator should detect impossible self-references where prohibited.
+
+Example:
+
+```yaml
+previousModule: module-02-purdue-model-and-network-architecture
+```
+
+inside that same module.
+
+If the Cabinet/module model prohibits self-reference, this is a deterministic failure.
+
+Do not assume that every repeated identifier is self-reference without resolving it against the actual module identity.
+
+---
+
+# 14. Reciprocal Relationships
+
+Where the repository model expects reciprocal relationships, the validator may verify them.
+
+Example:
+
+Module A:
+
+```yaml
+nextModule: module-b
+```
+
+Module B:
+
+```yaml
+previousModule: module-a
+```
+
+If the repository explicitly requires this relationship to be reciprocal, validate it.
+
+If reciprocity is not an established repository rule, do not invent it.
+
+---
+
+# 15. Module Ordering
+
+Where module ordering is explicitly represented in the existing metadata/index, the validator may check that Cabinet progression does not contradict it.
+
+For example, if a module's `nextModule` points backward to an earlier module where the repository explicitly defines forward progression, report the inconsistency.
+
+Do not assume numeric ordering alone defines the learning sequence unless the existing module loader/index establishes that convention.
+
+---
+
+# 16. Hands-On Requirement
+
+Some module families require practical work.
+
+The validator may check for the structural presence of a hands-on section when the applicable rule explicitly requires it.
+
+Examples of possible structural markers include:
+
+```text
+Hands-On Lab
+Setting Up
+Hands-On
+Section 3: Hands-On
+```
+
+However, the implementation must first inspect the existing module structures and use a robust family-aware definition.
+
+It must not require one exact heading across all modules.
+
+---
+
+# 17. Hands-On Quality Is Not Deterministic
+
+The validator must not claim that a lab is good merely because it contains:
+
+```text
+Step 1
+Step 2
+Step 3
+```
+
+Likewise, it must not automatically fail a lab because it has fewer or more steps.
+
+The following belong to later review:
+
+- realistic task design
+- technical correctness
+- difficulty
+- troubleshooting value
+- enterprise relevance
+- learner independence
+- usefulness of the result
+
+---
+
+# 18. Cabinet Section Requirement
+
+Where a module family requires a Cabinet section, the validator may check that the corresponding structural content exists.
+
+For example, an OT module may contain a section conceptually corresponding to:
+
+```text
+Section 5: Cabinet
+```
+
+The validator should use heading/content structure rather than requiring one exact heading if the repository intentionally permits variations.
+
+The key deterministic question is:
+
+> Does the module contain the required Cabinet/artifact output structure?
+
+---
+
+# 19. Portfolio Entry Consistency
+
+Foundation modules may contain sections such as:
+
+```text
+Your First Portfolio Entry
+Your Second Portfolio Entry
+```
+
+The validator may check for the presence of the required portfolio artifact section where the Foundation rule explicitly requires it.
+
+It should not require:
+
+```text
+Your First Portfolio Entry
+```
+
+specifically for every module.
+
+The section numbering can vary.
+
+The validator should not confuse portfolio entry numbering with Cabinet artifact identity.
+
+---
+
+# 20. Artifact-to-Content Relationship
+
+Where a module declares an artifact, the validator should establish that the module contains a corresponding practical output reference.
+
+This may be a deterministic structural check if the existing module structure makes the relationship explicit.
+
+For example:
+
+```yaml
+cabinetArtifact:
+  name: Network Traffic Analysis Report
+```
+
+and the module contains a Cabinet/portfolio section referring to the artifact.
+
+The validator should not attempt semantic similarity scoring in this ticket.
+
+If exact matching is not reliable, the rule should remain human/AI review rather than become an aggressive deterministic check.
+
+---
+
+# 21. Duplicate Artifact Identifiers
+
+Where the Cabinet model defines a unique artifact identifier, detect duplicates.
+
+If the Cabinet currently identifies artifacts by another mechanism, use that mechanism.
+
+Do not create a new ID field solely for this validator.
+
+A duplicate artifact name alone should not automatically be treated as a duplicate artifact unless the repository defines names as unique identifiers.
+
+---
+
+# 22. Artifact Progression
+
+The validator should check deterministic progression relationships where available.
+
+Potential checks include:
+
+```text
+artifact unlocks on module A
+artifact references module A
+module A exists
+next module exists
+previous module exists
+```
+
+The validator must not attempt to determine whether the progression is pedagogically optimal.
+
+---
+
+# 23. Findings
+
+All findings must use CP-AUTO-004.
+
+Example:
+
+```yaml
+id: example-finding-id
+ruleId: CP-CAB-003
+severity: HARD
+status: FAIL
+category: cabinet
+message: "Cabinet artifact references a module that does not exist."
+file: "content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx"
+location:
+  line: 18
+  column: 5
+evidence:
+  type: relationship
+  field: nextModule
+  value: "module-03-nonexistent"
+remediation: "Update the module relationship to reference an implemented module or remove it if this is the final module."
+source:
+  type: deterministic
+  validator: cabinet
+```
+
+---
+
+# 24. Avoid Cascading Findings
+
+If the Cabinet metadata object cannot be parsed, do not emit a large number of misleading child-field failures.
+
+For example:
+
+```text
+✖ cabinetArtifact is malformed
+```
+
+may be sufficient to establish the root issue.
+
+Dependent checks should be skipped internally when their required input is unavailable.
+
+The output must not imply that skipped checks passed.
+
+---
+
+# 25. Family-Aware Validation
+
+Foundation and OT modules must be validated according to their actual family rules.
+
+Do not apply Foundation-specific assumptions to OT modules.
+
+Do not apply OT-specific section requirements to Foundation modules.
+
+The validator should determine the family using the same repository conventions used by the existing loaders.
+
+---
+
+# 26. Existing Content Test Set
+
+Run the validator against all currently implemented modules.
+
+## Foundation
+
+```text
+content/foundations/how-the-internet-works.mdx
+content/foundations/linux-fundamentals.mdx
+content/foundations/windows-and-active-directory.mdx
+content/foundations/security-fundamentals.mdx
+content/foundations/cloud-fundamentals.mdx
+content/foundations/python-for-security.mdx
+```
+
+## OT Security
+
+```text
+content/paths/ot-security/module-01-what-ot-security-is.mdx
+content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx
+```
+
+The implementation should first learn what the existing valid structures look like.
+
+Do not assume that the old generic template represents every live module.
+
+---
+
+# 27. Required Test Cases
+
+Create representative controlled test cases for:
+
+1. valid Foundation artifact metadata
+2. valid OT Cabinet structure
+3. missing Cabinet artifact
+4. malformed Cabinet artifact
+5. missing required artifact name
+6. missing required artifact description
+7. invalid `previousModule`
+8. invalid `nextModule`
+9. self-reference
+10. invalid unlock relationship
+11. missing required Cabinet section
+12. missing required hands-on section
+13. valid final module with no `nextModule`
+14. valid first module with no `previousModule`
+15. valid module with multiple practical steps
+16. duplicate artifact identifier if the existing Cabinet model defines one
+17. unresolved relationship without crashing the whole run
+
+Tests should use fixtures or equivalent controlled inputs.
+
+Do not intentionally corrupt production content just to test failures.
+
+---
+
+# 28. Output
+
+Clean example:
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+Lab / Cabinet / Artifact validation
+
+Files checked: 8
+PASS: 8
+WARNING: 0
+NEEDS HUMAN REVIEW: 0
+FAIL: 0
+
+PASS
+```
+
+Failure example:
+
+```text
+✖ FAIL  CP-CAB-003
+  content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx:18:5
+  Cabinet artifact references a module that does not exist.
+  Fix: Update the relationship to a valid module or remove it if appropriate.
+
+Summary
+  PASS: 7
+  FAIL: 1
+
+Result: FAIL
+```
+
+---
+
+# 29. Integration
+
+CP-AUTO-008 must use the same output contract as:
+
+```text
+CP-AUTO-005
+CP-AUTO-006
+CP-AUTO-007
+```
+
+The eventual QA runner should be able to aggregate:
+
+```text
+File/frontmatter
++
+Style
++
+Scenario/company
++
+Lab/Cabinet/artifact
+```
+
+into a single CP-AUTO-004 run result.
+
+---
+
+# 30. What This Ticket Does Not Define
+
+This ticket does not define:
+
+- whether a lab is technically correct
+- whether a lab is realistic
+- whether a lab is sufficiently difficult
+- whether a Cabinet artifact is impressive
+- whether an artifact would impress an employer
+- whether module sequencing is pedagogically optimal
+- AI-generated quality scores
+- portfolio quality scores
+- automatic content rewriting
+- automatic PR creation
+- automatic merging
+- arbitrary lab execution
+- security command execution
+
+Those belong to later AI-assisted, technical-validation, or human-review work.
+
+---
+
+# 31. Acceptance Criteria
+
+CP-AUTO-008 is complete when:
+
+- [ ] Existing Cabinet definitions/types have been inspected and reused.
+- [ ] Foundation and OT structures are handled separately where required.
+- [ ] Deterministic Cabinet metadata checks are implemented.
+- [ ] Artifact relationship checks are implemented where supported by repository data.
+- [ ] Previous/next module references are validated.
+- [ ] Self-reference is detected where prohibited.
+- [ ] Unlock relationships are validated where a repository source of truth exists.
+- [ ] Required hands-on structure is checked only where explicitly required.
+- [ ] Required Cabinet/portfolio structure is checked only where explicitly required.
+- [ ] Existing Foundation and OT modules are tested.
+- [ ] Invalid fixtures cover representative failure cases.
+- [ ] Findings conform to CP-AUTO-004.
+- [ ] Cascading false positives are minimized.
+- [ ] No AI is required.
+- [ ] No content is automatically modified.
+- [ ] No arbitrary commands or MDX code are executed.
+- [ ] No new content or Cabinet schema is invented.
+
+---
+
+# 32. Definition of Done
+
+CP-AUTO-008 is successful when CyberPivot can reliably answer the deterministic structural question:
+
+> "Does this module's practical work and Cabinet artifact structure match the repository's defined content and progression model?"
+
+It must leave these questions for later review:
+
+> "Is this lab good?"
+
+> "Is this artifact valuable?"
+
+> "Is this learning progression pedagogically strong?"
+
+Those are not deterministic QA questions.
+
+---
+
+# 33. Next Ticket
+
+**CP-AUTO-009 — Test Against Existing Content**
+
+This is where the first four validators are run together against the real CyberPivot content.
+
+The objective is to find:
+
+- false positives
+- false negatives
+- rules that are too strict
+- rules that are too vague
+- differences between Foundation and OT structures
+- assumptions that need to be corrected before GitHub integration
+
+No new validator should be added during CP-AUTO-009 unless testing reveals a genuine missing deterministic rule.

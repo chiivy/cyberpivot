@@ -1,0 +1,656 @@
+# CyberPivot — Content Assurance Rule Classification
+
+**Document:** CP-AUTO-003  
+**Status:** Draft for implementation  
+**Purpose:** Classify the CP-AUTO-002 content rules by the type of assurance that can realistically be performed.
+
+---
+
+## 1. Objective
+
+CP-AUTO-003 answers one question:
+
+> **What should CyberPivot automate, what should AI review later, and what must remain a human decision?**
+
+The classification is deliberately conservative.
+
+A rule is **not** classified as deterministic simply because a computer can search for text. The automated result must be meaningful enough that CyberPivot can trust the finding.
+
+Likewise, AI review is not treated as proof of correctness. AI can identify likely issues and provide review context, but technical accuracy, factual verification, and publication decisions remain human responsibilities.
+
+---
+
+# 2. Assurance Layers
+
+CyberPivot Content Assurance has three practical layers.
+
+## Layer 1 — Deterministic QA
+
+The machine checks facts that can be established from repository data or well-defined syntax.
+
+Examples:
+
+- frontmatter exists
+- required fields exist
+- values have valid types
+- slugs are unique
+- internal module references resolve
+- navigation is internally consistent
+- required structural components exist
+- em dashes are absent
+- obvious malformed links exist
+
+**Purpose:** Catch objective defects early and cheaply.
+
+**Can block a PR:** Yes, for selected HARD rules.
+
+---
+
+## Layer 2 — AI-Assisted Content Review
+
+AI reads the module and evaluates content against CyberPivot's learning and writing standards.
+
+Examples:
+
+- Is the explanation technically coherent?
+- Does the scenario actually establish relevance?
+- Does the lab teach what the module claims?
+- Is the Cabinet artifact meaningful?
+- Is the writing genuinely second-person/in-role?
+- Does the module contain suspicious padding or repetition?
+- Are factual/real-world claims worth human verification?
+
+**Purpose:** Surface quality issues that require semantic understanding.
+
+**Can block a PR:** Initially no. AI findings should be review findings until confidence, evaluation, and human override mechanisms are established.
+
+---
+
+## Layer 3 — Human Review
+
+A person makes the final judgment on:
+
+- technical correctness of substantive claims
+- real-world incident accuracy
+- resource appropriateness
+- pedagogical quality
+- lab safety and scope
+- artifact quality
+- publication readiness
+
+**Purpose:** Protect CyberPivot's credibility.
+
+---
+
+# 3. Classification Rules
+
+The following classifications use the CP-AUTO-002 rule IDs.
+
+---
+
+# 4. File and Parsing Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-FILE-001 Supported Content File Types | Deterministic | Implement |
+| CP-FILE-002 Ignore Placeholder Path Directories | Deterministic | Implement |
+| CP-FILE-003 Every Inspected Module Must Parse | Deterministic | Implement |
+
+### Rationale
+
+These are repository facts. No AI judgment is required.
+
+---
+
+# 5. Frontmatter Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-FM-001 Required Foundation Metadata | Deterministic | Implement |
+| CP-FM-002 Required OT Metadata | Deterministic | Implement |
+| CP-FM-003 Slug Present and Non-Empty | Deterministic | Implement |
+| CP-FM-004 Slug Uniqueness | Deterministic | Implement |
+| CP-FM-005 Module Number Validity | Deterministic | Implement after confirming live type |
+| CP-FM-006 Title Present | Deterministic | Implement |
+| CP-FM-007 Description Present | Deterministic | Implement |
+| CP-FM-008 Reading Time Metadata | Deterministic | Implement after confirming live type |
+| CP-FM-009 Lab Time Metadata | Deterministic | Implement after confirming live type |
+| CP-FM-010 Tools Is Structured Metadata | Deterministic | Implement |
+| CP-FM-011 Tool Name and Type | Deterministic | Implement |
+| CP-FM-012 Tool URL Format | Deterministic | Implement |
+| CP-FM-013 Enterprise Tools Note | Deterministic + Warning | Implement structural check only |
+| CP-FM-014 Cabinet Artifact Object | Deterministic | Implement |
+| CP-FM-015 Cabinet Artifact Name | Deterministic | Implement |
+| CP-FM-016 Cabinet Artifact Description | Deterministic | Implement |
+| CP-FM-017 Cabinet Artifact Unlock Condition | Deterministic | Implement after confirming live type |
+| CP-FM-018 Previous/Next References | Deterministic | Implement |
+| CP-FM-019 No Self-Reference | Deterministic | Implement |
+| CP-FM-020 Navigation Consistency | Deterministic | Implement |
+| CP-FM-021 Terminal Module Navigation | Deterministic | Implement |
+
+### Important boundary
+
+The validator should **reuse the live TypeScript types and registries**. It should not invent:
+
+- allowed `tools[].type` values
+- `readingTime` units
+- `labTime` units
+- `unlocksOn` values
+- module-number rules
+
+until those are confirmed from the repository.
+
+---
+
+# 6. Module Family Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-FAMILY-001 Foundation Family | Deterministic | Implement |
+| CP-FAMILY-002 OT Security Family | Deterministic | Implement |
+| CP-FAMILY-003 Do Not Apply Foundation Skeleton to OT | Deterministic | Implement through family-specific validators |
+| CP-FAMILY-004 Do Not Require Identical Heading Order | Deterministic design rule | Encode architecture, not a content warning |
+
+These are important because the current repository explicitly contains different valid module structures.
+
+---
+
+# 7. Foundation Structure Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-FOUND-001 Scenario/Context | AI-Assisted + Human | Later |
+| CP-FOUND-002 Hands-On Component | Deterministic | Implement |
+| CP-FOUND-003 Numbered Practical Tasks | Deterministic heuristic + Warning | Later in first QA |
+| CP-FOUND-004 Enterprise Context | Deterministic structural + AI/Human semantic | Implement structural portion |
+| CP-FOUND-005 Cabinet Portfolio Entry | Deterministic structural | Implement |
+| CP-FOUND-006 Artifact Alignment | AI-Assisted + Human | Later |
+| CP-FOUND-007 Analysis/Answer Sections Optional | Deterministic design rule | Do not fail |
+| CP-FOUND-008 Final Foundation Navigation | Deterministic | Implement |
+
+### Important distinction
+
+For `CP-FOUND-004`, the CLI can establish that an enterprise section exists.
+
+It cannot establish that the enterprise explanation is accurate.
+
+Therefore:
+
+> **Structure can be automated. Meaning cannot be assumed.**
+
+---
+
+# 8. OT Structure Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-OT-001 OT Role Slug | Deterministic | Implement |
+| CP-OT-002 OT Path Slug | Deterministic | Implement |
+| CP-OT-003 OT Hands-On Section | Deterministic | Implement |
+| CP-OT-004 OT Enterprise Section | Deterministic | Implement |
+| CP-OT-005 OT Cabinet Section | Deterministic | Implement |
+| CP-OT-006 OT Step-Based Lab | Deterministic heuristic + Warning | Later |
+| CP-OT-007 OT Artifact Alignment | AI-Assisted + Human | Later |
+| CP-OT-008 OT Navigation Integrity | Deterministic | Implement |
+
+---
+
+# 9. Learning-Quality Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-LEARN-001 Real-World Relevance | AI-Assisted + Human | Later |
+| CP-LEARN-002 Scenario-First Context | AI-Assisted + Human | Later |
+| CP-LEARN-003 Concept Explanation | AI-Assisted + Human | Later |
+| CP-LEARN-004 Hands-On Learning | Deterministic structural + AI/Human semantic | Split |
+| CP-LEARN-005 Enterprise Equivalent | Deterministic structural + AI/Human semantic | Split |
+| CP-LEARN-006 Tangible Output | Deterministic structural + AI/Human semantic | Split |
+| CP-LEARN-007 Job Relevance | AI-Assisted + Human | Later |
+
+### Split-rule principle
+
+Some CyberPivot rules contain two different questions.
+
+Example:
+
+> Does the module contain a hands-on section?
+
+This is deterministic.
+
+> Is the hands-on exercise actually useful and appropriate?
+
+This is not deterministic.
+
+The QA system should therefore report them separately rather than pretending one check proves both.
+
+---
+
+# 10. Style Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-STYLE-001 Second-Person/In-Role Voice | AI-Assisted + Human | Later |
+| CP-STYLE-002 Practitioner Voice | AI-Assisted + Human | Later |
+| CP-STYLE-003 No AI-Sounding Phrases | AI-Assisted + Human | Later |
+| CP-STYLE-004 No Em Dash | Deterministic | Implement |
+
+### Why not deterministic voice checking?
+
+Counting words such as "you" or "your" cannot establish that the content actually maintains an in-role narrative.
+
+A module can contain hundreds of second-person words and still sound detached or generic.
+
+---
+
+# 11. Tool and Resource Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-TOOL-001 Tool Metadata Matches Schema | Deterministic | Implement |
+| CP-TOOL-002 No Invented Tool Metadata | AI-Assisted + Human | Later |
+| CP-TOOL-003 URL Syntax | Deterministic | Implement |
+| CP-TOOL-004 URL Reachability | Deterministic external check + Warning | Later |
+| CP-TOOL-005 URL Appropriateness | AI-Assisted + Human | Later |
+| CP-TOOL-006 No Invented Resources | AI-Assisted + Human | Later |
+
+### Important distinction
+
+A URL checker can establish:
+
+> "This URL responded."
+
+It cannot establish:
+
+> "This is the correct resource CyberPivot should recommend."
+
+Those are different QA questions.
+
+---
+
+# 12. Technical Accuracy Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-TECH-001 Technical Claims | AI-Assisted + Human | Later |
+| CP-TECH-002 Commands and Code | Deterministic syntax detection + Human | Later |
+| CP-TECH-003 Environment Assumptions | AI-Assisted + Human | Later |
+| CP-TECH-004 Security Tool Behaviour | AI-Assisted + Human | Later |
+
+### Critical decision
+
+The first QA CLI must **not claim to validate cybersecurity correctness**.
+
+That requires a different assurance layer.
+
+Later, CyberPivot can build a Technical Validation Agent that executes selected labs in controlled environments.
+
+---
+
+# 13. Scenario Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-SCEN-001 Fictional Scenario Consistency | AI-Assisted + Human | Later |
+| CP-SCEN-002 Real Incident Claims | AI-Assisted + Human | Later |
+| CP-SCEN-003 Do Not Present Fiction as Fact | AI-Assisted + Human | Later |
+
+The deterministic CLI can identify obvious names and headings.
+
+It cannot establish whether a scenario is factually coherent.
+
+---
+
+# 14. Cabinet Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-CAB-001 Applicable Module Has Artifact | Deterministic | Implement |
+| CP-CAB-002 Artifact Has Name | Deterministic | Implement |
+| CP-CAB-003 Artifact Has Description | Deterministic | Implement |
+| CP-CAB-004 Artifact Has Unlock Condition | Deterministic | Implement |
+| CP-CAB-005 Artifact Is Produced by Work | AI-Assisted + Human | Later |
+| CP-CAB-006 Artifact Is Not Merely a Template | AI-Assisted + Human | Later |
+| CP-CAB-007 Body/Metadata Consistency | AI-Assisted + Human | Later |
+
+The metadata checks are deterministic.
+
+The value of the artifact is not.
+
+---
+
+# 15. Access and Commercial Model
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-ACCESS-001 Foundation Access Classification | Deterministic once source of truth is confirmed | Confirm first |
+| CP-ACCESS-002 Role-Path Default Access | Deterministic once source of truth is confirmed | Confirm first |
+| CP-ACCESS-003 No Historical Open-Source Enforcement | Deterministic design rule | Apply |
+
+### Important
+
+Do not infer access status solely from the folder name.
+
+The QA engine must first identify the application's actual access-control source of truth.
+
+---
+
+# 16. Internal Consistency
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-CONSIST-001 Frontmatter vs File Path | Deterministic | Implement |
+| CP-CONSIST-002 Frontmatter vs Registry | Deterministic | Implement |
+| CP-CONSIST-003 Role Module List vs MDX | Deterministic + Warning initially | Implement for completed paths |
+| CP-CONSIST-004 Broken Internal References | Deterministic | Implement |
+
+These checks should reuse the existing registries rather than duplicate their data.
+
+---
+
+# 17. Link Rules
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-LINK-001 Markdown/MDX Link Syntax | Deterministic | Implement |
+| CP-LINK-002 Internal Link Target | Deterministic | Implement |
+| CP-LINK-003 External URL Reachability | Deterministic + Warning | Later |
+| CP-LINK-004 External Resource Appropriateness | AI-Assisted + Human | Later |
+
+---
+
+# 18. Length and Repetition
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-LENGTH-001 Empty Sections | Deterministic | Implement |
+| CP-LENGTH-002 Suspiciously Short Practical Section | Deterministic heuristic + Warning | Later |
+| CP-LENGTH-003 Repetition | AI-Assisted | Later |
+
+No arbitrary word-count gate should be introduced merely to make the QA system look sophisticated.
+
+---
+
+# 19. Safety and Security
+
+| Rule | Classification | Initial Action |
+|---|---|---|
+| CP-SAFE-001 No Secrets | Deterministic pattern scan | Implement |
+| CP-SAFE-002 Lab Scope | AI-Assisted + Human | Later |
+| CP-SAFE-003 Dangerous Automation | AI-Assisted + Human / specialist review | Later |
+
+The first release can safely scan for obvious credential/secrets patterns.
+
+It should **not execute arbitrary security content**.
+
+---
+
+# 20. First CLI Scope
+
+The first Content Assurance CLI should implement approximately the following groups:
+
+### A. File integrity
+
+- CP-FILE-001
+- CP-FILE-002
+- CP-FILE-003
+
+### B. Frontmatter
+
+- CP-FM-001
+- CP-FM-002
+- CP-FM-003
+- CP-FM-004
+- CP-FM-005
+- CP-FM-006
+- CP-FM-007
+- CP-FM-008
+- CP-FM-009
+- CP-FM-010
+- CP-FM-011
+- CP-FM-012
+- CP-FM-014
+- CP-FM-015
+- CP-FM-016
+- CP-FM-018
+- CP-FM-019
+- CP-FM-020
+- CP-FM-021
+
+Subject to confirmation of the live types:
+
+- CP-FM-013
+- CP-FM-017
+
+### C. Module-family integrity
+
+- CP-FAMILY-001
+- CP-FAMILY-002
+- CP-FAMILY-003
+- CP-FAMILY-004
+
+### D. Foundation structure
+
+- CP-FOUND-002
+- CP-FOUND-004 structural portion
+- CP-FOUND-005
+- CP-FOUND-008
+
+### E. OT structure
+
+- CP-OT-001
+- CP-OT-002
+- CP-OT-003
+- CP-OT-004
+- CP-OT-005
+- CP-OT-008
+
+### F. Basic style
+
+- CP-STYLE-004
+
+### G. Tools and links
+
+- CP-TOOL-001
+- CP-TOOL-003
+- CP-LINK-001
+- CP-LINK-002
+
+### H. Internal consistency
+
+- CP-CONSIST-001
+- CP-CONSIST-002
+- CP-CONSIST-003
+- CP-CONSIST-004
+
+### I. Basic safety
+
+- CP-SAFE-001
+
+---
+
+# 21. AI Reviewer Scope
+
+The later AI content reviewer should initially focus on:
+
+### Learning quality
+
+- CP-LEARN-001
+- CP-LEARN-002
+- CP-LEARN-003
+- CP-LEARN-004 semantic portion
+- CP-LEARN-005 semantic portion
+- CP-LEARN-006 semantic portion
+- CP-LEARN-007
+
+### Writing
+
+- CP-STYLE-001
+- CP-STYLE-002
+- CP-STYLE-003
+
+### Tools/resources
+
+- CP-TOOL-002
+- CP-TOOL-005
+- CP-TOOL-006
+
+### Technical review
+
+- CP-TECH-001
+- CP-TECH-003
+- CP-TECH-004
+
+### Scenarios
+
+- CP-SCEN-001
+- CP-SCEN-002
+- CP-SCEN-003
+
+### Cabinet quality
+
+- CP-CAB-005
+- CP-CAB-006
+- CP-CAB-007
+
+### Repetition
+
+- CP-LENGTH-003
+
+### Lab safety
+
+- CP-SAFE-002
+- CP-SAFE-003
+
+AI findings should initially be marked **NEEDS HUMAN REVIEW**, not automatic FAIL.
+
+---
+
+# 22. Human-Only Responsibilities
+
+Human review remains the final authority for:
+
+1. Technical correctness of important cybersecurity claims
+2. Accuracy of real-world incidents
+3. Accuracy of enterprise-product behaviour
+4. Suitability of recommended tools/resources
+5. Quality and safety of hands-on labs
+6. Whether a Cabinet artifact is genuinely useful
+7. Whether a module feels like real practitioner work
+8. Whether the module is publishable
+9. Exceptions to standard content rules
+10. Final acceptance of AI-generated findings
+
+---
+
+# 23. Rule Classification Summary
+
+| Layer | Approximate scope | Primary purpose |
+|---|---:|---|
+| Deterministic | ~40+ rules | Catch objective repository/content defects |
+| AI-assisted | ~25+ rules | Surface semantic/content-quality issues |
+| Human | Overlaps AI-assisted | Final judgment and approval |
+| Deferred | Selected checks | Future capability after evidence/infrastructure exists |
+
+The numbers are approximate because several rules intentionally have split responsibilities.
+
+---
+
+# 24. QA Decision Model
+
+The eventual system should distinguish:
+
+### PASS
+
+No blocking deterministic failures.
+
+### WARNING
+
+A non-blocking issue exists.
+
+### NEEDS HUMAN REVIEW
+
+AI/heuristic review found an issue or the content contains a claim that requires human verification.
+
+### FAIL
+
+A deterministic HARD rule is violated.
+
+A module can therefore have:
+
+> **PASS + NEEDS HUMAN REVIEW**
+
+That means structural QA passed, but the content is not automatically considered publish-ready.
+
+---
+
+# 25. What We Must NOT Build
+
+The first QA system should not:
+
+- use an LLM for every file just to validate YAML
+- block PRs based on subjective AI opinions
+- invent a new module schema
+- require identical headings across module families
+- require exactly five lab tasks
+- require every optional section
+- declare technical accuracy from keyword presence
+- treat URL reachability as resource quality
+- automatically rewrite failing modules
+- execute arbitrary security commands
+- auto-publish content
+- auto-merge PRs
+
+---
+
+# 26. Prerequisites Before CP-AUTO-005
+
+Before Cursor implements the CLI, confirm these live repository details:
+
+1. Exact types for `readingTime`
+2. Exact types for `labTime`
+3. Exact `tools[].type` values
+4. Exact `cabinetArtifact.unlocksOn` representation
+5. Module registry relationships
+6. Actual access-control source of truth
+7. Internal link conventions
+8. Whether Intro MDX belongs in the same validator
+
+These should be discovered from the repository, not guessed.
+
+---
+
+# 27. Definition of Done for CP-AUTO-003
+
+CP-AUTO-003 is complete when:
+
+- every CP-AUTO-002 rule has a classification;
+- deterministic, AI-assisted, and human responsibilities are separated;
+- split rules are explicitly identified;
+- the first CLI scope is defined;
+- subjective rules are not accidentally converted into hard gates;
+- unresolved repository details are documented;
+- the classification can be turned directly into implementation and test tickets.
+
+---
+
+# 28. Next Ticket
+
+**CP-AUTO-004 — Define the QA output contract.**
+
+Before writing the validator, define exactly what it returns.
+
+That contract should specify:
+
+- rule ID
+- severity
+- status
+- file
+- location
+- message
+- evidence
+- remediation
+- validator version
+- summary counts
+- exit code
+
+This gives Cursor a stable interface to implement against and gives the future GitHub PR gate and AI reviewer the same output format.

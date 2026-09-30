@@ -77,17 +77,17 @@ Unlike Windows, where you have separate drive letters like `C:` and `D:`, Linux 
 
 A handful of directories matter constantly in security and system administration work.
 
-`/etc` — configuration files for almost everything on the system live here. Network settings, user account definitions, service configurations. When something is misconfigured, this is often where you look.
+`/etc`: configuration files for almost everything on the system live here. Network settings, user account definitions, service configurations. When something is misconfigured, this is often where you look.
 
-`/var` — variable data, meaning data that changes while the system runs. Most importantly, `/var/log` is where most system and application logs live. This is one of the first places a SOC analyst looks during an investigation.
+`/var`: variable data, meaning data that changes while the system runs. Most importantly, `/var/log` is where most system and application logs live. This is one of the first places a SOC analyst looks during an investigation.
 
-`/home` — every regular user's personal folder lives here, similar to `C:\Users` on Windows. `/home/analyst` would be a personal space belonging to a user called analyst.
+`/home`: every regular user's personal folder lives here, similar to `C:\Users` on Windows. `/home/analyst` would be a personal space belonging to a user called analyst.
 
-`/root` — the home folder belonging specifically to the root user, the all-powerful administrator account. Not to be confused with the root directory `/` itself, which is a common point of early confusion.
+`/root`: the home folder belonging specifically to the root user, the all-powerful administrator account. Not to be confused with the root directory `/` itself, which is a common point of early confusion.
 
-`/bin` and `/usr/bin` — this is where the actual programs live, the executable files that commands like `ls` and `grep` actually run.
+`/bin` and `/usr/bin`: this is where the actual programs live, the executable files that commands like `ls` and `grep` actually run.
 
-`/tmp` — temporary files. Anyone can write here. Attackers frequently drop malicious files in `/tmp` because it is writable and gets cleaned automatically, which also makes it a place worth checking during an investigation.
+`/tmp`: temporary files. Anyone can write here. Attackers frequently drop malicious files in `/tmp` because it is writable and gets cleaned automatically, which also makes it a place worth checking during an investigation.
 
 You do not need to memorise this list. You need to recognise these names the moment you see them in a log path or a command, and have a rough sense of why something living there matters.
 
@@ -95,23 +95,23 @@ You do not need to memorise this list. You need to recognise these names the mom
 
 These five commands are how you move around and look at things. You will use all of them constantly, in every module from here onward.
 
-`pwd` — print working directory. Tells you exactly where you currently are in the filesystem. The first thing to run when you feel lost.
+`pwd`: print working directory. Tells you exactly where you currently are in the filesystem. The first thing to run when you feel lost.
 
-`ls` — list. Shows you what is inside the current directory. Add `-l` for a detailed long listing showing permissions, owner, size, and date. Add `-a` to also show hidden files, which on Linux are any files or folders starting with a dot, like `.bashrc`. Combined as `ls -la`, this is one of the most-typed commands in all of Linux.
+`ls`: list. Shows you what is inside the current directory. Add `-l` for a detailed long listing showing permissions, owner, size, and date. Add `-a` to also show hidden files, which on Linux are any files or folders starting with a dot, like `.bashrc`. Combined as `ls -la`, this is one of the most-typed commands in all of Linux.
 
-`cd` — change directory. `cd /var/log` takes you straight there. `cd ..` moves you up one level. `cd ~` or just `cd` with nothing after it takes you home.
+`cd`: change directory. `cd /var/log` takes you straight there. `cd ..` moves you up one level. `cd ~` or just `cd` with nothing after it takes you home.
 
-`cat` — short for concatenate, but in practice it just means "show me the full contents of this file." `cat /etc/hostname` prints out whatever is in that file.
+`cat`: short for concatenate, but in practice it just means "show me the full contents of this file." `cat /etc/hostname` prints out whatever is in that file.
 
-`less` — for files too long to comfortably read with `cat`. `less /var/log/syslog` opens the file in a scrollable view. Press the space bar to page down, `q` to quit. For long log files, `less` is what you actually want, not `cat`.
+`less`: for files too long to comfortably read with `cat`. `less /var/log/syslog` opens the file in a scrollable view. Press the space bar to page down, `q` to quit. For long log files, `less` is what you actually want, not `cat`.
 
 ## Users, Permissions, and Why They Are a Security Concept, Not Just CLI Trivia
 
 This section matters more than it might first appear. Permissions are not an administrative detail. They are one of the most fundamental security controls in any operating system, and misconfigured permissions are a real, recurring cause of breaches.
 
-`whoami` — tells you which user you currently are. Always worth checking, especially when you SSH into an unfamiliar system.
+`whoami`: tells you which user you currently are. Always worth checking, especially when you SSH into an unfamiliar system.
 
-`sudo` — short for "superuser do." Running a command with `sudo` in front of it executes that command with administrator-level privileges, after you confirm with your password. This is least privilege in practice, a concept covered in the Introduction. Most of the time you operate as a regular user with limited permissions. You only elevate to admin privileges for the specific moment you need them, then drop back down. This is exactly the principle behind Privileged Identity Management in enterprise environments, which you will encounter again in the Azure Security Engineer path.
+`sudo`: short for "superuser do." Running a command with `sudo` in front of it executes that command with administrator-level privileges, after you confirm with your password. This is least privilege in practice, a concept covered in the Introduction. Most of the time you operate as a regular user with limited permissions. You only elevate to admin privileges for the specific moment you need them, then drop back down. This is exactly the principle behind Privileged Identity Management in enterprise environments, which you will encounter again in the Azure Security Engineer path.
 
 Run `ls -l` on any file and the very first part of the output, something like `-rwxr-xr--`, is the permission string. It looks cryptic at first but breaks down cleanly once you understand who it is actually describing.
 
@@ -129,9 +129,9 @@ Within each of those three groups, the three characters represent read (`r`), wr
 
 So reading `rwxr-xr--` in full: the owner can read, write, and execute. The group can read and execute but not write. Everyone else can only read.
 
-`chmod` — change mode, meaning change permissions. `chmod 755 script.sh` is a pattern you will see constantly, and it maps directly to the rwx structure above. Each digit represents one of the three categories, owner, group, everyone, in that order, and the digit is simply read worth 4, write worth 2, and execute worth 1, added together. So 7 means read+write+execute (4+2+1), 5 means read+execute (4+1), and so on. `755` therefore means the owner gets full control, while the group and everyone else can read and execute but not modify.
+`chmod`: change mode, meaning change permissions. `chmod 755 script.sh` is a pattern you will see constantly, and it maps directly to the rwx structure above. Each digit represents one of the three categories, owner, group, everyone, in that order, and the digit is simply read worth 4, write worth 2, and execute worth 1, added together. So 7 means read+write+execute (4+2+1), 5 means read+execute (4+1), and so on. `755` therefore means the owner gets full control, while the group and everyone else can read and execute but not modify.
 
-`chown` — change owner. `chown analyst file.txt` makes the user called analyst the new owner of that file.
+`chown`: change owner. `chown analyst file.txt` makes the user called analyst the new owner of that file.
 
 Why this matters in security work specifically: a huge number of real misconfigurations and breaches trace back to permissions being too loose. A file that should only be readable by the owner, but is instead readable by everyone, can leak credentials, private keys, or sensitive configuration. A script that should not be executable by random users, but is, can become an attack path. When you review a Linux server during an investigation or an audit, checking permissions on sensitive files is a standard, expected step, not an afterthought.
 
@@ -139,9 +139,9 @@ Why this matters in security work specifically: a huge number of real misconfigu
 
 A server can have millions of files and log entries. Knowing how to find exactly what you need, fast, is the difference between an efficient investigation and an overwhelming one.
 
-`grep` — searches for a specific pattern of text inside a file or files. `grep "failed password" /var/log/auth.log` finds every line in that log file containing the phrase "failed password," exactly the kind of search you would run while investigating a suspected brute-force login attempt.
+`grep`: searches for a specific pattern of text inside a file or files. `grep "failed password" /var/log/auth.log` finds every line in that log file containing the phrase "failed password," exactly the kind of search you would run while investigating a suspected brute-force login attempt.
 
-`find` — searches the filesystem itself for files matching certain criteria, rather than searching inside file contents. `find / -name "*.conf"` searches starting from the root for any file ending in `.conf`. `find /home -mtime -1` finds files inside `/home` that were modified in the last day, which is genuinely useful when you are trying to figure out what an attacker touched recently.
+`find`: searches the filesystem itself for files matching certain criteria, rather than searching inside file contents. `find / -name "*.conf"` searches starting from the root for any file ending in `.conf`. `find /home -mtime -1` finds files inside `/home` that were modified in the last day, which is genuinely useful when you are trying to figure out what an attacker touched recently.
 
 The pipe symbol `|` is one of the most powerful ideas in the entire Linux command line. It takes the output of one command and feeds it directly as input into the next command, letting you chain simple tools together into something more powerful. `ps aux | grep ssh` runs `ps aux` (which lists every running process) and pipes that output into `grep ssh` (which filters it down to only lines mentioning ssh). Instead of scrolling through hundreds of processes manually, you get exactly the lines you care about, instantly.
 
@@ -151,11 +151,11 @@ This pattern, chaining small focused commands together with pipes, is something 
 
 A process is a running instance of a program. Every time something executes on a Linux system, whether it is a background service or a command you just typed, it becomes a process with its own unique process ID, or PID.
 
-`ps` — process status. `ps aux` is the version you will use most, showing every process currently running on the system, who started it, how much CPU and memory it is using, and its PID.
+`ps`: process status. `ps aux` is the version you will use most, showing every process currently running on the system, who started it, how much CPU and memory it is using, and its PID.
 
-`top` — gives you a live, constantly updating view of running processes, sorted by resource usage by default. Genuinely useful the moment something is behaving unusually, like the CPU spike in this module's opening scenario. Press `q` to exit.
+`top`: gives you a live, constantly updating view of running processes, sorted by resource usage by default. Genuinely useful the moment something is behaving unusually, like the CPU spike in this module's opening scenario. Press `q` to exit.
 
-`kill` — stops a running process, using its PID. `kill 4521` sends a standard termination signal to the process with PID 4521. If a process refuses to stop, `kill -9 4521` forces it to stop immediately, with no chance to clean up after itself first.
+`kill`: stops a running process, using its PID. `kill 4521` sends a standard termination signal to the process with PID 4521. If a process refuses to stop, `kill -9 4521` forces it to stop immediately, with no chance to clean up after itself first.
 
 In the scenario at the start of this module, this is exactly the toolkit you would reach for. `top` to see what is consuming CPU right now. `ps aux | grep <suspicious name>` to get full details on a specific process you have spotted. Once you can confidently identify what should and should not be running on a system, you are doing genuine, real triage work, not just typing commands for the sake of it.
 
@@ -314,11 +314,11 @@ This is the most important task. If you can explain it in plain language clearly
 
 Everything in this module scales directly into real enterprise environments. The commands do not change. The scale and the tooling around them does.
 
-**Bash and shell scripting** — what you are doing manually now, typing individual commands, becomes automated through shell scripts in real environments. A SOC analyst's "check these five things on a suspicious server" routine often becomes a script that runs all five checks automatically and produces a report.
+**Bash and shell scripting**: what you are doing manually now, typing individual commands, becomes automated through shell scripts in real environments. A SOC analyst's "check these five things on a suspicious server" routine often becomes a script that runs all five checks automatically and produces a report.
 
-**SSH** — Secure Shell, the protocol used to remotely connect to and operate on Linux servers from anywhere. The scenario at the top of this module, "SSH into the box and have a look," is something you will do constantly in real SOC, cloud security, and incident response work, once you add SSH itself as a topic in a later module.
+**SSH**: Secure Shell, the protocol used to remotely connect to and operate on Linux servers from anywhere. The scenario at the top of this module, "SSH into the box and have a look," is something you will do constantly in real SOC, cloud security, and incident response work, once you add SSH itself as a topic in a later module.
 
-**Centralised logging** — instead of manually running `cat` and `grep` on one server's log files, enterprise environments forward logs from hundreds or thousands of servers into a central SIEM, the same kind of system covered conceptually in the Introduction and built hands-on in the SOC Analyst path. The underlying log entries look exactly like the kind you just investigated in Task 2. The skill of reading and querying them is identical. The scale is what changes.
+**Centralised logging**: instead of manually running `cat` and `grep` on one server's log files, enterprise environments forward logs from hundreds or thousands of servers into a central SIEM, the same kind of system covered conceptually in the Introduction and built hands-on in the SOC Analyst path. The underlying log entries look exactly like the kind you just investigated in Task 2. The skill of reading and querying them is identical. The scale is what changes.
 
 **Configuration management tools** like Ansible or Puppet manage permissions, installed packages, and configuration across thousands of Linux servers consistently, applying the exact same `chmod` and `apt install` style operations you just learned, just automated and applied at scale.
 

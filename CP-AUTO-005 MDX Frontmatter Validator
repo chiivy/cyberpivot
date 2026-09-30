@@ -1,0 +1,730 @@
+# CP-AUTO-005 — MDX + Frontmatter Validator
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-005  
+**Status:** Implementation specification  
+**Depends on:** CP-AUTO-002 Content Rule Inventory, CP-AUTO-003 Rule Classification, CP-AUTO-004 QA Output Contract  
+**Next ticket:** CP-AUTO-006 Style Rule Validator
+
+---
+
+## 1. Purpose
+
+Build the first deterministic CyberPivot Content Assurance validator.
+
+The validator will inspect CyberPivot MDX content files and verify:
+
+- file integrity
+- MDX/frontmatter parseability
+- required frontmatter fields
+- valid frontmatter values
+- module family metadata
+- internal module metadata relationships where they are deterministic
+
+The validator must produce results using the CP-AUTO-004 QA Output Contract.
+
+This ticket deliberately does **not** introduce AI review.
+
+---
+
+# 2. Actual Content Families in Scope
+
+The current repository contains two implemented content families:
+
+### Foundation
+
+```text
+content/foundations/
+```
+
+Current implemented modules:
+
+```text
+how-the-internet-works.mdx
+linux-fundamentals.mdx
+windows-and-active-directory.mdx
+security-fundamentals.mdx
+cloud-fundamentals.mdx
+python-for-security.mdx
+```
+
+### OT Security
+
+```text
+content/paths/ot-security/
+```
+
+Current implemented modules:
+
+```text
+module-01-what-ot-security-is.mdx
+module-02-purdue-model-and-network-architecture.mdx
+```
+
+The validator must support both families.
+
+It must not assume that every module family has identical frontmatter.
+
+---
+
+# 3. Important Schema Constraint
+
+The live content structure is the source of truth for this validator.
+
+The validator must **not** use the older simplified `content/TEMPLATE.mdx` schema as the implementation contract if it differs from the live modules.
+
+The live Foundation frontmatter currently includes concepts such as:
+
+```yaml
+title:
+slug:
+module:
+level:
+description:
+readingTime:
+labTime:
+tools:
+  - name:
+    type:
+    url:
+    enterpriseToolsNote:
+    cabinetArtifact:
+      name:
+      description:
+      unlocksOn:
+      previousModule:
+      nextModule:
+```
+
+OT modules additionally include role/path metadata such as:
+
+```yaml
+roleSlug:
+pathSlug:
+```
+
+The implementation should inspect the actual repository files and existing TypeScript types/loaders before hard-coding assumptions.
+
+---
+
+# 4. Rules in Scope
+
+CP-AUTO-005 implements the deterministic portion of the following rule groups already classified in CP-AUTO-003.
+
+## File Integrity
+
+- `CP-FILE-001`
+- `CP-FILE-002`
+- `CP-FILE-003`
+
+## Frontmatter
+
+Implement the currently confirmed deterministic frontmatter rules:
+
+- `CP-FM-001` through `CP-FM-012`
+- `CP-FM-014` through `CP-FM-016`
+- `CP-FM-018` through `CP-FM-021`
+
+Rules previously marked as dependent on confirming live types should remain excluded until the repository inspection confirms their exact deterministic interpretation.
+
+Do not invent an interpretation merely to increase coverage.
+
+## Module Family Integrity
+
+- `CP-FAMILY-001`
+- `CP-FAMILY-002`
+- `CP-FAMILY-003`
+- `CP-FAMILY-004`
+
+The implementation should use the existing repository structure and role/module loaders where appropriate rather than creating a second competing definition of module families.
+
+## Basic Internal Consistency
+
+Where the check is purely deterministic and already defined:
+
+- `CP-CONSIST-001`
+- `CP-CONSIST-002`
+- `CP-CONSIST-003`
+- `CP-CONSIST-004`
+
+Only implement the portions that can be established from repository data.
+
+---
+
+# 5. Validator Responsibilities
+
+The validator should perform the following sequence.
+
+## Step 1 — Discover files
+
+Identify implemented content MDX files under the supported content locations.
+
+At minimum:
+
+```text
+content/foundations/**/*.mdx
+content/paths/**/*.mdx
+```
+
+Do not treat `.gitkeep` files as modules.
+
+Do not scan unrelated application files as content modules.
+
+The discovery mechanism should be deterministic.
+
+---
+
+## Step 2 — Validate file existence and readability
+
+For each discovered module:
+
+- confirm the path exists
+- confirm it can be read
+- confirm it is a file
+- confirm it has the expected `.mdx` extension
+
+Failures here should map to the applicable `CP-FILE-*` rules.
+
+The validator must not silently skip unreadable content.
+
+---
+
+## Step 3 — Parse frontmatter
+
+Each implemented module is expected to contain frontmatter.
+
+The validator should:
+
+1. identify the frontmatter block
+2. parse it
+3. report malformed frontmatter
+4. report missing frontmatter
+5. retain the parsed values for subsequent checks
+
+A parse failure should produce a clear finding and prevent misleading downstream checks that depend on unavailable metadata.
+
+For example, if YAML cannot be parsed, the validator should not generate ten unrelated "missing field" findings based solely on the parser failure.
+
+---
+
+# 6. Frontmatter Validation
+
+The validator must distinguish between:
+
+### Missing
+
+The field is not present.
+
+### Empty
+
+The field exists but contains no usable value.
+
+### Invalid type
+
+The field exists but has the wrong data type.
+
+### Invalid value
+
+The field has the expected type but violates an explicit repository rule.
+
+### Valid
+
+The field satisfies the applicable rule.
+
+These distinctions should be reflected in the finding message/evidence where useful.
+
+---
+
+# 7. String Fields
+
+For required string metadata:
+
+- confirm the field exists
+- confirm it is a string
+- confirm it is not empty after trimming
+- apply any explicitly defined format constraint from the rule inventory
+
+Do not impose additional formatting rules merely because a format seems preferable.
+
+For example, if the rule only requires a non-empty title, the validator should not invent a maximum title length.
+
+---
+
+# 8. Numeric Fields
+
+For numeric fields such as reading/lab time where applicable:
+
+- confirm the field exists when required
+- confirm the value is numeric
+- confirm any explicit positive/non-negative constraint defined by the rule
+
+Do not silently convert arbitrary strings into numbers.
+
+For example, if a field is expected to be numeric:
+
+```yaml
+readingTime: "15 minutes"
+```
+
+should not automatically be treated as valid numeric metadata.
+
+---
+
+# 9. Enum-Like Fields
+
+For fields with known allowed values, validate against the repository's existing definitions.
+
+Examples may include:
+
+```text
+level
+type
+```
+
+Do not duplicate allowed-value lists if the repository already exposes the authoritative TypeScript definition.
+
+If a value is unknown because the source of truth is ambiguous, stop and flag the implementation decision rather than guessing.
+
+---
+
+# 10. Slug Validation
+
+The validator should validate slug consistency using the rules already established in the repository.
+
+Where the module's expected slug can be deterministically derived from its location or existing loader conventions, compare them.
+
+Example concept:
+
+```text
+content/foundations/linux-fundamentals.mdx
+```
+
+should have the repository-consistent slug for that module.
+
+The validator must use the existing CyberPivot convention rather than inventing a new slug format.
+
+---
+
+# 11. Module Number / Ordering
+
+Where a module has a numeric module identifier:
+
+```yaml
+module: 1
+```
+
+the validator should verify the value against the existing module-index conventions where this can be established deterministically.
+
+It should not require every module family to use the same numbering representation unless the repository already does so.
+
+---
+
+# 12. Foundation vs OT Metadata
+
+The validator must determine the module family from repository location and/or the existing loaders/types.
+
+For example:
+
+```text
+content/foundations/
+```
+
+is Foundation content.
+
+```text
+content/paths/ot-security/
+```
+
+is OT Security content.
+
+OT-specific fields should not automatically be required on Foundation modules.
+
+Foundation-only assumptions should not automatically be applied to OT modules.
+
+This is one of the reasons CP-AUTO-005 must support family-aware validation.
+
+---
+
+# 13. Tools Metadata
+
+The validator should validate the deterministic structure of `tools`.
+
+For a tool entry, where required by the live schema:
+
+```yaml
+tools:
+  - name:
+    type:
+```
+
+should have the expected structure.
+
+Optional values such as:
+
+```yaml
+url:
+enterpriseToolsNote:
+```
+
+should be validated only where the rule inventory explicitly requires validation.
+
+The validator should not decide whether a tool is a good resource.
+
+That belongs to later semantic/human review.
+
+---
+
+# 14. Cabinet Artifact Metadata
+
+The current module frontmatter contains Cabinet artifact metadata.
+
+CP-AUTO-005 may validate the **metadata structure** where that validation belongs to the frontmatter contract.
+
+It should not attempt to determine whether the artifact is educationally useful.
+
+For example:
+
+Deterministic:
+
+```text
+cabinetArtifact.name exists
+cabinetArtifact.description exists
+unlocksOn is present/valid where required
+```
+
+Semantic:
+
+```text
+"The artifact is actually useful as a portfolio artifact."
+```
+
+The second is outside CP-AUTO-005.
+
+---
+
+# 15. Internal References
+
+Where frontmatter contains relationships such as:
+
+```yaml
+previousModule:
+nextModule:
+```
+
+the validator should check deterministic repository relationships where defined.
+
+Examples:
+
+- referenced module exists
+- reference resolves to an implemented module
+- relationship is internally consistent
+- no impossible self-reference where prohibited
+
+The validator should not rewrite relationships.
+
+---
+
+# 16. Duplicate Metadata
+
+Where a rule requires uniqueness, the validator should detect duplicate identifiers across modules.
+
+Potential examples:
+
+- duplicate slug
+- duplicate module identifier within a family where uniqueness is required
+
+The validator must use the applicable scope.
+
+A Foundation module number and an OT module number should not automatically conflict if numbering is scoped by module family.
+
+---
+
+# 17. Dependency-Aware Checks
+
+Some rules depend on successful parsing.
+
+The validator should avoid cascaded false positives.
+
+Example:
+
+If frontmatter is malformed:
+
+```text
+FAIL CP-FM-002
+```
+
+then checks requiring parsed frontmatter may be marked as not evaluated internally rather than producing misleading failures.
+
+The final output should remain understandable.
+
+A practical terminal result may show:
+
+```text
+✖ CP-FM-002 Frontmatter could not be parsed.
+  Dependent frontmatter checks were not evaluated for this file.
+```
+
+The exact representation of skipped checks is an implementation detail, but the validator must avoid pretending they passed.
+
+---
+
+# 18. Output Contract
+
+All findings must conform to CP-AUTO-004.
+
+A deterministic finding should contain at least:
+
+```yaml
+id:
+ruleId:
+severity:
+status:
+category:
+message:
+file:
+location:
+evidence:
+remediation:
+source:
+```
+
+Example:
+
+```yaml
+ruleId: CP-FM-001
+severity: HARD
+status: FAIL
+category: frontmatter
+message: "Required field 'title' is missing."
+file: "content/foundations/linux-fundamentals.mdx"
+location:
+  line: 1
+  column: 1
+evidence:
+  type: metadata
+  field: title
+  value: null
+remediation: "Add a non-empty 'title' field to the module frontmatter."
+source:
+  type: deterministic
+  validator: frontmatter
+```
+
+---
+
+# 19. PASS Behavior
+
+The validator should count successful checks.
+
+Normal terminal output should emphasize actionable findings rather than printing every successful assertion.
+
+Example:
+
+```text
+CyberPivot Content Assurance
+
+Files checked: 8
+PASS: 64
+WARNING: 0
+NEEDS HUMAN REVIEW: 0
+FAIL: 0
+
+PASS
+```
+
+The exact count will depend on the implemented rules.
+
+Do not hard-code expected counts.
+
+---
+
+# 20. Failure Behavior
+
+A deterministic `HARD` rule that fails must contribute to:
+
+```text
+status: FAIL
+```
+
+and:
+
+```text
+exit code: 1
+```
+
+Warnings and human-review findings do not block the initial quality gate.
+
+QA execution/configuration errors use:
+
+```text
+exit code: 2
+```
+
+as defined in CP-AUTO-004.
+
+---
+
+# 21. What This Validator Must Not Do
+
+CP-AUTO-005 must not:
+
+- call an LLM
+- assess whether prose is technically accurate
+- judge whether a lab is realistic
+- judge whether a resource is appropriate
+- rewrite content
+- modify MDX files
+- create commits
+- create pull requests
+- merge pull requests
+- execute arbitrary shell/security commands
+- invent missing metadata
+- silently repair invalid content
+- enforce identical headings across all module families
+- require every optional section
+- require exactly five lab tasks
+- replace the existing content schema
+- treat the old template as more authoritative than live repository structures
+
+The validator reports. It does not author.
+
+---
+
+# 22. Testing Requirements
+
+The implementation must be tested against the actual existing content:
+
+### Foundation
+
+All six current Foundation modules:
+
+```text
+how-the-internet-works.mdx
+linux-fundamentals.mdx
+windows-and-active-directory.mdx
+security-fundamentals.mdx
+cloud-fundamentals.mdx
+python-for-security.mdx
+```
+
+### OT Security
+
+Both current OT modules:
+
+```text
+module-01-what-ot-security-is.mdx
+module-02-purdue-model-and-network-architecture.mdx
+```
+
+The first test objective is not to make every file produce a failure.
+
+The objective is to determine whether the validator correctly recognizes the existing valid structure and identifies actual violations.
+
+---
+
+# 23. Required Test Cases
+
+The implementation should include representative cases for:
+
+1. valid Foundation module
+2. valid OT module
+3. missing frontmatter
+4. malformed frontmatter
+5. missing required field
+6. empty required field
+7. wrong field type
+8. invalid allowed value
+9. invalid slug
+10. duplicate slug
+11. invalid module relationship
+12. malformed tools structure
+13. malformed Cabinet metadata
+14. unreadable/nonexistent file handling
+15. clean repository run
+
+Tests should not require modifying the real production modules merely to create bad cases.
+
+Use controlled fixtures or equivalent test inputs.
+
+---
+
+# 24. Repository Integration
+
+Before implementation, inspect and reuse existing repository conventions where applicable:
+
+```text
+lib/foundations/
+lib/roles/
+types/
+scripts/
+package.json
+```
+
+In particular, check existing:
+
+- module types
+- module indexes
+- loaders
+- slug conventions
+- role definitions
+- package scripts
+
+Do not create a second source of truth when an existing repository definition can safely be reused.
+
+---
+
+# 25. CLI Integration
+
+The validator should be structured so it can eventually be exposed through the planned CyberPivot QA command.
+
+Target direction:
+
+```text
+pnpm cyberpivot qa
+```
+
+However, CP-AUTO-005 does not require final CLI architecture if the repository does not yet have that command.
+
+The implementation may establish the command as part of this ticket if doing so is straightforward and consistent with the existing package structure.
+
+Do not over-engineer command routing.
+
+---
+
+# 26. Acceptance Criteria
+
+CP-AUTO-005 is complete when:
+
+- [ ] The validator discovers implemented CyberPivot MDX content.
+- [ ] Foundation and OT content are both supported.
+- [ ] `.gitkeep` and unrelated files are not treated as modules.
+- [ ] File integrity checks are implemented for the selected CP-FILE rules.
+- [ ] Frontmatter is parsed safely.
+- [ ] Confirmed CP-FM rules are implemented.
+- [ ] Module family rules are implemented where deterministic.
+- [ ] Applicable internal consistency rules are implemented.
+- [ ] The validator uses existing repository metadata/types where appropriate.
+- [ ] Findings conform to CP-AUTO-004.
+- [ ] Exact file locations are reported when available.
+- [ ] Cascading false positives are minimized.
+- [ ] No AI is used.
+- [ ] No content is automatically modified.
+- [ ] Exit code `1` is returned for blocking failures.
+- [ ] Exit code `2` is reserved for QA execution/configuration errors.
+- [ ] Existing six Foundation and two OT modules are tested.
+- [ ] Representative invalid fixtures/cases are tested.
+- [ ] The validator can be run locally.
+- [ ] The implementation does not introduce a competing content schema.
+
+---
+
+# 27. Definition of Done
+
+The first implementation milestone is successful when a developer can run the QA command against the existing CyberPivot repository and receive a trustworthy report that answers:
+
+> "Which deterministic content rules did I violate, where did I violate them, and what do I need to inspect or fix?"
+
+That is the only goal of CP-AUTO-005.
+
+The semantic AI reviewer comes later.

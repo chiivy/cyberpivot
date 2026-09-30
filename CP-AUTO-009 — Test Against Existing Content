@@ -1,0 +1,762 @@
+# CP-AUTO-009 — Test Against Existing Content
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-009  
+**Status:** Test / calibration specification  
+**Depends on:** CP-AUTO-005, CP-AUTO-006, CP-AUTO-007, CP-AUTO-008  
+**Next ticket:** CP-AUTO-010 GitHub PR Integration
+
+---
+
+## 1. Purpose
+
+CP-AUTO-009 validates the first deterministic CyberPivot QA system against the actual implemented content.
+
+This is a calibration and reliability milestone.
+
+The goal is not to add more validators.
+
+The goal is to determine whether the validators correctly understand the existing CyberPivot repository.
+
+The test should identify:
+
+- false positives
+- false negatives
+- overly strict rules
+- rules that are too vague
+- schema assumptions
+- Foundation/OT differences
+- incorrect file discovery
+- inaccurate locations
+- incorrect severity behavior
+- output-contract problems
+
+Only after this test passes should the QA engine be treated as ready for GitHub integration.
+
+---
+
+# 2. Existing Content Scope
+
+The initial validation set is the currently implemented content.
+
+## Foundation
+
+```text
+content/foundations/how-the-internet-works.mdx
+content/foundations/linux-fundamentals.mdx
+content/foundations/windows-and-active-directory.mdx
+content/foundations/security-fundamentals.mdx
+content/foundations/cloud-fundamentals.mdx
+content/foundations/python-for-security.mdx
+```
+
+## OT Security
+
+```text
+content/paths/ot-security/module-01-what-ot-security-is.mdx
+content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx
+```
+
+Total initial implemented modules:
+
+```text
+8
+```
+
+This count must not be hard-coded into the QA engine.
+
+It is the expected current test scope only.
+
+---
+
+# 3. Test Philosophy
+
+The existing content is the reference corpus for calibration.
+
+Do not change valid production content simply because the first validator implementation expects a different structure.
+
+When a validator disagrees with existing content, investigate the disagreement.
+
+Possible outcomes:
+
+1. The content is actually invalid.
+2. The rule implementation is incorrect.
+3. The rule definition is ambiguous.
+4. The module family needs a separate structural interpretation.
+5. The rule should become warning/review rather than a hard failure.
+6. The repository has an undocumented convention that needs to be documented.
+
+The purpose of CP-AUTO-009 is to discover these differences.
+
+---
+
+# 4. No "Make the Tests Green" Editing
+
+Do not modify production modules solely to make the QA output look clean.
+
+The sequence should be:
+
+```text
+QA result
+    ↓
+Investigate
+    ↓
+Determine whether rule or content is wrong
+    ↓
+Correct the source of the problem
+    ↓
+Run QA again
+```
+
+Do not use:
+
+```text
+QA result
+    ↓
+Edit content until validator passes
+```
+
+without first determining whether the validator is correct.
+
+---
+
+# 5. Validator Set
+
+CP-AUTO-009 tests the validators created by:
+
+```text
+CP-AUTO-005  MDX + Frontmatter
+CP-AUTO-006  Style
+CP-AUTO-007  Scenario / Company
+CP-AUTO-008  Lab / Cabinet / Artifact
+```
+
+They should be capable of running together through the QA runner.
+
+If the final CLI runner does not yet exist, the validators may be invoked through their implementation-level interfaces for calibration.
+
+Do not block calibration merely because the final command wrapper has not been finalized.
+
+---
+
+# 6. Test Categories
+
+Each validator should be assessed against five dimensions.
+
+## A. Discovery
+
+Did it inspect the correct files?
+
+## B. Detection
+
+Did it identify the intended condition?
+
+## C. Non-detection
+
+Did it avoid flagging valid content?
+
+## D. Location
+
+Did it report the correct file and line/column?
+
+## E. Classification
+
+Did it assign the correct rule, severity, and status?
+
+---
+
+# 7. Baseline Run
+
+The first run should be performed against the repository without modifying the content.
+
+Capture:
+
+- overall status
+- files checked
+- modules checked
+- PASS count
+- WARNING count
+- NEEDS_HUMAN_REVIEW count
+- FAIL count
+- all findings
+- validator responsible for each finding
+- rule ID
+- file location
+
+The baseline should be saved as a test artifact or equivalent machine-readable result.
+
+Do not rely solely on a screenshot or copied terminal output.
+
+---
+
+# 8. Baseline Result Review
+
+Every non-PASS result must be reviewed.
+
+For each finding, classify it as one of:
+
+```text
+TRUE POSITIVE
+FALSE POSITIVE
+TRUE NEGATIVE
+FALSE NEGATIVE
+RULE AMBIGUITY
+IMPLEMENTATION BUG
+CONTENT ISSUE
+```
+
+The first five classifications are particularly important for calibration.
+
+---
+
+# 9. False Positive
+
+A false positive occurs when the validator reports a problem that is not actually a violation.
+
+Example:
+
+```text
+CP-STYLE-004
+```
+
+flags legitimate technical content that the approved rule does not intend to prohibit.
+
+The correct response is not automatically to change the content.
+
+Determine whether:
+
+- the rule should be narrowed
+- the scanner should understand context
+- the content should actually be changed
+
+Document the decision.
+
+---
+
+# 10. False Negative
+
+A false negative occurs when a known violation exists but the validator fails to report it.
+
+Create controlled fixtures for known violations rather than modifying production content unnecessarily.
+
+For example:
+
+```text
+Quorivane Banck
+```
+
+can be used as a controlled scenario fixture if the scenario validator is expected to detect it.
+
+The test should establish that the validator detects the issue reliably.
+
+---
+
+# 11. Controlled Negative Fixtures
+
+CP-AUTO-009 should maintain controlled invalid fixtures for important deterministic rules.
+
+Examples:
+
+### Frontmatter
+
+```yaml
+title:
+```
+
+### Invalid slug
+
+Use a deliberately invalid slug according to the repository convention.
+
+### Style
+
+```text
+This contains — an em dash.
+```
+
+### Scenario
+
+Use a deliberate variation of a canonical fictional company name.
+
+### Cabinet
+
+Reference a deliberately nonexistent module.
+
+These fixtures should live in a test/fixture area and must not be treated as production CyberPivot modules.
+
+---
+
+# 12. Foundation Calibration
+
+Review every Foundation module individually.
+
+For each module record:
+
+```text
+Module
+Frontmatter result
+Style result
+Scenario result
+Cabinet/lab result
+Overall result
+Unexpected findings
+Decision
+```
+
+The validator must account for the fact that Foundation modules have some structural variation.
+
+Do not require identical section headings.
+
+Do not require every Foundation module to have identical lab structures unless the applicable rule explicitly requires it.
+
+---
+
+# 13. OT Calibration
+
+Review both implemented OT modules individually.
+
+Pay particular attention to:
+
+- role/path metadata
+- OT-specific module metadata
+- OT module index relationships
+- hands-on structure
+- Cabinet section
+- module progression
+- differences from Foundation modules
+
+The OT validator must not accidentally inherit Foundation-only assumptions.
+
+---
+
+# 14. Structure Variance Test
+
+The test should deliberately confirm that legitimate structural variation is accepted.
+
+Examples from the known repository structure include variations such as:
+
+```text
+Scenario
+Before You Start
+Hands-On Lab
+Analysis Tasks
+Answer Guide
+Enterprise Equivalent
+```
+
+versus:
+
+```text
+Before You Start
+Scenario
+Setting Up
+Hands-On Lab
+Enterprise
+```
+
+and the OT structure.
+
+The QA system must validate the required learning contract, not enforce one universal outline.
+
+---
+
+# 15. Frontmatter Calibration
+
+Compare validator behavior against the actual live frontmatter structure.
+
+Confirm:
+
+- required fields
+- optional fields
+- field types
+- nested `tools`
+- nested `cabinetArtifact`
+- OT-specific metadata
+- slug conventions
+- module identifiers
+- level values
+- timing metadata
+
+Any rule that contradicts live repository structure must be investigated before GitHub integration.
+
+Do not use the older simplified template as the deciding authority when it conflicts with live content and repository types.
+
+---
+
+# 16. Style Calibration
+
+Run `CP-STYLE-004` against all eight modules.
+
+For each detected em dash:
+
+1. verify the character is actually U+2014
+2. verify the location
+3. verify the rule applies to that content
+4. determine whether the finding should be fixed in content or implementation
+
+Also confirm that:
+
+```text
+-
+```
+
+and:
+
+```text
+–
+```
+
+are not incorrectly reported as em dashes.
+
+---
+
+# 17. Scenario Calibration
+
+Review every scenario/company finding.
+
+Confirm that:
+
+- canonical fictional companies are recognized
+- company names are not accidentally normalized into one another
+- Delvara Energy and Velorin Energy remain separate
+- Quorivane Bank is not confused with generic references to "the bank"
+- Candrel Water Services remains distinct
+- real tools/vendors are not treated as fictional scenario organizations
+
+Any ambiguous company identity should not become a blocking failure without a deterministic basis.
+
+---
+
+# 18. Cabinet Calibration
+
+For each artifact relationship, verify:
+
+- artifact metadata parsing
+- artifact name
+- artifact description
+- unlock relationship
+- previous module
+- next module
+- module existence
+- self-reference behavior
+- required Cabinet/portfolio structure
+- hands-on structure where explicitly required
+
+Confirm that the validator does not treat educational quality as deterministic.
+
+---
+
+# 19. Cross-Validator Interaction
+
+The complete QA run should be reviewed for duplicated findings.
+
+Example:
+
+If malformed frontmatter prevents Cabinet metadata from being parsed, the system should not produce:
+
+```text
+Missing cabinet artifact
+Missing cabinet name
+Missing cabinet description
+Missing unlock
+Missing next module
+```
+
+as five independent failures when the root problem is one malformed frontmatter block.
+
+The system should minimize cascading findings.
+
+---
+
+# 20. Location Accuracy
+
+Select findings from each validator and manually verify:
+
+```text
+file
+line
+column
+```
+
+The reported location must point to the actual relevant source.
+
+At minimum verify:
+
+- one frontmatter finding
+- one style finding
+- one scenario finding
+- one Cabinet finding
+
+If exact column reporting is not reliable, the implementation should report only the line rather than inventing a column.
+
+---
+
+# 21. Output Contract Validation
+
+Verify that every validator conforms to CP-AUTO-004.
+
+Each finding should provide:
+
+```text
+id
+ruleId
+severity
+status
+category
+message
+file
+location
+evidence
+remediation
+source
+```
+
+The run should provide:
+
+```text
+version
+status
+scope
+summary
+findings
+```
+
+No validator should emit a private incompatible result format.
+
+---
+
+# 22. Severity Validation
+
+Verify that the result classification follows CP-AUTO-003.
+
+Examples:
+
+```text
+HARD + violation
+→ FAIL
+```
+
+```text
+WARNING + issue
+→ WARNING
+```
+
+```text
+HUMAN + semantic uncertainty
+→ NEEDS_HUMAN_REVIEW
+```
+
+The validators must not convert subjective uncertainty into `FAIL`.
+
+---
+
+# 23. Exit Code Validation
+
+Test:
+
+### Clean run
+
+```text
+exit code 0
+```
+
+### Warning-only run
+
+```text
+exit code 0
+```
+
+### Human-review-only run
+
+```text
+exit code 0
+```
+
+### Blocking failure
+
+```text
+exit code 1
+```
+
+### QA execution/configuration failure
+
+```text
+exit code 2
+```
+
+These values must match CP-AUTO-004.
+
+---
+
+# 24. Deterministic vs Semantic Boundary Test
+
+Explicitly verify that the first QA engine does not claim to prove things it cannot prove.
+
+It must not claim deterministic validation of:
+
+- technical correctness
+- scenario realism
+- resource appropriateness
+- lab quality
+- portfolio value
+- practitioner feel
+- repetition
+- writing quality
+
+Those remain later AI-assisted or human-review concerns.
+
+---
+
+# 25. Regression Test Set
+
+Every bug discovered during CP-AUTO-009 should result in a regression test.
+
+Example:
+
+```text
+Bug:
+OT module incorrectly flagged for missing Foundation-only section.
+
+Regression:
+OT module fixture demonstrating valid OT structure.
+Expected:
+PASS.
+```
+
+The goal is that once a validator learns an actual repository convention, it does not regress when another validator is changed.
+
+---
+
+# 26. Findings Log
+
+Maintain a calibration log with at least:
+
+```text
+Finding
+Rule ID
+Validator
+File
+Observed behavior
+Expected behavior
+Classification
+Root cause
+Resolution
+Regression test added
+```
+
+Example:
+
+```text
+Finding:
+CP-FOUND-004 on OT module
+
+Validator:
+foundation-structure
+
+Classification:
+Implementation bug
+
+Root cause:
+Foundation structural rule was applied to all module families.
+
+Resolution:
+Scope rule to Foundation modules.
+
+Regression:
+Added OT structure fixture.
+```
+
+---
+
+# 27. Rule Adjustments
+
+If testing reveals a rule that cannot be implemented reliably as currently written:
+
+1. do not hide the problem in validator code
+2. document the ambiguity
+3. determine whether the rule needs clarification
+4. update the rule inventory/classification if required
+5. update the implementation specification
+6. add a regression test
+
+Rule changes should remain traceable to the original rule ID.
+
+---
+
+# 28. Success Criteria
+
+CP-AUTO-009 should not define success as:
+
+```text
+Zero findings.
+```
+
+A repository may legitimately contain content issues.
+
+Instead, success means:
+
+- findings are explainable
+- true violations are detected
+- valid structures are not incorrectly rejected
+- Foundation and OT differences are handled correctly
+- rule severity is respected
+- output is trustworthy
+- known edge cases have regression tests
+- remaining semantic questions are correctly deferred
+
+---
+
+# 29. Acceptance Criteria
+
+CP-AUTO-009 is complete when:
+
+- [ ] All six Foundation modules have been tested.
+- [ ] Both OT modules have been tested.
+- [ ] All four validators have been exercised.
+- [ ] A baseline machine-readable QA result has been captured.
+- [ ] Every baseline finding has been reviewed.
+- [ ] False positives have been identified and resolved or documented.
+- [ ] False negatives have been tested with controlled fixtures.
+- [ ] Foundation/OT structural differences have been verified.
+- [ ] Frontmatter behavior has been calibrated against live content.
+- [ ] Style detection has been verified against actual source.
+- [ ] Scenario/company matching has been verified.
+- [ ] Cabinet/lab relationships have been verified.
+- [ ] Cascading findings have been reviewed.
+- [ ] File/line/column reporting has been checked.
+- [ ] Output conforms to CP-AUTO-004.
+- [ ] Exit codes conform to CP-AUTO-004.
+- [ ] Regression tests exist for discovered validator bugs.
+- [ ] No production content was changed merely to satisfy an incorrect validator.
+- [ ] No AI is required for deterministic QA.
+- [ ] Remaining semantic questions are explicitly deferred to later review.
+
+---
+
+# 30. Definition of Done
+
+CP-AUTO-009 is successful when the CyberPivot team can trust the deterministic QA engine enough to run it on a pull request without treating the validator itself as an uncontrolled source of noise.
+
+The key question is:
+
+> "If this QA engine flags something, can I understand why it flagged it and trust that the rule actually applies?"
+
+Only when the answer is yes should the system move to GitHub integration.
+
+---
+
+# 31. Next Ticket
+
+**CP-AUTO-010 — GitHub PR Integration**
+
+CP-AUTO-010 will take the calibrated deterministic QA engine and run it automatically against pull requests.
+
+The GitHub gate should:
+
+- run deterministic QA
+- expose findings clearly
+- block only approved HARD failures
+- preserve warnings
+- preserve human-review findings
+- avoid automatic content modification
+- avoid automatic merging

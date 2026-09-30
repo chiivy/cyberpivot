@@ -1,30 +1,153 @@
 ---
-title: "Module title"
-slug: "module-slug"
-path: "azure-security"
-order: 1
-estimatedHours: 2
+title: "Module Title"
+slug: "module-title"
+module: 1
+level: "Foundation"
+description: "A short description of what the learner will understand and be able to do."
+readingTime: "15 min"
+labTime: "45 min"
 tools:
-  - "Tool name"
-cabinetArtifact: "What the learner builds and keeps"
+  - name: "Tool Name"
+    type: "free"
+    url: "https://example.com"
+cabinetArtifact:
+  name: "Artifact Name"
+  description: "What the learner produces and why it matters."
+  unlocksOn: "completion"
+previousModule: null
+nextModule: null
 ---
+
+# Module Title
+
+> **Template note:** This file is a starting point, not a rigid universal schema. Foundation modules and role-path modules may use different supported structures. Match the structure of the path you are writing for and keep the learning outcomes consistent.
 
 ## Scenario
 
-<!-- Real-world situation first. The learner should feel why this matters. -->
+Put the learner in a concrete security situation.
 
-## Hands-on
+Use a real incident or a clearly fictional scenario. If using a fictional organisation, use one of CyberPivot's established fictional companies where appropriate. Do not invent claims about real organisations.
 
-<!-- Introduce tools here before conceptual theory. -->
+Write in second person. Start with the problem the learner needs to understand or solve.
 
-## Theory
+## Before You Start
 
-<!-- Concepts after the learner has touched the tools. -->
+Include prerequisites, environment requirements, accounts, downloads, or setup steps only when the module needs them.
 
-## Cabinet artifact
+If a lab depends on a tool, version, dataset, sandbox, or external service that may change, state the uncertainty clearly and provide a practical fallback where possible.
 
-<!-- Tangible output the learner adds to their cabinet. -->
+## Concepts
 
-## Check your understanding
+Explain the ideas the learner needs before or alongside the hands-on work.
 
-<!-- Short practical checks, not passive MCQs. -->
+Prefer:
+
+- Plain language
+- Short sections
+- The why before the what
+- Concrete examples
+- Security relevance and job context
+
+Do not pad the module with theory that does not support the work.
+
+## Hands-On Lab
+
+Give the learner work to perform, not just instructions to read.
+
+### Task 1 — Task name
+
+Describe what to do, what to observe, and what evidence to capture.
+
+### Task 2 — Task name
+
+Describe the next practical task.
+
+Add as many tasks as the learning objective requires. Do not force an arbitrary task count.
+
+## Analysis Tasks
+
+Use this section when learners need to interpret evidence, compare findings, or explain what happened.
+
+1. What did you observe?
+2. What does the evidence tell you?
+3. What would you investigate next?
+
+## Answer Guide
+
+Use this section when the module requires guided answers or validation of analysis tasks.
+
+Keep answers focused on reasoning and evidence. Do not turn the guide into a copy-paste solution unless that is necessary for the exercise.
+
+## Enterprise Equivalent
+
+Explain how the same skill appears in a real security job.
+
+Cover relevant enterprise tooling or processes when appropriate. Do not imply that a specific organisation uses a product unless that is verified.
+
+If a free/open tool is used in the lab, explain the corresponding enterprise capability where there is a meaningful equivalent.
+
+Do not invent trial links, product behaviour, pricing, or product availability.
+
+## Your Portfolio Entry
+
+Tell the learner exactly what they should retain as evidence of the work.
+
+### Artifact
+
+Describe the artifact represented by the `cabinetArtifact` frontmatter field.
+
+### Include
+
+- Evidence or screenshots where useful
+- Key findings
+- Decisions or conclusions
+- Relevant commands, queries, diagrams, or configuration where appropriate
+- A short explanation of what the learner actually did
+
+The artifact should demonstrate a practical skill, not simply repeat the module's theory.
+
+## What You Can Now Do
+
+State the practical capability the learner should have after completing the module.
+
+Use observable outcomes such as:
+
+- Analyse a packet capture and identify suspicious traffic.
+- Review authentication events and identify a likely attack path.
+- Produce a security decision brief from collected evidence.
+
+## What Is Next
+
+Use this section when the module belongs to a sequence. Point to the actual next module rather than inventing a route.
+
+---
+
+## Author Checklist
+
+Before opening a PR, verify:
+
+- [ ] Frontmatter matches the live schema for the target content type.
+- [ ] `slug` is unique and matches the module file/registry expectations.
+- [ ] Required metadata is complete.
+- [ ] Scenario or context is present.
+- [ ] Concepts explain the why and the relevant security context.
+- [ ] Hands-on work produces observable evidence or a practical result where appropriate.
+- [ ] Enterprise/job context is included where relevant.
+- [ ] Cabinet artifact is defined and the body explains what the learner produces.
+- [ ] Links and external resources are real and relevant.
+- [ ] Tool names, commands, versions, environments, and technical behaviour have been checked.
+- [ ] No fictional company is presented as a real organisation.
+- [ ] No unsupported claims about real incidents or products are presented as fact.
+- [ ] Writing follows the CyberPivot voice: direct, practical, second person, no em dashes.
+- [ ] The module is self-contained enough for the learner to complete the intended work.
+
+## Important
+
+This template is guidance, not a requirement that every module have identical headings.
+
+The current repository contains at least two supported module patterns:
+
+- **Foundation modules:** richer learning flow, often including setup, theory, hands-on tasks, analysis tasks, answer guides, enterprise equivalent, and portfolio entry.
+- **Role-path modules:** may use a numbered section structure, role/path metadata, step-based labs, enterprise context, and a Cabinet artifact.
+
+Content QA should validate the supported frontmatter, learning requirements, navigation, resources, practical work, and artifact expectations. It should not fail a module simply because it uses a different heading arrangement.

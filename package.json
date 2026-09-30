@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "cyberpivot": "tsx scripts/cyberpivot.ts",
+    "test:content-assurance": "tsx scripts/content-assurance/verify-cp-auto-005.ts",
+    "test:content-assurance:calibrate": "tsx scripts/content-assurance/calibrate-cp-auto-009.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -29,11 +32,6 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^4.4.3"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "unrs-resolver"
-    ]
-  },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
@@ -43,6 +41,7 @@
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

@@ -1,0 +1,805 @@
+# CP-AUTO-010 — GitHub PR Integration
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-010  
+**Status:** Implementation specification  
+**Depends on:** CP-AUTO-004, CP-AUTO-005, CP-AUTO-006, CP-AUTO-007, CP-AUTO-008, CP-AUTO-009  
+**Milestone:** Deterministic QA Foundation Complete
+
+---
+
+## 1. Purpose
+
+Connect the calibrated CyberPivot deterministic Content Assurance system to GitHub pull requests.
+
+The goal is simple:
+
+> A contributor should not be able to merge content that violates approved deterministic HARD rules without seeing and resolving the QA failure.
+
+The GitHub integration should also expose:
+
+- warnings
+- human-review findings
+- QA summaries
+- changed-file scope
+- useful remediation information
+
+The integration must remain a **quality gate**, not an autonomous content-authoring system.
+
+---
+
+# 2. Desired Pull Request Flow
+
+The intended flow is:
+
+```text
+Contributor edits content
+        ↓
+Pull Request created/updated
+        ↓
+GitHub Actions starts
+        ↓
+CyberPivot QA runs
+        ↓
+QA result generated
+        ↓
+Results displayed on PR
+        ↓
+HARD failures?
+   ┌────┴────┐
+  Yes       No
+   ↓         ↓
+Block     Allow gate
+merge       to pass
+```
+
+Warnings and human-review findings should remain visible without automatically blocking the PR in the initial implementation.
+
+---
+
+# 3. Repository Integration
+
+The repository currently has no dedicated `.github` directory or GitHub Actions workflow.
+
+CP-AUTO-010 should therefore establish the minimum required structure.
+
+Expected direction:
+
+```text
+.github/
+  workflows/
+    cyberpivot-content-qa.yml
+```
+
+The exact filename may differ if the repository establishes another naming convention during implementation.
+
+Do not create unrelated workflows.
+
+---
+
+# 4. Trigger Conditions
+
+The workflow should run when relevant pull-request content changes.
+
+Primary trigger:
+
+```text
+pull_request
+```
+
+Relevant activity should include at least:
+
+- opened
+- synchronize
+- reopened
+
+The workflow should run again when new commits are pushed to the PR.
+
+The workflow does not need to run for unrelated repository activity.
+
+---
+
+# 5. Path Scope
+
+The QA workflow should be focused on content changes.
+
+Relevant paths include:
+
+```text
+content/**/*.mdx
+```
+
+and any validator/configuration files whose changes can affect QA behavior.
+
+The exact path filters should be determined from the final repository structure.
+
+Do not make the workflow trigger on every repository file change unless necessary.
+
+---
+
+# 6. Important Security Principle
+
+GitHub Actions should not execute arbitrary commands supplied by pull-request content.
+
+The QA workflow must treat MDX content as untrusted data.
+
+It must not:
+
+- execute code from MDX
+- execute JavaScript embedded in content
+- execute shell commands contained in code blocks
+- run arbitrary learner lab commands
+- evaluate scenario instructions
+- allow content to control workflow commands
+
+The QA process should parse and inspect content only.
+
+---
+
+# 7. Workflow Permissions
+
+Use the minimum GitHub permissions required.
+
+The initial QA workflow should not request broad repository write access if it only needs to:
+
+- check out repository content
+- run the QA command
+- publish a check/result
+
+Avoid permissions such as unrestricted write access unless a later implementation genuinely requires them.
+
+The workflow should follow least privilege.
+
+---
+
+# 8. QA Command
+
+The workflow should invoke the project's canonical QA command.
+
+Target direction:
+
+```bash
+pnpm cyberpivot qa
+```
+
+If the implementation establishes a different command during CP-AUTO-005 through CP-AUTO-009, CP-AUTO-010 should use that actual command rather than inventing a second interface.
+
+There should be one canonical local QA command.
+
+The same command should work locally and in CI wherever practical.
+
+---
+
+# 9. Environment
+
+The GitHub workflow should use the Node/package-manager versions supported by the actual CyberPivot repository.
+
+Before implementation:
+
+- inspect `package.json`
+- inspect package-manager configuration
+- inspect lockfile
+- inspect existing application build configuration
+
+Do not hard-code an unrelated Node or pnpm version.
+
+The CI environment should reproduce the repository's supported development environment as closely as practical.
+
+---
+
+# 10. Dependency Installation
+
+CI should install dependencies using the repository's lockfile.
+
+The installation process should be deterministic.
+
+Avoid commands that intentionally ignore the lockfile.
+
+The exact command must follow the package manager and lockfile actually used by the repository.
+
+---
+
+# 11. QA Scope in Pull Requests
+
+The first GitHub implementation may run QA against the entire implemented content corpus.
+
+This is acceptable because the current corpus is small.
+
+However, the workflow should preserve enough information to later optimize to changed-content scope.
+
+Do not prematurely create complicated incremental dependency analysis.
+
+The initial priority is correctness and trustworthiness.
+
+---
+
+# 12. Pull Request Result
+
+The GitHub check should clearly communicate one of these outcomes:
+
+### PASS
+
+```text
+CyberPivot Content QA passed.
+```
+
+### WARNING
+
+```text
+CyberPivot Content QA passed with warnings.
+```
+
+### HUMAN REVIEW
+
+```text
+CyberPivot Content QA passed, but human review is required.
+```
+
+### FAIL
+
+```text
+CyberPivot Content QA failed.
+```
+
+The result should include counts.
+
+Example:
+
+```text
+PASS: 82
+WARNING: 2
+NEEDS HUMAN REVIEW: 5
+FAIL: 0
+```
+
+---
+
+# 13. Blocking Rules
+
+The initial GitHub quality gate blocks only:
+
+```text
+HARD rule
++
+FAIL status
+```
+
+Example:
+
+```text
+CP-FM-001
+severity: HARD
+status: FAIL
+```
+
+This should produce a failing GitHub check.
+
+Warnings do not block.
+
+Human-review findings do not block in the initial implementation.
+
+This is deliberate.
+
+---
+
+# 14. Exit-Code Mapping
+
+The workflow should respect CP-AUTO-004.
+
+```text
+0 = no blocking QA failures
+1 = one or more blocking QA failures
+2 = QA execution/configuration error
+```
+
+The GitHub workflow must distinguish:
+
+### Exit code 1
+
+Content failed deterministic QA.
+
+### Exit code 2
+
+The QA system itself failed to execute correctly.
+
+A CI infrastructure failure must not be presented to contributors as though their content violated a CyberPivot rule.
+
+---
+
+# 15. Infrastructure Failure
+
+If the QA command crashes, cannot parse its configuration, cannot install required dependencies, or otherwise fails to execute:
+
+```text
+QA infrastructure error
+```
+
+The GitHub check should fail.
+
+The message should make clear that this is not necessarily a content violation.
+
+Example:
+
+```text
+CyberPivot Content QA could not complete.
+
+This appears to be a QA execution/configuration failure rather than a content finding.
+```
+
+Do not manufacture content findings from an infrastructure error.
+
+---
+
+# 16. PR Summary
+
+The GitHub check should provide a concise summary.
+
+Example:
+
+```text
+## CyberPivot Content QA
+
+**Result:** FAIL
+
+| Status | Count |
+|---|---:|
+| PASS | 78 |
+| WARNING | 2 |
+| NEEDS HUMAN REVIEW | 4 |
+| FAIL | 1 |
+
+### Blocking findings
+
+- `CP-FM-001` — Missing required `title`
+  - `content/foundations/example.mdx:1`
+
+### Warnings
+
+- `CP-LINK-002` — External URL could not be verified
+
+### Human review
+
+- `CP-TECH-001` — Technical explanation requires verification
+```
+
+The exact formatting may evolve.
+
+The principle is that contributors should not need to inspect raw CI logs to understand a failure.
+
+---
+
+# 17. Finding Detail
+
+Each blocking finding should expose:
+
+- rule ID
+- message
+- file
+- line/column where available
+- evidence
+- remediation
+
+Example:
+
+```text
+CP-FM-001 — Missing required title
+
+File:
+content/foundations/linux-fundamentals.mdx
+
+Location:
+line 1
+
+Fix:
+Add a non-empty title field to the module frontmatter.
+```
+
+---
+
+# 18. Annotations
+
+Where practical, the workflow should expose file/line findings through GitHub's native check annotations.
+
+For example:
+
+```text
+content/foundations/linux-fundamentals.mdx
+line 1
+```
+
+The implementation should use GitHub's supported annotation mechanism rather than inventing a custom UI.
+
+If annotations prove unnecessarily complex for the first implementation, the PR summary remains the minimum acceptable behavior.
+
+Do not delay the whole QA integration solely for advanced annotation support.
+
+---
+
+# 19. Changed Files
+
+The workflow should be able to identify changed content files for useful reporting.
+
+The first version does not need to implement dependency-aware selective QA.
+
+However, the output may distinguish:
+
+```text
+Changed content files: 2
+Total content files checked: 8
+```
+
+This will support future optimization.
+
+---
+
+# 20. No Automatic Content Modification
+
+The GitHub workflow must not:
+
+- edit MDX files
+- rewrite content
+- commit fixes
+- push commits
+- open correction PRs
+- merge the PR
+- automatically approve the PR
+
+The system reports problems.
+
+The contributor remains responsible for deciding and applying the fix.
+
+---
+
+# 21. No Automatic Merge
+
+Even when QA passes, the QA workflow must not merge pull requests.
+
+GitHub branch protection can later require the QA check to pass before merging.
+
+That configuration is separate from the QA engine.
+
+---
+
+# 22. Branch Protection
+
+The repository may later configure the CyberPivot QA check as a required status check.
+
+CP-AUTO-010 should document the expected check name so that branch protection can reference it.
+
+The workflow implementation should use a stable job/check name.
+
+Example direction:
+
+```text
+cyberpivot-content-qa
+```
+
+Do not make the exact name a dependency of the QA engine itself.
+
+---
+
+# 23. Pull Request Comments
+
+A persistent PR comment is optional.
+
+The first implementation should prefer the native GitHub check summary rather than creating a new comment on every commit.
+
+Repeated automated comments can create noise.
+
+If a PR comment is later implemented, it should update an existing bot comment rather than create a new comment for every run.
+
+This is not required for CP-AUTO-010.
+
+---
+
+# 24. Artifact Retention
+
+The workflow may upload machine-readable QA results as a CI artifact.
+
+For example:
+
+```text
+cyberpivot-qa-results.json
+```
+
+This can help debugging and future automation.
+
+The exact artifact naming and retention period should follow repository/organization policy.
+
+Do not store secrets or unnecessary repository data in the artifact.
+
+---
+
+# 25. Secrets
+
+The QA workflow should require no secrets for the deterministic validators.
+
+The initial workflow should not require:
+
+```text
+OPENAI_API_KEY
+```
+
+or another AI provider credential.
+
+AI-assisted review is a later phase.
+
+If future functionality requires credentials, that must be introduced in a separate ticket with explicit security review.
+
+---
+
+# 26. AI Review Boundary
+
+CP-AUTO-010 integrates only the deterministic QA foundation.
+
+It does not introduce:
+
+- LLM review
+- AI-generated comments
+- AI content rewriting
+- AI technical accuracy claims
+- model credentials
+- external AI API calls
+
+The AI-assisted layer remains a later milestone.
+
+---
+
+# 27. Workflow Failure Modes
+
+Test at least:
+
+### Clean content
+
+Expected:
+
+```text
+PASS
+exit 0
+```
+
+### Warning-only content
+
+Expected:
+
+```text
+WARNING
+exit 0
+```
+
+### Human-review-only content
+
+Expected:
+
+```text
+NEEDS HUMAN REVIEW
+exit 0
+```
+
+### Blocking content failure
+
+Expected:
+
+```text
+FAIL
+exit 1
+```
+
+### QA execution failure
+
+Expected:
+
+```text
+CI/QA ERROR
+exit 2
+```
+
+---
+
+# 28. Pull Request Test Matrix
+
+Use controlled test branches/PRs.
+
+| Scenario | Expected result | Merge gate |
+|---|---|---|
+| Valid content | PASS | Pass |
+| Warning only | WARNING | Pass |
+| Human review only | REVIEW | Pass |
+| One HARD failure | FAIL | Block |
+| Multiple HARD failures | FAIL | Block |
+| QA process error | CI error | Block |
+| Unrelated source-only change | Workflow behavior according to path rules | No unnecessary content failure |
+
+---
+
+# 29. Regression Against Existing Content
+
+Before enabling the check as a required branch protection rule:
+
+Run the complete QA workflow against the existing repository.
+
+The baseline must be understood.
+
+There should be no unexplained blocking failures.
+
+If the existing repository produces a blocking failure:
+
+1. investigate the finding
+2. determine whether the content or rule is wrong
+3. correct the appropriate source
+4. rerun CP-AUTO-009 calibration if the rule changed
+5. only then enable the required check
+
+Do not simply weaken the validator to make the baseline pass.
+
+---
+
+# 30. Performance
+
+The first content corpus is small.
+
+Optimize for:
+
+```text
+correctness
+simplicity
+determinism
+```
+
+rather than premature performance optimization.
+
+The workflow should not introduce unnecessary services or infrastructure.
+
+If runtime later becomes a problem as CyberPivot content grows, optimization can be addressed separately.
+
+---
+
+# 31. Permissions and Fork PRs
+
+The workflow must be designed carefully for pull requests originating from forks.
+
+Do not expose repository secrets to untrusted fork code.
+
+The deterministic QA process should ideally require no secrets.
+
+Avoid privileged GitHub events that could execute untrusted contributor code with repository write permissions.
+
+The exact GitHub Actions event design should follow GitHub's security guidance for untrusted pull requests.
+
+---
+
+# 32. Action Pinning and Supply Chain
+
+Third-party GitHub Actions should be minimized.
+
+Where actions are used, follow the repository's security policy.
+
+If the project adopts SHA pinning for Actions, use the approved organization convention.
+
+Do not add a collection of third-party actions when native shell/Node functionality is sufficient.
+
+---
+
+# 33. Local/CI Parity
+
+A contributor should be able to run:
+
+```bash
+pnpm cyberpivot qa
+```
+
+locally and obtain the same fundamental result as CI.
+
+CI may add GitHub-specific presentation, but the underlying QA findings must come from the same validator implementation.
+
+Avoid maintaining a separate "CI-only" ruleset.
+
+---
+
+# 34. Output Contract Compatibility
+
+The workflow consumes CP-AUTO-004.
+
+It must not redefine:
+
+- statuses
+- severities
+- finding fields
+- exit codes
+
+If GitHub requires a presentation-specific transformation, that transformation should happen at the CI integration layer.
+
+The QA engine remains the source of QA truth.
+
+---
+
+# 35. Acceptance Criteria
+
+CP-AUTO-010 is complete when:
+
+- [ ] A GitHub Actions workflow exists for CyberPivot Content QA.
+- [ ] The workflow runs on relevant pull request activity.
+- [ ] Relevant content changes trigger QA.
+- [ ] The workflow uses the repository's actual package manager and supported runtime.
+- [ ] Dependencies are installed deterministically from the lockfile.
+- [ ] The canonical QA command is executed.
+- [ ] No secrets are required for deterministic QA.
+- [ ] MDX/content is treated as untrusted data.
+- [ ] The workflow does not execute arbitrary content commands.
+- [ ] QA findings conform to CP-AUTO-004.
+- [ ] HARD + FAIL findings cause a failed check.
+- [ ] WARNING findings do not block.
+- [ ] NEEDS_HUMAN_REVIEW findings do not block initially.
+- [ ] QA execution errors are distinguishable from content failures.
+- [ ] Exit codes conform to CP-AUTO-004.
+- [ ] PR output includes useful counts and actionable blocking findings.
+- [ ] Existing repository content produces no unexplained blocking failures.
+- [ ] No automatic content modification occurs.
+- [ ] No automatic merging occurs.
+- [ ] No AI credentials or AI service are introduced.
+- [ ] Fork PR security is considered.
+- [ ] Workflow permissions follow least privilege.
+- [ ] The underlying QA command works locally as well as in CI.
+
+---
+
+# 36. Definition of Done
+
+CP-AUTO-010 is successful when a contributor can open a pull request containing CyberPivot content and receive a trustworthy automated answer to:
+
+> "Does this content violate any deterministic CyberPivot quality requirements that should block the PR?"
+
+The system should clearly distinguish:
+
+```text
+Your content failed a rule.
+```
+
+from:
+
+```text
+The QA system itself failed.
+```
+
+and from:
+
+```text
+The content needs human review but did not violate a blocking deterministic rule.
+```
+
+That distinction is essential to maintaining trust in the QA system.
+
+---
+
+# 37. Deterministic QA Foundation Complete
+
+Once CP-AUTO-010 is implemented and accepted, the first CyberPivot automation milestone is complete:
+
+```text
+CP-AUTO-001  Automation PRD
+CP-AUTO-002  Rule Inventory
+CP-AUTO-003  Rule Classification
+CP-AUTO-004  QA Output Contract
+CP-AUTO-005  MDX / Frontmatter Validator
+CP-AUTO-006  Style Validator
+CP-AUTO-007  Scenario / Company Validator
+CP-AUTO-008  Lab / Cabinet / Artifact Validator
+CP-AUTO-009  Existing Content Calibration
+CP-AUTO-010  GitHub PR Integration
+```
+
+The project should then pause and evaluate the actual value of the QA system before building the next automation layer.
+
+The next milestone is not automatically another large engineering project.
+
+The next decision should be based on what the QA system reveals about CyberPivot's content workflow.
+
+Potential next workstreams remain:
+
+1. Repo-aware Content Copilot
+2. Job Role Intelligence
+3. Technical Validation
+4. Skill/Cabinet Intelligence
+
+These should be taken one at a time.

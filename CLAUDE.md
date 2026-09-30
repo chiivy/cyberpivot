@@ -7,7 +7,7 @@ Also read PRD.md and DECISIONS.md before starting any session.
 
 ## What We Are Building
 
-CyberPivot is a free, open source cybersecurity learning platform.
+CyberPivot is a paid cybersecurity learning platform with a deliberately free Foundation experience. Selected introductory or sample content may also be free. Role-path content is paid unless explicitly marked free. CyberPivot is no longer positioned as an open-source product.
 Core philosophy: **Start where you are.**
 
 Users go from zero (or wherever they are) to having real skills, a real home lab, and a real portfolio. Not a course platform. A practical, role-aware, scenario-driven journey that ends with a cabinet of real artifacts and the confidence to walk into interviews.
@@ -91,7 +91,9 @@ cyberpivot/
 
 ## Platform Architecture
 
-Modules are the core building blocks. Roles are curated collections of modules in a specific order. Some modules appear across multiple role paths — written once, used everywhere.
+Modules remain the conceptual building blocks, but the repository implementation has evolved from the original central JSON module-library design. Current source-of-truth locations are `content/foundations/` for Foundation modules, `content/paths/` for role-path modules, and `lib/roles/` for role definitions and path metadata. Do not assume the old `content/modules/` or `content/roles/*.json` structure exists. Foundation and role-path modules may use different supported content structures.
+
+The Cabinet is part of the product model. Artifacts are outputs learners produce through practical work, not downloadable templates.
 
 **Six domains — 30+ roles across six security domains:**
 
@@ -107,7 +109,7 @@ Governance, Risk and Compliance — GRC Analyst (V1), Compliance Analyst, Risk A
 
 Operational Technology and Industrial Control Systems Security — OT Security Analyst, OT Security Engineer
 
-Every role is visible from day one. V1 roles fully built. All others show as Coming Soon with expected dates and a notify option.
+Every role may be visible from day one, but availability must reflect the actual repository state. Do not mark content as available unless the corresponding module content and route actually exist. Coming-soon roles must not silently redirect to unrelated role content.
 
 **Content levels:**
 - Introduction — free, ungated, no account needed
@@ -173,11 +175,13 @@ The platform must be secure by design. Non-negotiable.
 
 ## Content Rules
 
-- All module content in MDX format
-- Follow the standard template in /content/TEMPLATE.mdx
-- Scenario always comes before theory
-- Tools introduced hands-on before explained conceptually
-- Every module ends with a cabinet artifact
+- Module content is MDX, but Foundation and role-path modules may use different supported structures.
+- Treat `/content/TEMPLATE.mdx` as a reference, not proof that every live module must use identical headings.
+- Core content standard: context/scenario, concepts, hands-on work, job context, and a Cabinet artifact. Modules may add setup, analysis, answer guides, checks, troubleshooting, environment options, or extra theory when appropriate.
+- Scenario/context should ground the learner before abstract explanation.
+- Tooling modules should provide practical hands-on work and an enterprise equivalent where appropriate.
+- Every role-path learning module should produce a meaningful tangible artifact; validate the actual module requirements before assuming a universal artifact schema.
+- Do not invent URLs, tools, environments, enterprise products, or technical behaviour. Flag uncertain technical details for review.
 
 **Every module that involves tooling covers two tracks:**
 
@@ -213,24 +217,31 @@ Good: "This module is about how traffic moves across a network. Start here befor
 
 ---
 
-## V1 Build Order
+## Current Implementation Context
 
-1. Homepage
-2. Introduction section (all 8 parts)
-3. Onboarding flow
-4. All role pages (V1 full, Coming Soon basic)
-5. Foundation modules (all 6 complete and live)
-6. Azure Security Engineer path
-7. SOC Analyst path
-8. Penetration Tester path
-9. GRC Analyst path
-10. Progress dashboard
-11. Cabinet display
-12. Cert roadmap per role
-13. Interview prep
-14. CV builder
+The repository is beyond the original V1 planning stage, but many planned role paths remain incomplete. As of the current repository inventory:
 
-Do not build V2 features until V1 is complete.
+- 6 Foundation modules exist under `content/foundations/`.
+- 2 OT Security modules exist under `content/paths/ot-security/`.
+- Other V1 role-path directories are currently placeholders rather than completed module libraries.
+- Role metadata is implemented in TypeScript under `lib/roles/`, not JSON files under `content/roles/`.
+- Foundation and OT registries/loaders exist under `lib/foundations/` and `lib/roles/ot-security/`.
+- There is not yet a dedicated MDX/frontmatter/content QA pipeline. Existing `verify-*` scripts validate specific Cabinet user-generated content and should not be treated as a complete content QA system.
+
+When implementing new work, inspect the actual repository before assuming a planned feature exists. Prefer the current repository plus DECISIONS.md and PRD.md over stale historical examples.
+
+## Build Priorities
+
+Build in this order unless the current task explicitly changes it:
+
+1. Content Assurance / deterministic content QA foundation
+2. GitHub quality gate for content changes
+3. Repo-aware Content Copilot for drafting and maintenance
+4. Job Role Intelligence for curriculum gap analysis
+5. Technical validation for selected labs/detections
+6. Skill/Cabinet intelligence and later change-impact automation
+
+Automation must remain human-approved. No agent should auto-merge or autonomously publish production content.
 
 ---
 
@@ -241,7 +252,7 @@ Do not build V2 features until V1 is complete.
 - Do not use inline styles — Tailwind only
 - Do not build custom UI if shadcn provides it
 - Do not skip TypeScript types — no `any`
-- Do not build V2 features in V1
+- Do not build unrelated future features before current priorities are complete
 - Do not use light mode as default
 - Do not write AI-sounding copy — follow writing voice rules
 - Do not name the cloud path "Cloud Security Azure" — it is "Azure Security Engineer"
@@ -252,7 +263,9 @@ Do not build V2 features until V1 is complete.
 ## Key Context
 
 - Target users: complete beginners, IT professionals pivoting, developers moving into security, existing practitioners
-- Free and open source — keep all dependencies free or with generous free tiers
+- Product model: paid subscription platform with free Foundation content and selected free samples
+- CyberPivot is proprietary, not an open-source product
+- Keep infrastructure and dependencies practical and maintainable; do not assume a free/self-hosted business model
 - Windows is the primary dev OS for this project
-- Community contributes via GitHub PRs on MDX files
-- Every decision: does this help someone land a cybersecurity job?
+- GitHub is the source of truth for code and content changes; changes require human approval before merge
+- Every decision: does this improve content quality, production speed, maintenance, learner experience, or the ability to build real cybersecurity skills?

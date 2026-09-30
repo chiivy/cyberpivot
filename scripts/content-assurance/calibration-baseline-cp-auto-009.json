@@ -1,0 +1,18 @@
+{
+  "version": "1",
+  "status": "PASS",
+  "startedAt": "2026-09-30T14:33:09.973Z",
+  "completedAt": "2026-09-30T14:33:10.009Z",
+  "scope": {
+    "filesChecked": 8,
+    "modulesChecked": 8
+  },
+  "summary": {
+    "pass": 355,
+    "warning": 0,
+    "needsHumanReview": 0,
+    "fail": 0
+  },
+  "findings": [],
+  "exitCode": 0
+}

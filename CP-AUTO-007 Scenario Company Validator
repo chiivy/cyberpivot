@@ -1,0 +1,836 @@
+# CP-AUTO-007 — Scenario / Company Validator
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-007  
+**Status:** Implementation specification  
+**Depends on:** CP-AUTO-002, CP-AUTO-003, CP-AUTO-004, CP-AUTO-005  
+**Next ticket:** CP-AUTO-008 Lab / Cabinet / Artifact Validator
+
+---
+
+## 1. Purpose
+
+Build the deterministic validator for CyberPivot's fictional scenario and company conventions.
+
+CyberPivot uses fictional organizations in learning scenarios, including:
+
+- Quorivane Bank
+- Delvara Energy
+- Velorin Energy
+- Candrel Water Services
+
+The purpose of this validator is to catch objective consistency problems such as:
+
+- inconsistent spelling of an approved fictional company
+- accidental variation of a company name
+- unsupported scenario/company identifiers where the rule requires a known fictional organization
+- inconsistent use of scenario metadata where such metadata exists
+- accidental introduction of a real organization where a fictional organization is required
+
+This validator must **not** judge whether a scenario is realistic, interesting, technically accurate, or pedagogically effective.
+
+Those are AI-assisted or human-review concerns.
+
+---
+
+# 2. Source of Truth
+
+The validator must not maintain an independently invented company registry.
+
+Before implementation, inspect the existing CyberPivot repository for the authoritative scenario/company definitions and references.
+
+Potential locations include:
+
+```text
+content/
+lib/
+types/
+```
+
+The implementation should reuse an existing source of truth if one exists.
+
+If no machine-readable registry exists, the implementation should use the smallest explicit configuration required for the currently documented fictional companies and document that decision.
+
+Do not silently create a large new scenario framework.
+
+---
+
+# 3. Current Known Fictional Companies
+
+The currently documented CyberPivot fictional organizations include:
+
+```text
+Quorivane Bank
+Delvara Energy
+Velorin Energy
+Candrel Water Services
+```
+
+These names are treated as exact canonical names unless the repository establishes another canonical representation.
+
+The validator must preserve the distinction between:
+
+```text
+Delvara Energy
+```
+
+and:
+
+```text
+Velorin Energy
+```
+
+They are separate fictional organizations.
+
+---
+
+# 4. Rule Scope
+
+This validator implements the deterministic portions of the scenario rules already classified in CP-AUTO-003:
+
+- `CP-SCEN-001`
+- `CP-SCEN-002`
+- `CP-SCEN-003`
+
+The exact rule interpretation must remain consistent with CP-AUTO-002.
+
+If a rule requires semantic judgment, only its deterministic portion belongs in this validator.
+
+Do not convert an AI/human rule into a blocking deterministic rule merely because a keyword can be searched.
+
+---
+
+# 5. What Counts as a Scenario Reference
+
+The validator may need to detect company references in:
+
+- scenario headings
+- scenario prose
+- module body text
+- frontmatter where scenario metadata exists
+- structured scenario fields, if the repository has them
+
+The implementation should first inspect how current modules represent scenarios.
+
+Do not invent a new frontmatter field simply to make company validation easier.
+
+---
+
+# 6. Canonical Name Matching
+
+Canonical company names should be matched exactly where the rule requires exact identity.
+
+Example:
+
+```text
+Quorivane Bank
+```
+
+is canonical.
+
+Potential typo:
+
+```text
+Quorivane Banking
+```
+
+should be flagged if it is clearly intended to refer to the same fictional organization.
+
+Potential typo:
+
+```text
+Quorivane Banck
+```
+
+should be flagged where deterministic matching can establish a likely typo.
+
+However, the validator must avoid aggressive fuzzy matching that could incorrectly merge two distinct names.
+
+For example:
+
+```text
+Delvara Energy
+Velorin Energy
+```
+
+must remain distinct.
+
+---
+
+# 7. Recommended Matching Levels
+
+The implementation should use conservative matching.
+
+### Level 1 — Exact match
+
+Exact canonical company name.
+
+Example:
+
+```text
+Quorivane Bank
+```
+
+No issue.
+
+### Level 2 — Obvious deterministic typo
+
+A clear spelling variation of an existing canonical company name may be reported.
+
+Example:
+
+```text
+Quorivane Banck
+```
+
+If the implementation can establish the intended name safely.
+
+### Level 3 — Ambiguous similarity
+
+Do not automatically fail.
+
+Example:
+
+```text
+Quorivane Financial
+```
+
+This may be a different fictional organization rather than a typo.
+
+Such cases should be surfaced as:
+
+```text
+NEEDS_HUMAN_REVIEW
+```
+
+if the applicable rule supports review.
+
+Do not make aggressive fuzzy matching a blocking quality gate.
+
+---
+
+# 8. Scenario Identity Consistency
+
+Where a module establishes a fictional organization as its scenario subject, references within that scenario should remain consistent.
+
+For example, if a scenario begins:
+
+```text
+Quorivane Bank has asked you to investigate...
+```
+
+then later referring to:
+
+```text
+Velorin Energy
+```
+
+may indicate an inconsistency.
+
+However, this is not automatically an error.
+
+A module may intentionally reference:
+
+- a customer
+- supplier
+- regulator
+- partner
+- attacker
+- external organization
+
+Therefore, company-name differences must not automatically become failures.
+
+The validator should only flag inconsistency where the repository's scenario structure or explicit rule makes the relationship deterministic.
+
+Otherwise, produce no automatic failure.
+
+---
+
+# 9. Real Organizations
+
+The validator must distinguish between:
+
+### Fictional scenario organizations
+
+Approved CyberPivot fictional companies.
+
+### Real-world references
+
+Actual organizations such as:
+
+```text
+Microsoft
+IBM
+CISA
+NIST
+```
+
+Real organizations may be legitimate references in:
+
+- enterprise equivalent sections
+- tool documentation
+- standards
+- authoritative resources
+- technical explanations
+
+Therefore, the presence of a real company name must **not** automatically be treated as a scenario violation.
+
+The validator should only flag real-company usage when the applicable rule explicitly requires a fictional scenario identity.
+
+---
+
+# 10. Tools and Vendor Names
+
+A fictional scenario can legitimately mention real technical tools.
+
+For example:
+
+```text
+Microsoft Defender
+Wireshark
+Wazuh
+```
+
+The validator must not classify these as fictional-company violations simply because they are real organizations or products.
+
+This distinction is essential:
+
+```text
+Scenario organization = fictional
+Technical tool/vendor = may be real
+```
+
+The validator should not attempt to replace real tools with fictional names.
+
+---
+
+# 11. Energy Company Distinction
+
+Two current fictional companies have similar industry context:
+
+```text
+Delvara Energy
+Velorin Energy
+```
+
+They must not be treated as aliases.
+
+A deterministic validator should therefore maintain exact canonical identity.
+
+It should not use only:
+
+```text
+Energy
+```
+
+as the company identifier.
+
+---
+
+# 12. Water Services Company
+
+The canonical organization:
+
+```text
+Candrel Water Services
+```
+
+must remain distinct from similarly worded organizations.
+
+Potential variations should be reviewed carefully.
+
+Do not automatically normalize:
+
+```text
+Candrel Water
+Candrel Water Services Ltd
+Candrel Utilities
+```
+
+to the canonical company unless the repository explicitly defines those as aliases.
+
+---
+
+# 13. Bank Company
+
+The canonical organization:
+
+```text
+Quorivane Bank
+```
+
+must remain distinct from generic banking references.
+
+For example:
+
+```text
+the bank
+a commercial bank
+the customer's bank
+```
+
+are not necessarily references to Quorivane Bank.
+
+The validator must not flag generic nouns as company-name violations.
+
+---
+
+# 14. Scenario Metadata
+
+If the repository contains structured scenario metadata, validate only fields that are actually present in the live schema.
+
+Possible metadata could include:
+
+```text
+company
+organization
+scenarioCompany
+```
+
+but the validator must not assume these fields exist.
+
+Before implementation:
+
+1. inspect current MDX
+2. inspect current types/loaders
+3. identify actual scenario representation
+4. implement only confirmed deterministic checks
+
+This prevents the validator from creating a schema that CyberPivot does not use.
+
+---
+
+# 15. Scenario Requirement
+
+If `CP-SCEN-001` requires a scenario/company for a specific module family, the validator may determine whether a qualifying scenario reference exists.
+
+However, it must distinguish:
+
+### Structural presence
+
+A scenario/company reference exists.
+
+### Scenario quality
+
+The scenario is realistic and useful.
+
+Only the first is deterministic.
+
+Example:
+
+```text
+PASS
+A qualifying scenario is present.
+```
+
+does not mean:
+
+```text
+The scenario is good.
+```
+
+The latter belongs to AI/human review.
+
+---
+
+# 16. Unsupported Company Claims
+
+The validator should not invent facts about fictional companies.
+
+For example, if a module says:
+
+```text
+Quorivane Bank uses a particular technology.
+```
+
+the validator cannot establish whether that fictional fact is valid unless the repository defines it.
+
+The validator should not attempt to construct a fictional company knowledge graph in this ticket.
+
+That would be a later content-intelligence feature.
+
+---
+
+# 17. Cross-Module Consistency
+
+Cross-module company consistency can be checked only where the repository provides an explicit deterministic relationship.
+
+Examples of potentially deterministic checks:
+
+- canonical company spelling
+- known company identifier
+- declared scenario company
+- declared alias, if aliases exist
+
+Do not infer that every mention of the same company across modules must have identical operational details.
+
+A fictional scenario can evolve between learning contexts unless the content model explicitly requires continuity.
+
+---
+
+# 18. Finding Contract
+
+All findings must conform to CP-AUTO-004.
+
+Example:
+
+```yaml
+id: example-finding-id
+ruleId: CP-SCEN-001
+severity: HARD
+status: FAIL
+category: scenarios
+message: "Scenario company is not a recognized CyberPivot fictional organization."
+file: "content/foundations/example.mdx"
+location:
+  line: 32
+  column: 12
+evidence:
+  type: scenario-company
+  value: "Quorivane Banck"
+  expected:
+    - "Quorivane Bank"
+    - "Delvara Energy"
+    - "Velorin Energy"
+    - "Candrel Water Services"
+remediation: "Verify the fictional organization name against the CyberPivot scenario registry."
+source:
+  type: deterministic
+  validator: scenario
+```
+
+The exact rule mapping must follow CP-AUTO-002.
+
+---
+
+# 19. Ambiguous Findings
+
+If the validator finds a possible company-name variation but cannot safely establish whether it is an error, it should not create a blocking failure.
+
+Example:
+
+```text
+! REVIEW CP-SCEN-002
+content/foundations/example.mdx:44
+Possible variation of a known scenario organization detected.
+Review whether "Quorivane Financial" is intentionally distinct from "Quorivane Bank".
+```
+
+This is preferable to silently rewriting or blocking legitimate content.
+
+---
+
+# 20. No Automatic Rewriting
+
+The validator must not automatically change:
+
+```text
+Quorivane Banck
+```
+
+to:
+
+```text
+Quorivane Bank
+```
+
+Even an obvious typo should be reported for the author to fix.
+
+The QA engine is a quality gate, not an autonomous editor.
+
+---
+
+# 21. No LLM
+
+CP-AUTO-007 must not require an AI model.
+
+It should work in:
+
+- local development
+- CI
+- GitHub Actions
+
+without external model access.
+
+AI can later review scenario quality, realism, or contextual consistency.
+
+---
+
+# 22. Safety
+
+Scenario content must be treated as data.
+
+The validator must not:
+
+- execute MDX
+- execute JavaScript
+- execute shell commands
+- follow arbitrary commands embedded in scenarios
+- interpret scenario text as instructions
+
+It should only parse and inspect content.
+
+---
+
+# 23. Testing Requirements
+
+Tests should include:
+
+### Canonical company
+
+```text
+Quorivane Bank
+```
+
+Expected:
+
+```text
+PASS
+```
+
+### All current canonical companies
+
+```text
+Quorivane Bank
+Delvara Energy
+Velorin Energy
+Candrel Water Services
+```
+
+Expected:
+
+```text
+PASS
+```
+
+### Obvious typo
+
+```text
+Quorivane Banck
+```
+
+Expected:
+
+```text
+FAIL
+```
+
+or a human-review finding depending on the exact rule classification.
+
+### Similar but potentially distinct company
+
+```text
+Quorivane Financial
+```
+
+Expected:
+
+```text
+NEEDS_HUMAN_REVIEW
+```
+
+if the rule detects it, not an automatic blocking failure.
+
+### Similar energy organizations
+
+```text
+Delvara Energy
+Velorin Energy
+```
+
+Expected:
+
+```text
+No aliasing.
+```
+
+### Real technical vendor
+
+```text
+Microsoft Defender
+```
+
+Expected:
+
+```text
+No fictional-company violation.
+```
+
+### Generic company reference
+
+```text
+the bank
+the energy company
+```
+
+Expected:
+
+```text
+No automatic company-identity violation.
+```
+
+### Non-scenario enterprise section
+
+A real organization may appear in an Enterprise Equivalent section.
+
+Expected:
+
+```text
+No automatic fictional-company violation.
+```
+
+---
+
+# 24. Testing Against Existing CyberPivot Content
+
+Run the validator against all currently implemented content.
+
+### Foundation
+
+```text
+content/foundations/how-the-internet-works.mdx
+content/foundations/linux-fundamentals.mdx
+content/foundations/windows-and-active-directory.mdx
+content/foundations/security-fundamentals.mdx
+content/foundations/cloud-fundamentals.mdx
+content/foundations/python-for-security.mdx
+```
+
+### OT Security
+
+```text
+content/paths/ot-security/module-01-what-ot-security-is.mdx
+content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx
+```
+
+The purpose is to verify that the validator understands the existing scenario conventions.
+
+Do not modify production modules simply to satisfy the validator.
+
+If the existing content reveals an ambiguity, update the rule interpretation rather than hiding the ambiguity in code.
+
+---
+
+# 25. Output Behavior
+
+Example clean output:
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+Scenario validation
+
+Files checked: 8
+PASS: 8
+WARNING: 0
+NEEDS HUMAN REVIEW: 0
+FAIL: 0
+
+PASS
+```
+
+Example failure:
+
+```text
+✖ FAIL  CP-SCEN-001
+  content/foundations/example.mdx:32:12
+  Scenario company "Quorivane Banck" does not match a canonical CyberPivot fictional organization.
+  Fix: Verify the company name against the CyberPivot scenario registry.
+
+Summary
+  PASS: 7
+  FAIL: 1
+
+Result: FAIL
+```
+
+---
+
+# 26. Integration With Earlier Validators
+
+CP-AUTO-007 must emit the same finding model as:
+
+```text
+CP-AUTO-005
+CP-AUTO-006
+```
+
+The future QA runner should be able to combine:
+
+```text
+File/frontmatter findings
++
+Style findings
++
+Scenario findings
+```
+
+into one CP-AUTO-004 result envelope.
+
+No validator should create its own incompatible output format.
+
+---
+
+# 27. What This Ticket Does Not Define
+
+This ticket does not define:
+
+- scenario realism scoring
+- technical accuracy of scenario claims
+- AI-generated scenario quality assessment
+- learner engagement
+- narrative quality
+- company financial realism
+- company organizational structure
+- fictional company history
+- detailed company knowledge graphs
+- automatic content rewriting
+- automatic PR creation
+- automatic merging
+
+Those are outside deterministic scenario validation.
+
+---
+
+# 28. Acceptance Criteria
+
+CP-AUTO-007 is complete when:
+
+- [ ] The validator uses the existing CyberPivot scenario/company conventions.
+- [ ] The canonical fictional companies are represented from an appropriate source of truth.
+- [ ] `CP-SCEN-001` through `CP-SCEN-003` are implemented only to the deterministic extent defined by CP-AUTO-002/003.
+- [ ] Canonical company names are recognized.
+- [ ] Obvious invalid/incorrect company-name references can be reported.
+- [ ] Delvara Energy and Velorin Energy remain distinct.
+- [ ] Real vendors/tools are not incorrectly treated as scenario companies.
+- [ ] Generic nouns such as "the bank" are not treated as company identities without deterministic evidence.
+- [ ] Ambiguous cases do not become automatic blocking failures.
+- [ ] Findings conform to CP-AUTO-004.
+- [ ] File/line locations are reported where available.
+- [ ] No AI is required.
+- [ ] No content is automatically modified.
+- [ ] No MDX or embedded code is executed.
+- [ ] Existing Foundation and OT modules are tested.
+- [ ] No new scenario schema is invented without repository evidence.
+
+---
+
+# 29. Definition of Done
+
+CP-AUTO-007 is successful when CyberPivot can detect objective scenario/company consistency problems without pretending that narrative quality or fictional-world realism can be determined mechanically.
+
+The validator should answer:
+
+> "Is this scenario using the fictional organization identity consistently enough for the deterministic rules we have actually defined?"
+
+It should not attempt to answer:
+
+> "Is this a good scenario?"
+
+That distinction remains important for the later AI-assisted content reviewer.
+
+Next:
+
+**CP-AUTO-008 — Lab / Cabinet / Artifact Validator**

@@ -1,0 +1,612 @@
+# CP-AUTO-006 — Style Rule Validator
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-006  
+**Status:** Implementation specification  
+**Depends on:** CP-AUTO-002, CP-AUTO-003, CP-AUTO-004, CP-AUTO-005  
+**Next ticket:** CP-AUTO-007 Scenario / Company Validator
+
+---
+
+## 1. Purpose
+
+Build the deterministic style-validation component for CyberPivot Content Assurance.
+
+The validator checks style rules that can be established mechanically from the content source.
+
+The first confirmed deterministic style requirement is:
+
+- `CP-STYLE-004` — No em dash
+
+This validator may also support other deterministic style rules from CP-AUTO-002 where their implementation can be defined without subjective language-quality judgment.
+
+The validator must use the common CP-AUTO-004 output contract.
+
+It must not use an LLM.
+
+---
+
+# 2. Why This Is a Separate Validator
+
+Style rules are different from frontmatter and structural rules.
+
+CP-AUTO-005 answers questions such as:
+
+> Does this module have valid metadata?
+
+CP-AUTO-006 answers questions such as:
+
+> Does this module contain a prohibited character or deterministic formatting pattern?
+
+The distinction matters because CyberPivot's broader writing standards include subjective requirements such as practitioner feel, clarity, repetition, and quality.
+
+Those should not be disguised as deterministic style checks.
+
+---
+
+# 3. Rule Scope
+
+The primary rule is:
+
+```text
+CP-STYLE-004 — No Em Dash
+```
+
+The rule requires CyberPivot content to avoid the em dash character:
+
+```text
+—
+```
+
+The validator must detect the actual Unicode em dash character.
+
+It should not infer an em dash from ordinary hyphens.
+
+Examples:
+
+```text
+No em dash here.
+```
+
+Valid.
+
+```text
+This is — prohibited.
+```
+
+Invalid.
+
+```text
+This is - not an em dash.
+```
+
+Not a CP-STYLE-004 violation.
+
+---
+
+# 4. Scope of Files
+
+The validator should inspect implemented CyberPivot content files, using the same content discovery scope established by CP-AUTO-005.
+
+At minimum:
+
+```text
+content/foundations/**/*.mdx
+content/paths/**/*.mdx
+```
+
+The validator should not scan the entire repository indiscriminately.
+
+It should not treat:
+
+```text
+.gitkeep
+```
+
+or unrelated source files as learning content.
+
+---
+
+# 5. Source Text vs Metadata
+
+The validator should define clearly what it scans.
+
+For `CP-STYLE-004`, the default behavior should scan the complete MDX source, including:
+
+- frontmatter
+- headings
+- prose
+- lists
+- tables
+- code blocks
+- blockquotes
+
+However, implementation should consider whether a prohibited-character rule should apply to code examples.
+
+If the repository contains legitimate code, command output, or technical syntax where the character could occur, the implementation must avoid altering or misclassifying valid technical content merely to satisfy a prose-style rule.
+
+This decision must be made from the actual CyberPivot content and rule intent before implementation.
+
+Do not silently exclude code blocks simply because doing so is convenient.
+
+---
+
+# 6. Exact Detection
+
+Detection must be deterministic.
+
+For the em dash rule, the validator should search for:
+
+```text
+U+2014 EM DASH
+```
+
+It should report each relevant occurrence or a useful grouped finding, depending on the implementation.
+
+It must not classify these as em dashes:
+
+```text
+-
+–
+```
+
+The first is a hyphen-minus.
+
+The second is an en dash.
+
+Those are different Unicode characters.
+
+---
+
+# 7. Location Reporting
+
+Every violation should report the repository-relative file path.
+
+Where possible, report:
+
+```yaml
+location:
+  line: 42
+  column: 18
+```
+
+The column should correspond to the actual character location in the source.
+
+The validator must not invent line or column positions.
+
+If the parser or scanner cannot reliably determine a column, it may report the line and leave the column unavailable.
+
+---
+
+# 8. Finding Contract
+
+A style finding must follow CP-AUTO-004.
+
+Example:
+
+```yaml
+id: example
+ruleId: CP-STYLE-004
+severity: HARD
+status: FAIL
+category: style
+message: "Em dash character detected."
+file: "content/foundations/linux-fundamentals.mdx"
+location:
+  line: 42
+  column: 18
+evidence:
+  type: text
+  value: "—"
+remediation: "Replace the em dash with punctuation or sentence structure consistent with CyberPivot's writing standard."
+source:
+  type: deterministic
+  validator: style
+```
+
+The implementation may use a more precise remediation message based on the surrounding text.
+
+Do not automatically rewrite the sentence.
+
+---
+
+# 9. Multiple Occurrences
+
+A file may contain more than one prohibited em dash.
+
+The validator should make the number of occurrences visible.
+
+Possible terminal output:
+
+```text
+✖ FAIL  CP-STYLE-004
+  content/foundations/cloud-fundamentals.mdx:42:18
+  Em dash character detected.
+
+✖ FAIL  CP-STYLE-004
+  content/foundations/cloud-fundamentals.mdx:87:31
+  Em dash character detected.
+```
+
+This is preferable to saying only:
+
+```text
+Style check failed.
+```
+
+because the author needs to know where to fix the content.
+
+---
+
+# 10. Severity
+
+`CP-STYLE-004` is deterministic and should retain the severity assigned in CP-AUTO-003.
+
+If that rule is classified as `HARD`, a violation produces:
+
+```text
+status: FAIL
+```
+
+and contributes to the blocking quality gate.
+
+The validator must not downgrade the severity simply because the issue is stylistic.
+
+Likewise, it must not create additional blocking rules that were not approved in the rule inventory.
+
+---
+
+# 11. No AI Review
+
+CP-AUTO-006 must not attempt to evaluate:
+
+- whether the writing sounds natural
+- whether the tone is professional
+- whether the explanation is clear
+- whether content is repetitive
+- whether the author uses too much jargon
+- whether the content feels practitioner-oriented
+- whether the second-person voice is effective
+- whether the content is engaging
+
+Those belong to AI-assisted or human review.
+
+For example, the validator should not produce:
+
+```text
+FAIL: This paragraph sounds too academic.
+```
+
+That is not a deterministic finding.
+
+---
+
+# 12. Do Not Expand the Rule
+
+The presence of one style rule does not authorize the validator to create unrelated style restrictions.
+
+For example, do not automatically enforce:
+
+- sentence length
+- paragraph length
+- Oxford commas
+- heading capitalization
+- number of headings
+- exact number of bullets
+- exact number of lab tasks
+- forbidden words unless explicitly defined
+- maximum use of passive voice
+- reading-level scores
+- "professional" tone
+
+unless those are separately defined and classified in the rule inventory.
+
+The rule inventory remains the source of truth.
+
+---
+
+# 13. Unicode Handling
+
+The implementation must treat content as UTF-8.
+
+The validator should not depend on an ASCII-only scan.
+
+This is particularly important because the rule specifically concerns a Unicode punctuation character.
+
+Tests should include:
+
+```text
+—
+```
+
+as well as nearby characters:
+
+```text
+-
+–
+```
+
+to confirm correct differentiation.
+
+---
+
+# 14. Interaction With Frontmatter
+
+CP-AUTO-006 may run independently or as part of the overall QA pipeline.
+
+It should not duplicate CP-AUTO-005 frontmatter validation.
+
+If frontmatter cannot be parsed, CP-AUTO-005 owns that error.
+
+The style scanner may still scan raw source text if doing so is safe and deterministic.
+
+The implementation should avoid producing confusing duplicate findings for the same underlying parse failure.
+
+---
+
+# 15. Interaction With MDX
+
+The validator should treat MDX as source text for deterministic character scanning.
+
+It does not need to understand the semantic meaning of the MDX.
+
+It should not execute MDX.
+
+It should not render MDX.
+
+It should not evaluate embedded JavaScript.
+
+This reduces the security and complexity surface of the first QA engine.
+
+---
+
+# 16. Safety
+
+The style validator must treat content as data.
+
+It must not execute:
+
+- shell commands from content
+- JavaScript embedded in MDX
+- code blocks
+- arbitrary imports
+- scripts contained in examples
+
+The validator only reads and analyzes source text.
+
+---
+
+# 17. Testing Requirements
+
+Tests should cover:
+
+### Valid
+
+```text
+This sentence contains no em dash.
+```
+
+Expected:
+
+```text
+PASS
+```
+
+### Invalid
+
+```text
+This sentence contains — an em dash.
+```
+
+Expected:
+
+```text
+FAIL
+```
+
+### Hyphen
+
+```text
+This is a well-known issue.
+```
+
+Expected:
+
+```text
+PASS
+```
+
+### En dash
+
+```text
+Pages 10–20 contain the details.
+```
+
+Expected:
+
+```text
+PASS
+```
+
+unless another explicitly defined rule says otherwise.
+
+### Multiple violations
+
+A file containing several em dashes should produce findings that allow the author to locate each occurrence.
+
+### Unicode
+
+The validator must correctly process UTF-8 content.
+
+### Code example
+
+Test how the chosen implementation handles an em dash inside a code block.
+
+The expected behavior must be based on the approved interpretation of CP-STYLE-004, not a convenient implementation assumption.
+
+---
+
+# 18. Testing Against Existing CyberPivot Content
+
+Run the validator against the current implemented modules:
+
+### Foundation
+
+```text
+content/foundations/how-the-internet-works.mdx
+content/foundations/linux-fundamentals.mdx
+content/foundations/windows-and-active-directory.mdx
+content/foundations/security-fundamentals.mdx
+content/foundations/cloud-fundamentals.mdx
+content/foundations/python-for-security.mdx
+```
+
+### OT Security
+
+```text
+content/paths/ot-security/module-01-what-ot-security-is.mdx
+content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx
+```
+
+The test should establish:
+
+- which files pass
+- which files contain actual violations
+- whether line/column reporting is accurate
+- whether any legitimate technical text is incorrectly flagged
+
+Do not change production content merely to make the validator pass.
+
+If the existing content exposes an ambiguity in the rule, document the ambiguity and resolve the rule before coding around it.
+
+---
+
+# 19. Output Examples
+
+## Clean result
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+Style validation
+
+Files checked: 8
+PASS: 8
+FAIL: 0
+
+PASS
+```
+
+## Failure
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+Style validation
+
+✖ FAIL  CP-STYLE-004
+  content/foundations/linux-fundamentals.mdx:74:52
+  Em dash character detected.
+  Fix: Replace the em dash with punctuation or sentence structure consistent with the CyberPivot writing standard.
+
+Summary
+  PASS: 7
+  FAIL: 1
+
+Result: FAIL
+```
+
+Exit code:
+
+```text
+1
+```
+
+---
+
+# 20. Integration With CP-AUTO-005
+
+CP-AUTO-006 should be composable with CP-AUTO-005.
+
+Eventually:
+
+```text
+CyberPivot Content Assurance
+        │
+        ├── File / Frontmatter Validator
+        ├── Style Validator
+        ├── Scenario Validator
+        ├── Lab / Cabinet Validator
+        └── Future AI Reviewer
+```
+
+Each component produces the same finding structure.
+
+The overall runner combines those results into the CP-AUTO-004 run-level result.
+
+CP-AUTO-006 should not create a second output format.
+
+---
+
+# 21. What This Ticket Does Not Define
+
+This ticket does not define:
+
+- the final CLI architecture
+- GitHub Actions
+- AI content review
+- technical accuracy verification
+- scenario/company validation
+- Cabinet quality evaluation
+- automatic rewriting
+- automatic PR creation
+- automatic merging
+- external resource appropriateness
+- job-market validation
+
+Those belong to later tickets.
+
+---
+
+# 22. Acceptance Criteria
+
+CP-AUTO-006 is complete when:
+
+- [ ] The validator scans the same implemented content scope as CP-AUTO-005.
+- [ ] `CP-STYLE-004` is implemented deterministically.
+- [ ] The actual Unicode em dash is detected.
+- [ ] Hyphens are not incorrectly flagged as em dashes.
+- [ ] En dashes are not incorrectly flagged as em dashes.
+- [ ] File paths are reported.
+- [ ] Line locations are reported where available.
+- [ ] Findings conform to CP-AUTO-004.
+- [ ] Exit-code behavior follows CP-AUTO-004.
+- [ ] UTF-8 content is handled correctly.
+- [ ] Code/technical content behavior is explicitly tested.
+- [ ] The validator does not execute MDX or embedded code.
+- [ ] No AI is used.
+- [ ] No content is automatically modified.
+- [ ] Existing Foundation and OT modules are tested.
+- [ ] No additional undocumented style rules are introduced.
+
+---
+
+# 23. Definition of Done
+
+CP-AUTO-006 is successful when CyberPivot can reliably detect the approved deterministic style violation in its real content and report:
+
+1. **what rule was violated**
+2. **which file**
+3. **where**
+4. **what was detected**
+5. **what the author should investigate or change**
+6. **whether the finding blocks the QA gate**
+
+without making subjective claims about writing quality.
+
+After this ticket, the next content-specific validator is:
+
+**CP-AUTO-007 — Scenario / Company Validator**

@@ -1,0 +1,1051 @@
+# CyberPivot — Content Assurance Rule Inventory
+
+**Document:** CP-AUTO-002  
+**Status:** Draft for implementation  
+**Purpose:** Define the content rules that the CyberPivot Content Assurance system may enforce or report on.  
+**Source basis:** Current CyberPivot decisions, current content architecture, actual Foundation and OT module structures, and the existing validation/automation inventory.
+
+---
+
+## 1. Purpose
+
+This document converts CyberPivot's existing content standards into explicit QA rules.
+
+The goal is **not** to force every module into one identical Markdown structure. The current repository contains at least two supported module shapes:
+
+- Foundation modules
+- OT Security role-path modules
+
+The QA system must validate the rules that are actually supported by the product rather than inventing a new universal schema.
+
+Each rule is classified by what the automated system can reasonably determine:
+
+- **HARD** — deterministic failure. The system can establish that the rule is violated.
+- **WARNING** — deterministic or heuristic issue that should be surfaced but should not necessarily block publication.
+- **HUMAN** — requires human judgment or later AI-assisted review. The system should not pretend it can prove the claim.
+- **NOT YET** — a desirable check that is deliberately deferred because the current repository does not provide enough reliable evidence or infrastructure.
+
+Rule IDs are stable identifiers. They should be preserved if the implementation changes.
+
+---
+
+# 2. Source of Truth Hierarchy
+
+When deciding whether a QA rule exists:
+
+1. Current decisions in `DECISIONS.md`
+2. Current product/content requirements in `PRD.md`, where not superseded
+3. Current implementation described by the actual repository structure
+4. `CLAUDE.md` and `CONTRIBUTING.md` for authoring conventions
+5. `content/TEMPLATE.mdx` as an authoring reference, **not** as proof of the live schema
+6. Historical decisions and superseded documentation are not enforcement rules
+
+A historical statement that conflicts with a current decision must not become a QA failure.
+
+---
+
+# 3. Rule Severity Model
+
+## HARD
+
+Use when the repository gives the QA engine enough information to prove a violation.
+
+Examples:
+
+- Missing required frontmatter field
+- Duplicate slug
+- Broken `nextModule` reference
+- Invalid module number
+- Invalid Cabinet artifact object shape
+- Malformed YAML/frontmatter
+
+A HARD failure should eventually produce a non-zero CLI exit code.
+
+## WARNING
+
+Use when the condition is useful to flag but does not necessarily mean the content is unusable.
+
+Examples:
+
+- A module contains a URL that could not be checked
+- A tool entry has no URL where a URL may be useful
+- A lab appears unusually short
+- A heading pattern is inconsistent with the known module family
+
+Warnings should not automatically block a PR.
+
+## HUMAN
+
+Use when judgment is required.
+
+Examples:
+
+- Whether the technical explanation is actually correct
+- Whether a real-world example is accurately represented
+- Whether the lab genuinely teaches the stated concept
+- Whether the Cabinet artifact demonstrates meaningful work
+- Whether the writing sounds like a knowledgeable practitioner rather than generated filler
+
+The deterministic CLI may emit a placeholder/review finding, but it must not claim the content passed technical review merely because structural checks passed.
+
+## NOT YET
+
+Use when the idea is valid but current evidence or infrastructure is insufficient.
+
+Examples:
+
+- Full semantic technical accuracy
+- Automated verification of real-world incident claims
+- AI-based repetition detection
+- Automated job-market alignment
+- Automated execution of every lab
+
+---
+
+# 4. File Discovery and Scope Rules
+
+## CP-FILE-001 — Supported Content File Types
+**Severity:** HARD
+
+Content Assurance should inspect supported content files only.
+
+For the current module QA milestone, the primary scope is:
+
+- `content/foundations/**/*.mdx`
+- `content/paths/**/*.mdx`
+
+Do not silently treat unrelated TypeScript, SQL, Python, or application files as content modules.
+
+## CP-FILE-002 — Ignore Placeholder Path Directories
+**Severity:** HARD / INFO
+
+Directories containing only `.gitkeep` files do not constitute completed role-path modules.
+
+The current repository contains placeholder directories for several planned paths. The QA system must not report missing modules merely because a planned path has no completed MDX yet.
+
+## CP-FILE-003 — Every Inspected Module Must Parse
+**Severity:** HARD
+
+Each MDX module selected for QA must have parseable frontmatter and parseable MDX.
+
+If parsing fails, the remaining semantic checks for that file may be skipped and the parse error reported.
+
+---
+
+# 5. Frontmatter Rules
+
+The actual live Foundation module schema is richer than the original `content/TEMPLATE.mdx`.
+
+Current observed Foundation frontmatter fields include:
+
+- `title`
+- `slug`
+- `module`
+- `level`
+- `description`
+- `readingTime`
+- `labTime`
+- `tools`
+- `cabinetArtifact`
+- optional `previousModule`
+- optional `nextModule`
+
+OT Security role-path modules additionally use:
+
+- `roleSlug`
+- `pathSlug`
+
+## CP-FM-001 — Required Foundation Metadata
+**Severity:** HARD
+
+A Foundation module must contain the required live metadata fields:
+
+- `title`
+- `slug`
+- `module`
+- `level`
+- `description`
+- `readingTime`
+- `labTime`
+- `tools`
+- `cabinetArtifact`
+
+Do not infer required fields from the older template.
+
+## CP-FM-002 — Required OT Metadata
+**Severity:** HARD
+
+An OT Security role-path module must contain the additional role/path metadata used by the live implementation:
+
+- `roleSlug`
+- `pathSlug`
+
+## CP-FM-003 — Slug Present and Non-Empty
+**Severity:** HARD
+
+`slug` must be present and non-empty.
+
+## CP-FM-004 — Slug Uniqueness
+**Severity:** HARD
+
+No two inspected modules may declare the same `slug`.
+
+## CP-FM-005 — Module Number Validity
+**Severity:** HARD
+
+The `module` value must be valid for the module family and must not create an ambiguous module ordering.
+
+The exact numeric schema should be taken from the current TypeScript types/indexes during implementation rather than invented by the QA CLI.
+
+## CP-FM-006 — Title Present
+**Severity:** HARD
+
+`title` must be present and non-empty.
+
+## CP-FM-007 — Description Present
+**Severity:** HARD
+
+`description` must be present and non-empty.
+
+## CP-FM-008 — Reading Time Metadata
+**Severity:** HARD
+
+`readingTime` must exist in the supported live type/format.
+
+The validator must use the actual TypeScript/content type rather than assuming a unit or numeric representation that has not been verified.
+
+## CP-FM-009 — Lab Time Metadata
+**Severity:** HARD
+
+`labTime` must exist in the supported live type/format.
+
+Do not invent a required unit or numeric range until confirmed from the live type definitions.
+
+## CP-FM-010 — Tools Is Structured Metadata
+**Severity:** HARD
+
+`tools` must use the live structured representation.
+
+Observed live fields include:
+
+- `name`
+- `type`
+- optional `url`
+- optional `enterpriseToolsNote`
+
+The validator must reject the old template's string-only tool representation for live modules.
+
+## CP-FM-011 — Tool Name and Type
+**Severity:** HARD
+
+Each tool object must contain a non-empty `name` and `type`.
+
+## CP-FM-012 — Tool URL Format
+**Severity:** HARD where URL is supplied
+
+If a tool has a `url`, it must be syntactically valid as a URL according to the supported schema.
+
+This checks URL syntax, not whether the destination is appropriate or currently available.
+
+## CP-FM-013 — Enterprise Tools Note
+**Severity:** WARNING
+
+Where `enterpriseToolsNote` is present, it should be non-empty and associated with the module's enterprise-tool context.
+
+Do not require this field for every module unless the live schema explicitly makes it required.
+
+## CP-FM-014 — Cabinet Artifact Object
+**Severity:** HARD
+
+`cabinetArtifact` must use the live object structure.
+
+Observed fields:
+
+- `name`
+- `description`
+- `unlocksOn`
+
+## CP-FM-015 — Cabinet Artifact Name
+**Severity:** HARD
+
+`cabinetArtifact.name` must be present and non-empty.
+
+## CP-FM-016 — Cabinet Artifact Description
+**Severity:** HARD
+
+`cabinetArtifact.description` must be present and non-empty.
+
+## CP-FM-017 — Cabinet Artifact Unlock Condition
+**Severity:** HARD
+
+`cabinetArtifact.unlocksOn` must be present in the supported live representation.
+
+Do not invent allowed values until confirmed from the live TypeScript type/index.
+
+## CP-FM-018 — Previous/Next References
+**Severity:** HARD when supplied
+
+`previousModule` and `nextModule`, when present, must reference valid module slugs in the same supported module family/path.
+
+## CP-FM-019 — No Self-Reference
+**Severity:** HARD
+
+A module must not point to itself through `previousModule` or `nextModule`.
+
+## CP-FM-020 — Navigation Consistency
+**Severity:** HARD
+
+Where two adjacent modules explicitly declare previous/next relationships, those relationships should agree.
+
+Example:
+
+- Module A → `nextModule: B`
+- Module B → `previousModule: A`
+
+A contradiction is a deterministic integrity failure.
+
+## CP-FM-021 — Terminal Module Navigation
+**Severity:** HARD
+
+A terminal module may explicitly set `nextModule: null` where that is the live convention.
+
+The QA system must distinguish `null` from a missing field where the schema requires the distinction.
+
+---
+
+# 6. Module Family Rules
+
+The QA engine must identify the module family before applying family-specific structure rules.
+
+## CP-FAMILY-001 — Foundation Family
+**Severity:** HARD
+
+Files under `content/foundations/` use the Foundation module schema and Foundation-specific structural checks.
+
+## CP-FAMILY-002 — OT Security Family
+**Severity:** HARD
+
+Files under `content/paths/ot-security/` use the OT role-path schema and OT-specific structural checks.
+
+## CP-FAMILY-003 — Do Not Apply Foundation Skeleton to OT
+**Severity:** HARD
+
+An OT module must not fail merely because it does not contain Foundation-specific headings such as:
+
+- `Your First Portfolio Entry`
+- `Analysis Tasks`
+- `Answer Guide`
+
+The repository documents that OT uses a different supported structure.
+
+## CP-FAMILY-004 — Do Not Require Identical Heading Order
+**Severity:** HARD
+
+QA must not require every module to have exactly the same headings.
+
+Structural validation should enforce the minimum required learning components for the module family, not a rigid copy of one existing module.
+
+---
+
+# 7. Foundation Structure Rules
+
+The current Foundation modules show a common learning arc but some differences.
+
+Observed Foundation structures include:
+
+- Scenario
+- Before You Start
+- concept/theory sections
+- Setting Up or Installing a tool where appropriate
+- Hands-On Lab
+- Enterprise / Enterprise Equivalent
+- Cabinet/portfolio entry
+- What Is Next
+
+Module 1 additionally has:
+
+- Analysis Tasks
+- Answer Guide
+
+Module 3 includes an explicit note about the hands-on lab.
+
+Module 6 ends the Foundation sequence differently because it is the final Foundation module.
+
+## CP-FOUND-001 — Scenario/Context
+**Severity:** WARNING initially
+
+A Foundation module should contain a meaningful scenario/context component.
+
+The exact heading should not be required because current modules vary in heading order and wording.
+
+## CP-FOUND-002 — Hands-On Component
+**Severity:** HARD
+
+A Foundation module that is intended as a practical module must contain a hands-on lab/exercise component.
+
+The current Foundation set uses `Hands-On Lab`.
+
+## CP-FOUND-003 — Numbered Practical Tasks
+**Severity:** WARNING initially
+
+Where a Foundation lab uses numbered tasks, QA should detect whether practical tasks are present.
+
+Do not require exactly five tasks because the current repository already demonstrates different counts:
+
+- several modules: 5 tasks
+- Python module: 4 tasks
+
+## CP-FOUND-004 — Enterprise Context
+**Severity:** HARD
+
+Foundation modules must provide an enterprise/job context where the module's subject involves tooling or operational practice.
+
+The current content standard explicitly requires an enterprise equivalent/tool track.
+
+## CP-FOUND-005 — Cabinet Portfolio Entry
+**Severity:** HARD
+
+A Foundation module must contain a tangible portfolio/Cabinet output corresponding to its `cabinetArtifact`.
+
+The current modules use a trailing portfolio-entry section, but the QA rule should validate the underlying artifact requirement rather than require the exact heading text.
+
+## CP-FOUND-006 — Artifact Alignment
+**Severity:** HUMAN
+
+The body should actually explain what the learner produces and how it corresponds to the frontmatter `cabinetArtifact`.
+
+A deterministic checker can verify that the artifact metadata exists and that an artifact-related section exists, but it cannot reliably determine whether the artifact is genuinely useful.
+
+## CP-FOUND-007 — Analysis/Answer Sections Optional
+**Severity:** INFO
+
+`Analysis Tasks` and `Answer Guide` are supported but not universal.
+
+Their absence is not a failure.
+
+## CP-FOUND-008 — Final Foundation Module
+**Severity:** HARD for navigation integrity
+
+The final Foundation module must not point to a nonexistent Foundation module.
+
+The current Python module explicitly terminates the Foundation sequence with `nextModule: null`.
+
+---
+
+# 8. OT Security Module Rules
+
+The current OT Security modules use a different structure.
+
+Observed pattern:
+
+1. `Where you are`
+2. `Section 1` scenario
+3. `Section 2` concept
+4. `Section 3` hands-on
+5. `Section 4` enterprise
+6. `Section 5` Cabinet
+7. `What you can now do`
+
+## CP-OT-001 — OT Role Slug
+**Severity:** HARD
+
+`roleSlug` must be present and valid according to the current OT role implementation.
+
+## CP-OT-002 — OT Path Slug
+**Severity:** HARD
+
+`pathSlug` must be present and valid according to the current OT path implementation.
+
+## CP-OT-003 — OT Hands-On Section
+**Severity:** HARD
+
+An OT module must contain its practical/hands-on component.
+
+The current completed OT modules place this in Section 3.
+
+## CP-OT-004 — OT Enterprise Section
+**Severity:** HARD
+
+An OT module must contain an enterprise/job-context component.
+
+## CP-OT-005 — OT Cabinet Section
+**Severity:** HARD
+
+An OT module must contain a Cabinet/artifact component.
+
+## CP-OT-006 — OT Step-Based Lab
+**Severity:** WARNING initially
+
+The current OT modules use numbered lab steps.
+
+QA may report when an OT hands-on section contains no identifiable practical steps, but should initially avoid imposing an exact step count.
+
+## CP-OT-007 — OT Artifact Alignment
+**Severity:** HUMAN
+
+The artifact described in the OT module should represent work actually performed in the lab and should correspond to the frontmatter artifact metadata.
+
+Structural existence can be automated; quality/alignment requires review.
+
+## CP-OT-008 — OT Navigation Integrity
+**Severity:** HARD
+
+`previousModule` and `nextModule` must form a valid sequence for the OT path.
+
+The current completed sequence has:
+
+- Module 1 → next Module 2
+- Module 2 → previous Module 1
+- Module 2 → `nextModule: null`
+
+---
+
+# 9. Core Learning-Quality Rules
+
+These rules come directly from CyberPivot's stated content philosophy.
+
+## CP-LEARN-001 — Real-World Relevance
+**Severity:** HUMAN
+
+Every concept should answer:
+
+1. Why does this matter in the real world?
+2. How does it feel on the job?
+3. How do you get hands-on with it now?
+
+The QA system should not mark this PASS merely because the words "real world" or "job" appear.
+
+This is a content-quality judgment.
+
+## CP-LEARN-002 — Scenario-First Context
+**Severity:** HUMAN
+
+Content should be grounded in a real situation, real incident, real job task, or documented problem.
+
+This cannot be safely reduced to checking for the word `scenario`.
+
+## CP-LEARN-003 — Concept Explanation
+**Severity:** HUMAN
+
+The concept must be explained in concise, plain language, with the reason/importance established before excessive technical detail.
+
+## CP-LEARN-004 — Hands-On Learning
+**Severity:** HUMAN + structural check
+
+The learner should perform actual work rather than only read about a tool.
+
+The deterministic portion can verify that a hands-on section exists. Whether the exercise is genuinely useful requires review.
+
+## CP-LEARN-005 — Enterprise Equivalent
+**Severity:** HUMAN + structural check
+
+Where a free/open-source tool is used, the module should explain the enterprise equivalent or enterprise context as required by the platform's tool-coverage decision.
+
+The QA engine can detect the presence of an enterprise section, but cannot prove that the enterprise comparison is accurate.
+
+## CP-LEARN-006 — Tangible Output
+**Severity:** HUMAN + structural check
+
+The module should produce something the learner actually creates.
+
+A Cabinet artifact is not merely a downloadable template or document to read.
+
+## CP-LEARN-007 — Job Relevance
+**Severity:** HUMAN
+
+The learner should understand how the skill appears in actual practitioner work.
+
+---
+
+# 10. Voice and Style Rules
+
+Current decisions require:
+
+- plain, direct practitioner voice
+- knowledgeable security practitioner who can teach
+- second-person/in-role narrative
+- real examples
+- relatable analogies
+- no AI-sounding phrasing
+
+## CP-STYLE-001 — Second-Person/In-Role Voice
+**Severity:** HUMAN initially
+
+Content should keep the learner positioned as an active participant.
+
+Example principle:
+
+- Preferred: "You investigate the alert..."
+- Avoid: "The analyst would investigate the alert..."
+
+A simple second-person word-count heuristic may be added later, but it must not be treated as proof of voice quality.
+
+## CP-STYLE-002 — Practitioner Voice
+**Severity:** HUMAN
+
+The content should sound like a knowledgeable practitioner explaining the work directly.
+
+## CP-STYLE-003 — No AI-Sounding Phrases
+**Severity:** HUMAN / AI-assisted later
+
+The decision explicitly calls for avoiding AI-sounding language.
+
+Do not create a deterministic blacklist of generic phrases and pretend it measures this accurately.
+
+This is a candidate for a later AI-assisted reviewer.
+
+## CP-STYLE-004 — No Em Dash
+**Severity:** HARD
+
+CyberPivot's current authoring standard explicitly prohibits em dashes.
+
+The QA engine may deterministically flag the Unicode em dash character `—`.
+
+Important: this checks the character rule only. It does not attempt to judge all punctuation style.
+
+---
+
+# 11. Tool and Resource Rules
+
+## CP-TOOL-001 — Tool Metadata Must Match Live Schema
+**Severity:** HARD
+
+Tool entries must follow the actual structured metadata schema.
+
+## CP-TOOL-002 — No Invented Tool Metadata
+**Severity:** HUMAN
+
+The validator cannot reliably prove that a tool is genuinely used by the module.
+
+A later AI/human review should verify that tools named in frontmatter are actually used or meaningfully discussed.
+
+## CP-TOOL-003 — URL Syntax
+**Severity:** HARD
+
+Supplied URLs must be syntactically valid.
+
+## CP-TOOL-004 — URL Reachability
+**Severity:** WARNING
+
+A future link checker may test whether a URL resolves.
+
+Reachability is not the same as appropriateness.
+
+## CP-TOOL-005 — URL Appropriateness
+**Severity:** HUMAN
+
+A working URL may still point to:
+
+- the wrong product
+- outdated documentation
+- an unofficial source
+- an irrelevant page
+
+This requires review.
+
+## CP-TOOL-006 — No Invented Resources
+**Severity:** HUMAN
+
+Content must not claim that a nonexistent course, trial, download, lab, or resource exists.
+
+This is a high-value AI-assisted/human review rule, not a deterministic text check.
+
+---
+
+# 12. Technical Accuracy Rules
+
+## CP-TECH-001 — Technical Claims
+**Severity:** HUMAN / AI-assisted later
+
+Technical statements must be accurate.
+
+The first deterministic QA release must **not** claim to validate cybersecurity technical correctness.
+
+## CP-TECH-002 — Commands and Code
+**Severity:** WARNING initially
+
+Commands/code blocks should be detectable for structural inspection.
+
+Future validation may check selected syntax or execute explicitly approved examples.
+
+Do not execute arbitrary learner-facing security commands automatically.
+
+## CP-TECH-003 — Environment Assumptions
+**Severity:** HUMAN
+
+Operating-system, version, network, cloud-account, permission, and tool-version assumptions must be accurate and sufficiently clear.
+
+## CP-TECH-004 — Security Tool Behaviour
+**Severity:** HUMAN / AI-assisted later
+
+Claims about security products and tool behaviour require verification.
+
+Do not infer correctness from product names alone.
+
+---
+
+# 13. Scenario and Fictional Organisation Rules
+
+CyberPivot uses fictional organisations in scenario content, including documented names such as:
+
+- Quorivane Bank
+- Delvara Energy
+- Velorin Energy
+- Candrel Water Services
+
+## CP-SCEN-001 — Fictional Scenario Consistency
+**Severity:** WARNING / HUMAN
+
+When a fictional organisation is used, its identity and context should remain internally consistent.
+
+The QA engine can detect repeated organisation names but cannot reliably judge whether the scenario details are coherent.
+
+## CP-SCEN-002 — Real Incident Claims
+**Severity:** HUMAN / AI-assisted later
+
+When content presents a real incident as factual, the claim should be verified against a reliable source.
+
+The QA engine should not invent or assume the source.
+
+## CP-SCEN-003 — Do Not Present Fiction as Documented Fact
+**Severity:** HUMAN
+
+Fictional scenario details must not be presented as though they describe a real company or real incident.
+
+---
+
+# 14. Cabinet Rules
+
+The Cabinet is intended to contain proof of work.
+
+## CP-CAB-001 — Every Applicable Module Has an Artifact
+**Severity:** HARD
+
+For module types that use Cabinet artifacts, `cabinetArtifact` metadata must exist.
+
+## CP-CAB-002 — Artifact Has Name
+**Severity:** HARD
+
+Already covered by CP-FM-015.
+
+## CP-CAB-003 — Artifact Has Description
+**Severity:** HARD
+
+Already covered by CP-FM-016.
+
+## CP-CAB-004 — Artifact Has Unlock Condition
+**Severity:** HARD
+
+Already covered by CP-FM-017.
+
+## CP-CAB-005 — Artifact Is Produced by the Work
+**Severity:** HUMAN
+
+The artifact must be something the learner produces by doing the module's work.
+
+## CP-CAB-006 — Artifact Is Not Merely a Template
+**Severity:** HUMAN
+
+The Cabinet is not intended to be a collection of documents the learner simply downloads.
+
+## CP-CAB-007 — Body/Metadata Consistency
+**Severity:** WARNING / HUMAN
+
+The artifact described in the body should correspond to the frontmatter artifact.
+
+A deterministic check may compare obvious names, but should not require exact text matching.
+
+---
+
+# 15. Access/Commercial Model Rules
+
+CyberPivot is currently a paid platform with free Foundation content.
+
+The current rule is:
+
+- Foundation content is free/ungated.
+- Role-path content is paid unless explicitly marked free.
+
+## CP-ACCESS-001 — Foundation Access Classification
+**Severity:** HARD only if access metadata exists in the implementation
+
+Foundation content must not accidentally be classified as paid if the access-control implementation explicitly encodes its free status.
+
+This rule must be implemented only after the actual access-control source of truth is confirmed.
+
+## CP-ACCESS-002 — Role-Path Default Access
+**Severity:** HARD only if access metadata exists
+
+Role-path modules should follow the paid-by-default model unless explicitly marked free.
+
+Do not implement this as a content-folder assumption if the actual application access logic is elsewhere.
+
+## CP-ACCESS-003 — No Historical Open-Source Enforcement
+**Severity:** HARD
+
+Do not build QA rules based on the old open-source/freemium model.
+
+Historical references to community contribution, open-source licensing, or free role-path content must not be treated as current content requirements.
+
+---
+
+# 16. Internal Consistency Rules
+
+## CP-CONSIST-001 — Frontmatter vs File Path
+**Severity:** HARD
+
+Where the current implementation defines a relationship between the file location and metadata such as slug/path/role, those values must be consistent.
+
+Do not invent path-to-slug conventions that are not present in the implementation.
+
+## CP-CONSIST-002 — Frontmatter vs Registry
+**Severity:** HARD
+
+Where a module is represented in a TypeScript module index, its identity should not conflict with the MDX identity.
+
+This should reuse the existing module registries rather than creating a second independent source of truth.
+
+## CP-CONSIST-003 — Role Module List vs Existing MDX
+**Severity:** WARNING initially
+
+For role paths that have completed modules, the role's `modules[]` metadata should correspond to real MDX modules.
+
+This is especially relevant to OT because the current implementation uses role metadata plus `OT_SECURITY_MODULES`.
+
+## CP-CONSIST-004 — Broken Internal References
+**Severity:** HARD
+
+Any internal module reference used by the content metadata must resolve to an existing supported module.
+
+---
+
+# 17. Link Rules
+
+## CP-LINK-001 — Markdown/MDX Link Syntax
+**Severity:** HARD
+
+Malformed links should be detected where practical.
+
+## CP-LINK-002 — Internal Link Target
+**Severity:** HARD where target can be resolved
+
+Known internal content links should resolve.
+
+## CP-LINK-003 — External URL Reachability
+**Severity:** WARNING
+
+A future link checker may report unreachable external URLs.
+
+A failed request should not automatically mean the resource is invalid because of redirects, rate limits, temporary outages, or bot protection.
+
+## CP-LINK-004 — External Resource Appropriateness
+**Severity:** HUMAN
+
+A reachable resource still requires review for relevance, accuracy, and legitimacy.
+
+---
+
+# 18. Content-Length / Repetition Rules
+
+These are deliberately conservative.
+
+## CP-LENGTH-001 — Empty Sections
+**Severity:** HARD
+
+A required structural section must not be empty.
+
+## CP-LENGTH-002 — Suspiciously Short Practical Section
+**Severity:** WARNING
+
+A hands-on section that contains no meaningful task/step content should be flagged.
+
+Do not set an arbitrary word-count threshold as a quality gate.
+
+## CP-LENGTH-003 — Repetition
+**Severity:** NOT YET
+
+Repeated or padded content is a real quality concern, but deterministic repetition detection should not be part of the first QA CLI.
+
+Later implementation may use semantic similarity or AI review.
+
+---
+
+# 19. Safety and Security Rules for Content
+
+## CP-SAFE-001 — No Secrets
+**Severity:** HARD
+
+Content should not contain obvious real secrets, API keys, private keys, passwords, tokens, or credential material.
+
+This should eventually include deterministic secret-pattern scanning.
+
+## CP-SAFE-002 — Lab Scope
+**Severity:** HUMAN
+
+Security labs must be framed for authorised environments.
+
+The first deterministic QA release should not attempt to judge whether every command is safe.
+
+## CP-SAFE-003 — Dangerous Automation
+**Severity:** HUMAN / later specialist review
+
+Do not automatically execute arbitrary security commands from content.
+
+Any future technical-validation agent must use explicitly approved, isolated environments.
+
+---
+
+# 20. What the First QA CLI Should NOT Attempt
+
+The first implementation must not pretend to solve these:
+
+1. Full technical accuracy
+2. Full real-world incident verification
+3. Whether a lab is pedagogically excellent
+4. Whether an artifact is genuinely portfolio-worthy
+5. Whether the writing sounds human
+6. Whether a module is repetitive in a meaningful semantic sense
+7. Whether a tool is the best enterprise choice
+8. Whether a salary figure is current
+9. Whether a job-market claim is current
+10. Whether a learner can successfully complete a lab in every environment
+11. Whether a real-world scenario is legally/ethically complete
+12. Whether a resource is authoritative merely because its URL resolves
+
+Those belong in later AI-assisted or human review stages.
+
+---
+
+# 21. Proposed First Implementation Set
+
+The first CLI should focus on a small deterministic core.
+
+### Must implement first
+
+- CP-FILE-003
+- CP-FM-001 through CP-FM-004
+- CP-FM-006 through CP-FM-018
+- CP-FM-019 through CP-FM-021
+- CP-FAMILY-001 through CP-FAMILY-004
+- CP-FOUND-002
+- CP-FOUND-005
+- CP-OT-001 through CP-OT-005
+- CP-OT-008
+- CP-STYLE-004
+- CP-LINK-001
+- CP-LINK-002
+- CP-CONSIST-001 through CP-CONSIST-004
+
+### Add as warnings after the core works
+
+- CP-FOUND-001
+- CP-FOUND-003
+- CP-OT-006
+- CP-TOOL-004
+- CP-LENGTH-001
+- CP-LENGTH-002
+- CP-SAFE-001
+
+### Defer to AI/human review
+
+- CP-LEARN-001 through CP-LEARN-007
+- CP-STYLE-001 through CP-STYLE-003
+- CP-TOOL-005 through CP-TOOL-006
+- CP-TECH-001 through CP-TECH-004
+- CP-SCEN-001 through CP-SCEN-003
+- CP-CAB-005 through CP-CAB-007
+- CP-LENGTH-003
+- CP-SAFE-002 through CP-SAFE-003
+
+---
+
+# 22. Implementation Principles
+
+1. **Reuse existing types and registries.**
+   Do not create a second competing definition of module metadata.
+
+2. **Do not make the template the schema.**
+   The live module implementation is the authority for the current schema.
+
+3. **Validate module families separately.**
+   Foundation and OT already have different supported structures.
+
+4. **Prefer deterministic rules.**
+   If a check cannot reliably prove a failure, report a warning or defer it.
+
+5. **Never silently mutate content.**
+   The QA engine reports findings. It does not rewrite modules.
+
+6. **Never auto-merge.**
+   QA is a gate and review aid, not an autonomous publisher.
+
+7. **Keep rule IDs stable.**
+   Reports, CI, and future AI reviewers will depend on them.
+
+8. **Every rule should have a test case.**
+   A rule is not complete until there is at least one passing example and one intentional failing example.
+
+9. **Use the current eight completed modules as the initial fixture set.**
+   The six Foundation modules and two OT modules represent the actual supported structures currently present.
+
+10. **Do not penalise valid existing variation.**
+    Module 1 having an Answer Guide, Python having four tasks, and OT using Section 3/Section 5 are documented examples of legitimate variation.
+
+---
+
+# 23. Initial Rule Count
+
+The inventory above contains approximately 80 explicit rule entries across:
+
+- file/parse integrity
+- frontmatter
+- module families
+- Foundation structure
+- OT structure
+- learning quality
+- voice/style
+- tools/resources
+- technical accuracy
+- scenarios
+- Cabinet
+- access model
+- internal consistency
+- links
+- repetition
+- safety
+
+This count is intentionally broader than the first implementation.
+
+The first CLI should implement only the deterministic subset. The remaining rules become the backlog for AI-assisted review and human review.
+
+---
+
+# 24. Open Questions Before Implementation
+
+These items should be confirmed from the live repository before Cursor writes the corresponding validator:
+
+1. Exact TypeScript types for `readingTime`, `labTime`, and `cabinetArtifact.unlocksOn`.
+2. Exact allowed values for `tools[].type`.
+3. Exact role/path registry relationship for module references.
+4. Exact access-control source of truth for free Foundation vs paid role-path content.
+5. Exact supported internal-link conventions.
+6. Whether intro content should be included in the same QA CLI or handled as a separate content family.
+7. Whether future specialist/topic content will use another schema.
+
+Until these are confirmed, the QA implementation should not invent constraints.
+
+---
+
+## Definition of Done for CP-AUTO-002
+
+CP-AUTO-002 is complete when:
+
+- every proposed deterministic rule has a stable ID;
+- each rule has a severity;
+- Foundation and OT structures are explicitly separated;
+- historical/superseded rules are excluded;
+- AI/human-only checks are clearly separated;
+- the first implementation subset is identified;
+- unresolved schema questions are documented;
+- the rules can be converted directly into implementation tickets and tests.
+

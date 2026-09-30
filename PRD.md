@@ -1,15 +1,15 @@
 # CyberPivot — Product Requirements Document
-**Version:** 3.0
+**Version:** 4.0
 **Status:** Active
-**Last Updated:** June 2026
+**Last Updated:** September 2026
 
 ---
 
 ## 1. Vision
 
-CyberPivot is a free, open source cybersecurity learning platform built for anyone who wants to break into or level up in cybersecurity — regardless of where they are starting from.
+CyberPivot is a practical cybersecurity learning platform built for anyone who wants to break into or level up in cybersecurity — regardless of where they are starting from.
 
-Note: the free platform model described here was superseded by the Paid Platform Launch Model decision logged in DECISIONS.md in July 2026. The platform now operates on a paid subscription model with free Foundation modules. Open source status of the codebase remains under review.
+The current product model is paid subscription access to role-based learning paths and the Cabinet artifact system. Foundation content remains free and ungated, with selected introductory or sample content also available free. CyberPivot is no longer positioned as an open-source platform. See DECISIONS.md for the current product and licensing decisions.
 
 Core philosophy: **Start where you are.**
 
@@ -39,9 +39,8 @@ This is not a course platform. Not a CTF platform. Not another place to watch vi
 - Build as you learn. Every module produces a tangible artifact.
 - Free and enterprise. Learn on open source tools, understand the enterprise equivalents.
 - Honest. What certs matter, what jobs pay, what interviews actually look like.
-- Open source. Free forever. Community can contribute modules, paths, topics and tools.
-
-Note: superseded by the Paid Platform Launch Model decision in DECISIONS.md, July 2026.
+- Sustainable paid product. Foundation content is free and ungated; role-path learning is subscription content unless explicitly marked free.
+- Practical and verified. Content must be grounded in real work, hands-on practice, and tangible outputs.
 
 ---
 
@@ -92,6 +91,20 @@ Skip foundations. Jump into any role, specialist module, or topic directly.
 ---
 
 ## 6. Platform Content Structure
+
+### Current implementation architecture
+
+The product model and the repository architecture are related but not identical. The conceptual content levels below describe the learner experience. The current repository implements content using the following structure:
+
+- `content/intro/` — introduction content
+- `content/foundations/` — free Foundation modules
+- `content/paths/` — role-path modules, including the current OT Security content
+- `content/TEMPLATE.mdx` — reference template for module creation; it is not a requirement that every live module use identical headings
+- `lib/foundations/` — Foundation registries/loaders
+- `lib/roles/` — role definitions and role metadata
+- `lib/cabinet/` — Cabinet artifact logic and supporting structures
+
+The original design described a single central module library with role definitions stored as JSON. That is a historical architecture decision. The current implementation has evolved, and this PRD describes the product requirements rather than requiring the old file layout. Content QA must validate supported metadata, relationships, learning outcomes, links, resources, and practical requirements rather than enforcing one universal heading structure.
 
 ### Level 0 — Introduction (free, ungated, no account needed)
 
@@ -162,7 +175,7 @@ Not a path. Not gated. Anyone can read this before deciding if cybersecurity is 
 - How to use the onboarding assessment
 - How the cabinet works and why it matters
 - How to use the platform if you already have experience
-- How to contribute as an open source contributor
+- How free and paid content is structured and how the platform is maintained
 
 ---
 
@@ -419,15 +432,19 @@ Every role has a dedicated page the user reads before committing to a path. Each
 
 ---
 
-## 8. Module Structure
+## 8. Module Content Standard
 
-Every module follows this structure:
+Every module must provide the following learning outcomes, while allowing the exact headings and order to vary by module type:
 
-1. **Scenario** — a real situation that makes the concept relevant. A real incident, a real job task, a real problem.
-2. **Concept** — concise, plain language explanation. The why before the what.
-3. **Free tool hands-on** — actual lab work. Install it, use it, break something, fix something.
-4. **Enterprise equivalent** — what the job version looks like. Trial link where available. Screenshots and walkthrough where not. Why organisations pay for it.
-5. **Cabinet artifact** — something tangible produced by completing the module. You built it, you own it.
+1. **Context or scenario** — a real situation that makes the concept relevant. This may be a real incident, a realistic fictional organisation, a real job task, or a real operational problem.
+2. **Concepts** — concise, plain-language explanation. The why before the what.
+3. **Hands-on work** — an actual lab, exercise, simulation, analysis task, or practical configuration where appropriate.
+4. **Job context** — what the practitioner does with the skill in an enterprise environment, including enterprise tooling or equivalents where relevant.
+5. **Cabinet artifact** — a tangible output produced by completing the work.
+
+Modules may additionally include prerequisites, setup instructions, analysis tasks, answer guides, checks, troubleshooting, environment options, extended theory, or other sections when they improve the learning experience. Foundation and role-path modules may use different structural patterns.
+
+Content must remain second-person and in-role, practical, technically grounded, and self-contained. Fictional companies may be used for scenarios and should remain clearly fictional. Real incidents and external technical claims must be accurately represented and verified before publication.
 
 ---
 
@@ -610,61 +627,75 @@ The platform must be secure by design. A cybersecurity learning platform that is
 
 | Layer | Technology | Reason |
 |---|---|---|
-| Frontend | Next.js 14 App Router | OSS, self-hostable, excellent performance |
+| Frontend | Next.js 14 App Router | Excellent performance and established product architecture |
 | Styling | Tailwind CSS + shadcn/ui | Fast, consistent, accessible |
 | Backend/Auth/DB | Supabase | Auth + PostgreSQL + Realtime, generous free tier |
-| Content | MDX files | Markdown + components, community contributes via PR |
+| Content | MDX files | Versioned, structured content with reusable components |
 | Lab CLI | Python | Cross-platform, Windows friendly |
-| Hosting (managed) | Vercel | Free tier, excellent Next.js integration |
-| Hosting (self-hosted) | Docker Compose | Full self-host option |
+| Hosting | Vercel | Current managed hosting target |
 | Package Manager | pnpm | Faster, better monorepo support |
 | Analytics | Plausible | Open source, privacy friendly, no cookie banner |
-| Version Control | GitHub | Public repo, community contributions |
+| Version Control | GitHub | Source control, collaboration, and product delivery |
 
 ---
 
-## 14. V1 Scope
+## 14. Current Product and Delivery Scope
 
-Build this first. Prove the model. Ship it.
+CyberPivot is being built incrementally. The product requirements describe the intended V1 experience, while the repository's current implementation status is tracked separately and must not be confused with planned availability.
 
-**In V1:**
+### Current repository state (September 2026)
+
+- Foundation layer: 6 modules currently built.
+- OT Security: 2 role-path modules currently built.
+- Other role paths remain partially built or coming soon unless real content exists in the repository.
+- There is not yet a complete automated content QA pipeline or GitHub Actions content-quality gate.
+- Role-path module availability must reflect actual built content, not planned module lists.
+
+### Product V1 requirements
+
+The intended V1 experience includes:
 - Homepage
-- Introduction section (all 8 parts)
+- Introduction section
 - Onboarding assessment flow
-- Foundation Layer (6 modules)
-- Azure Security Engineer path (full)
-- SOC Analyst path (full)
-- Penetration Tester path (full)
-- GRC Analyst path (full)
+- Foundation Layer
+- Role paths with clear Ready/Coming Soon status
 - Progress dashboard
 - Cabinet display
-- Cert roadmap per role
-- Interview prep — general and per role
-- CV builder — per role templates
-- All role pages (V1 roles full, Coming Soon roles visible with basic info)
+- Certification roadmaps per role
+- Interview preparation, general and role-specific
+- CV builder and role-specific guidance where included in the current product scope
+- Role pages with honest job information, modules, and Cabinet artifacts
+- Paid subscription access for role-path content and Cabinet functionality
+- Free, ungated Foundation experience
 
-**V2 and beyond:**
-- All Coming Soon roles
+### Later scope
+
+- Additional role paths and modules
 - Specialist modules
 - Topic Library
 - Tools Directory
-- Community layer
+- Community features where intentionally reintroduced
 - Job board
-- Threat intel feed
+- Threat intelligence feed
 - Mobile app
 
----
-
-## 15. Open Source Model
-
-- All content lives in MDX files in the /content directory
-- Community contributes new paths, modules, labs, topics via GitHub Pull Requests
-- Each module follows the standard template in /content/TEMPLATE.mdx
-- Maintainers review for accuracy and quality
-- Contributors credited in the platform and README
-- Issues tagged "good first issue" for new contributors
-- Topic Library is the easiest contribution — focused explainer, submit a PR
+Planned scope does not make content available. A module is considered available only when its actual content and supporting application behavior exist and have passed the required review/QA process.
 
 ---
 
-*This document is the single source of truth for CyberPivot. All building decisions reference this PRD. When in doubt, also check DECISIONS.md.*
+## 15. Product and Content Access Model
+
+CyberPivot is a proprietary paid platform. It is not currently positioned as an open-source product.
+
+- Foundation modules remain free and ungated.
+- Selected introductory or sample content may be free.
+- Role-path learning content is paid unless explicitly marked free.
+- Subscription access covers the paid learning experience and relevant Cabinet functionality.
+- Historical open-source and freemium decisions remain documented in DECISIONS.md for context but are not current product requirements.
+- Exact legal licensing language is maintained separately from this PRD and must not be inferred from historical decisions.
+
+Content contributions, if enabled in future, will be governed by the current contribution and licensing policy rather than assuming a public open-source contribution model.
+
+---
+
+*This document defines product requirements. DECISIONS.md is the authoritative record of significant decisions and superseding changes. When a historical PRD statement conflicts with a current decision in DECISIONS.md, the current decision takes precedence.*

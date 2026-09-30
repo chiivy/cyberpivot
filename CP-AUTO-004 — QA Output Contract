@@ -1,0 +1,1128 @@
+# CP-AUTO-004 — QA Output Contract
+
+**Project:** CyberPivot  
+**Workstream:** Content Assurance / QA Engine  
+**Ticket:** CP-AUTO-004  
+**Status:** Design specification  
+**Depends on:** CP-AUTO-002 Content Rule Inventory, CP-AUTO-003 Rule Classification  
+**Next implementation ticket:** CP-AUTO-005 MDX + Frontmatter Validator
+
+---
+
+## 1. Purpose
+
+This document defines the output contract for CyberPivot Content Assurance.
+
+The contract answers:
+
+- What does a QA run return?
+- How is each finding represented?
+- How are deterministic failures separated from warnings and human review?
+- What information does a developer need to fix a finding?
+- What causes the CLI to exit successfully or with failure?
+- How can the same results later be consumed by GitHub Actions, an AI reviewer, or another interface?
+
+This is an output contract, not an implementation specification for the validators themselves.
+
+The first implementation must remain deterministic and repository-aware. AI-assisted findings are supported by the contract but are not required for CP-AUTO-005.
+
+---
+
+## 2. Design Principles
+
+### 2.1 One common finding model
+
+All validators should emit findings using the same conceptual structure.
+
+A frontmatter error, a missing Cabinet relationship, a style violation, and a later AI review finding should be understandable through the same result model.
+
+### 2.2 Rule IDs are stable identifiers
+
+Every finding must reference a CyberPivot rule ID from the rule inventory, for example:
+
+- `CP-FM-001`
+- `CP-FOUND-005`
+- `CP-CAB-003`
+- `CP-STYLE-004`
+
+Rule IDs should not be replaced with free-form validator-specific names.
+
+### 2.3 Severity and status are different
+
+**Severity** describes how important the rule violation is.
+
+**Status** describes the outcome of evaluating the rule.
+
+For example:
+
+- Severity: `HARD`
+- Status: `FAIL`
+
+or:
+
+- Severity: `WARNING`
+- Status: `WARNING`
+
+This distinction allows the same output model to represent a rule that passed, failed, needs human review, or produced a non-blocking warning.
+
+### 2.4 Evidence must be inspectable
+
+A finding should explain what caused it.
+
+For deterministic checks, this normally means the relevant value, text, heading, metadata field, or relationship.
+
+For AI-assisted checks, evidence should identify the passage or reasoning basis used by the reviewer. AI findings must not pretend to have deterministic proof where none exists.
+
+### 2.5 Remediation must be actionable
+
+A finding should tell the content author what to investigate or change.
+
+The QA system should not automatically rewrite content.
+
+### 2.6 Do not claim more certainty than the check provides
+
+A deterministic validator can establish repository facts.
+
+It cannot establish that a technical explanation is correct merely because required keywords exist.
+
+Likewise, URL reachability does not establish that a resource is appropriate.
+
+Those distinctions established in CP-AUTO-003 must remain visible in the output.
+
+---
+
+# 3. Result Statuses
+
+CyberPivot QA uses four result statuses.
+
+| Status | Meaning | Typical use |
+|---|---|---|
+| `PASS` | The evaluated rule/check passed | Valid frontmatter, valid slug, valid relationship |
+| `WARNING` | A non-blocking issue or advisory condition was detected | Potentially stale link, optional quality concern |
+| `NEEDS_HUMAN_REVIEW` | The check requires human judgment or identified something that cannot be safely decided automatically | Technical accuracy, resource appropriateness, publication judgment |
+| `FAIL` | A deterministic hard requirement was violated | Invalid frontmatter, broken required relationship, prohibited em dash |
+
+A QA run can contain more than one status.
+
+For example:
+
+```text
+PASS: 47
+WARNING: 3
+NEEDS_HUMAN_REVIEW: 4
+FAIL: 2
+```
+
+A module can therefore structurally pass some checks while still requiring human review before publication.
+
+---
+
+# 4. Rule Severity
+
+Rules use the severity classifications established in CP-AUTO-003.
+
+| Severity | Meaning | Default CI effect |
+|---|---|---|
+| `HARD` | Objective requirement that must be satisfied | A finding with `FAIL` blocks the quality gate |
+| `WARNING` | Objective or advisory issue that should be reviewed | Does not block by default |
+| `HUMAN` | Requires human judgment | Does not block by default |
+| `NOT_YET` | Defined in the inventory but not currently implemented | Not evaluated by the current validator |
+
+Severity belongs to the rule definition.
+
+A validator must not arbitrarily change a rule's severity because of a particular finding.
+
+---
+
+# 5. Finding Contract
+
+Every emitted finding should conceptually contain the following fields.
+
+```yaml
+id: unique-finding-id
+ruleId: CP-FM-001
+severity: HARD
+status: FAIL
+category: frontmatter
+message: "Required field 'title' is missing."
+file: "content/foundations/linux-fundamentals.mdx"
+location:
+  line: 1
+  column: 1
+evidence:
+  type: metadata
+  field: title
+  value: null
+remediation: "Add a non-empty 'title' field to the module frontmatter."
+source:
+  type: deterministic
+  validator: frontmatter
+```
+
+The exact implementation language or TypeScript interface may differ, but these concepts form the contract.
+
+---
+
+# 6. Required Finding Fields
+
+## 6.1 `id`
+
+A unique identifier for the individual finding within the QA run.
+
+Purpose:
+
+- identify a finding in machine-readable output
+- allow future tooling to track findings
+- distinguish multiple findings generated by the same rule
+
+The ID does not replace the rule ID.
+
+Example:
+
+```text
+CP-FM-001:content/foundations/linux-fundamentals.mdx
+```
+
+The implementation may choose a different stable format.
+
+---
+
+## 6.2 `ruleId`
+
+The CyberPivot rule that produced the finding.
+
+Examples:
+
+```text
+CP-FM-001
+CP-FOUND-005
+CP-CAB-003
+CP-STYLE-004
+```
+
+This field is required.
+
+A validator should never emit an unexplained issue without a rule ID.
+
+---
+
+## 6.3 `severity`
+
+The rule severity:
+
+```text
+HARD
+WARNING
+HUMAN
+NOT_YET
+```
+
+This must match the rule classification.
+
+---
+
+## 6.4 `status`
+
+The result of evaluating the rule:
+
+```text
+PASS
+WARNING
+NEEDS_HUMAN_REVIEW
+FAIL
+```
+
+A `NOT_YET` rule normally does not generate an evaluated finding in the initial CLI. If implementation later reports skipped rules, that should be represented at run level rather than pretending the rule passed.
+
+---
+
+## 6.5 `category`
+
+The rule inventory category.
+
+Examples:
+
+```text
+file_integrity
+frontmatter
+module_family
+foundation_structure
+ot_structure
+learning_quality
+style
+tools
+technical_accuracy
+scenarios
+cabinet
+access_model
+internal_consistency
+links
+length
+safety
+```
+
+The category should come from the rule inventory rather than being invented separately by each validator.
+
+---
+
+## 6.6 `message`
+
+Short human-readable explanation of the finding.
+
+Good:
+
+```text
+Required frontmatter field 'title' is missing.
+```
+
+Avoid:
+
+```text
+Validation failed.
+```
+
+The message should describe the actual issue.
+
+---
+
+## 6.7 `file`
+
+Repository-relative path to the affected file.
+
+Example:
+
+```text
+content/foundations/linux-fundamentals.mdx
+```
+
+Do not use absolute local machine paths in the standard output.
+
+---
+
+## 6.8 `location`
+
+Location of the finding when available.
+
+```yaml
+location:
+  line: 14
+  column: 3
+```
+
+Line is the most important location field.
+
+Column should be provided when the validator can determine it reliably.
+
+For file-level findings where no meaningful line exists:
+
+```yaml
+location:
+  line: null
+  column: null
+```
+
+The system must not invent line numbers.
+
+---
+
+## 6.9 `evidence`
+
+Evidence explains what the validator observed.
+
+Evidence should be concise.
+
+Examples:
+
+```yaml
+evidence:
+  type: metadata
+  field: title
+  value: null
+```
+
+or:
+
+```yaml
+evidence:
+  type: text
+  value: "This is — a prohibited em dash."
+```
+
+or:
+
+```yaml
+evidence:
+  type: relationship
+  expected: "previousModule points to an existing module"
+  actual: "content/foundations/does-not-exist.mdx"
+```
+
+For AI findings, evidence should distinguish observed source text from the AI's interpretation.
+
+---
+
+## 6.10 `remediation`
+
+A concise action the author can take to investigate or resolve the finding.
+
+Example:
+
+```text
+Add a non-empty 'title' field to the module frontmatter.
+```
+
+For human review:
+
+```text
+Review the technical explanation against authoritative documentation before publication.
+```
+
+Remediation is guidance, not an instruction for an automatic content rewrite.
+
+---
+
+## 6.11 `source`
+
+Identifies how the finding was produced.
+
+Allowed initial source types:
+
+```text
+deterministic
+ai_assisted
+human
+```
+
+CP-AUTO-005 should use:
+
+```text
+deterministic
+```
+
+AI-assisted review will use:
+
+```text
+ai_assisted
+```
+
+This prevents a later AI-generated opinion from being presented as an objective repository fact.
+
+The source object may contain:
+
+```yaml
+source:
+  type: deterministic
+  validator: frontmatter
+```
+
+For future AI review:
+
+```yaml
+source:
+  type: ai_assisted
+  reviewer: content-reviewer
+```
+
+The AI reviewer should not be presented as an authoritative source of truth.
+
+---
+
+# 7. Optional Finding Fields
+
+The following fields may be added when useful:
+
+```yaml
+docsUrl: null
+relatedRuleIds: []
+suggestedFix: null
+```
+
+They are not required for CP-AUTO-005.
+
+### `docsUrl`
+
+A link to CyberPivot documentation explaining the rule.
+
+Do not invent documentation URLs.
+
+### `relatedRuleIds`
+
+Useful when one issue affects multiple rules.
+
+### `suggestedFix`
+
+Reserved for future tooling where a safe, deterministic suggested change can be generated.
+
+It must not imply that automatic modification is safe unless that behavior is explicitly implemented and approved.
+
+---
+
+# 8. Run-Level Contract
+
+A QA run needs a result envelope around individual findings.
+
+Conceptually:
+
+```yaml
+version: "1"
+status: FAIL
+startedAt: "..."
+completedAt: "..."
+scope:
+  filesChecked: 8
+  modulesChecked: 8
+summary:
+  pass: 42
+  warning: 3
+  needsHumanReview: 4
+  fail: 2
+findings:
+  - ...
+```
+
+The exact timestamp representation is an implementation detail, but machine-readable output should use a consistent standard format.
+
+---
+
+# 9. Run-Level Status
+
+The overall run status follows the quality-gate rules.
+
+Initial behavior:
+
+### `FAIL`
+
+At least one blocking `HARD` rule produced `FAIL`.
+
+### `WARNING`
+
+No blocking failures exist, but one or more warnings exist.
+
+### `NEEDS_HUMAN_REVIEW`
+
+No blocking failures exist, but one or more human-review findings exist.
+
+### `PASS`
+
+No failures, warnings, or human-review findings remain in the evaluated scope.
+
+Important:
+
+`PASS` does not mean the content is universally technically correct.
+
+It means the implemented QA checks found no issues requiring a non-pass result.
+
+This distinction is important because technical accuracy is not fully deterministic.
+
+---
+
+# 10. Recommended Status Precedence
+
+When multiple findings exist, the run-level status should use this precedence:
+
+```text
+FAIL
+  ↓
+NEEDS_HUMAN_REVIEW
+  ↓
+WARNING
+  ↓
+PASS
+```
+
+Therefore:
+
+- Any blocking `FAIL` makes the run `FAIL`.
+- If there is no `FAIL` but there is human review, the run is `NEEDS_HUMAN_REVIEW`.
+- If there is neither `FAIL` nor human review but there are warnings, the run is `WARNING`.
+- Otherwise the run is `PASS`.
+
+This precedence is about QA state, not content quality ranking.
+
+---
+
+# 11. Exit Codes
+
+The CLI needs predictable exit codes for local use and GitHub Actions.
+
+Initial contract:
+
+| Exit code | Meaning |
+|---:|---|
+| `0` | No blocking failures |
+| `1` | One or more blocking `FAIL` findings |
+| `2` | QA execution/configuration error |
+
+Warnings and `NEEDS_HUMAN_REVIEW` findings do not cause a non-zero exit code in the initial quality gate.
+
+This means a developer can receive:
+
+```text
+QA status: NEEDS_HUMAN_REVIEW
+Process exit code: 0
+```
+
+That is intentional.
+
+The first version should not block a PR because an AI or human-review category exists.
+
+---
+
+# 12. Terminal Output
+
+The default CLI output should be optimized for a developer reading a pull request or local terminal.
+
+Example:
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+Scope
+  Files checked: 8
+  Modules checked: 8
+
+Result
+  FAIL
+
+Summary
+  PASS: 42
+  WARNING: 3
+  NEEDS HUMAN REVIEW: 4
+  FAIL: 2
+
+Findings
+
+✖ FAIL  CP-FM-001
+  content/foundations/linux-fundamentals.mdx:1
+  Required frontmatter field 'title' is missing.
+  Fix: Add a non-empty 'title' field to the module frontmatter.
+
+⚠ WARNING  CP-LINK-002
+  content/foundations/cloud-fundamentals.mdx:87
+  External URL could not be reached during validation.
+  Fix: Verify that the URL is current and appropriate.
+
+! REVIEW  CP-TECH-001
+  content/paths/ot-security/module-02-purdue-model-and-network-architecture.mdx:142
+  Technical explanation requires human verification.
+  Fix: Verify the explanation against authoritative OT security sources.
+
+────────────────────────────────────────
+2 blocking failures
+3 warnings
+4 human-review findings
+────────────────────────────────────────
+```
+
+The exact symbols may change based on terminal compatibility.
+
+The important requirement is that the output remains readable without requiring JSON inspection.
+
+---
+
+# 13. JSON Output
+
+The CLI should support machine-readable JSON output.
+
+Conceptually:
+
+```json
+{
+  "version": "1",
+  "status": "FAIL",
+  "scope": {
+    "filesChecked": 8,
+    "modulesChecked": 8
+  },
+  "summary": {
+    "pass": 42,
+    "warning": 3,
+    "needsHumanReview": 4,
+    "fail": 2
+  },
+  "findings": [
+    {
+      "id": "example-finding-id",
+      "ruleId": "CP-FM-001",
+      "severity": "HARD",
+      "status": "FAIL",
+      "category": "frontmatter",
+      "message": "Required frontmatter field 'title' is missing.",
+      "file": "content/foundations/linux-fundamentals.mdx",
+      "location": {
+        "line": 1,
+        "column": 1
+      },
+      "evidence": {
+        "type": "metadata",
+        "field": "title",
+        "value": null
+      },
+      "remediation": "Add a non-empty 'title' field to the module frontmatter.",
+      "source": {
+        "type": "deterministic",
+        "validator": "frontmatter"
+      }
+    }
+  ]
+}
+```
+
+JSON is the preferred machine-to-machine format for future GitHub integration.
+
+---
+
+# 14. Rule Metadata vs Finding Data
+
+The QA system should keep the rule definition separate from an individual finding.
+
+A rule definition conceptually contains:
+
+```yaml
+ruleId: CP-FM-001
+name: Required title field
+severity: HARD
+category: frontmatter
+description: Every module must contain a non-empty title.
+implementation: deterministic
+```
+
+A finding contains:
+
+```yaml
+ruleId: CP-FM-001
+status: FAIL
+file: content/foundations/example.mdx
+location: ...
+evidence: ...
+remediation: ...
+```
+
+This separation allows the rule inventory to remain the source of truth while individual validators provide contextual results.
+
+---
+
+# 15. PASS Findings
+
+The initial CLI does not need to print every successful check individually in terminal output.
+
+For example, if 20 frontmatter rules pass, printing all 20 would create unnecessary noise.
+
+Instead:
+
+```text
+PASS: 42
+```
+
+should be sufficient in normal terminal mode.
+
+Detailed PASS findings may still be included in JSON if implementation makes this useful, but this is not required for CP-AUTO-005.
+
+A practical initial approach is:
+
+- terminal: show failures, warnings, and human-review findings
+- JSON: include evaluated findings according to the chosen implementation
+- summary: always report counts
+
+The implementation should avoid generating large amounts of redundant output.
+
+---
+
+# 16. No-Finding Behavior
+
+A clean run should be obvious.
+
+Example:
+
+```text
+CyberPivot Content Assurance
+────────────────────────────────────────
+
+8 files checked
+42 checks passed
+
+PASS
+```
+
+Exit code:
+
+```text
+0
+```
+
+No empty finding objects should be generated.
+
+---
+
+# 17. Multiple Findings in One File
+
+A single file may produce several findings.
+
+Example:
+
+```text
+content/foundations/example.mdx
+
+✖ CP-FM-001 Missing title
+✖ CP-FM-004 Invalid slug
+⚠ CP-LINK-002 External URL could not be reached
+! CP-TECH-001 Technical explanation requires review
+```
+
+Findings must remain individually addressable by rule ID and location.
+
+The validator must not collapse unrelated issues into one generic message.
+
+---
+
+# 18. AI-Assisted Findings
+
+The output contract deliberately supports AI-assisted review without making AI the first implementation dependency.
+
+AI findings must identify:
+
+```yaml
+source:
+  type: ai_assisted
+```
+
+They should also clearly state what was reviewed.
+
+Example:
+
+```yaml
+ruleId: CP-TECH-001
+severity: HUMAN
+status: NEEDS_HUMAN_REVIEW
+category: technical_accuracy
+message: "Technical explanation should be verified against authoritative documentation."
+file: "content/foundations/cloud-fundamentals.mdx"
+location:
+  line: 118
+evidence:
+  type: text
+  value: "..."
+remediation: "Verify this explanation against authoritative documentation."
+source:
+  type: ai_assisted
+  reviewer: "technical-content-reviewer"
+```
+
+AI must not emit:
+
+```text
+FAIL: This technical statement is definitely incorrect.
+```
+
+unless the underlying system has an authoritative deterministic verification mechanism that supports that conclusion.
+
+The first AI reviewer should therefore favor `NEEDS_HUMAN_REVIEW` for uncertain semantic issues.
+
+---
+
+# 19. Human Review Findings
+
+Human review may be represented in the same model.
+
+Example:
+
+```yaml
+status: NEEDS_HUMAN_REVIEW
+severity: HUMAN
+source:
+  type: human
+```
+
+The initial CLI does not need to create human findings automatically.
+
+This field exists so future workflows can preserve a consistent contract.
+
+---
+
+# 20. Rule Coverage in the Run
+
+The run should make it possible to understand what was actually evaluated.
+
+This is important because CP-AUTO-002 contains rules that are:
+
+- implemented now
+- planned
+- AI-assisted later
+- human-only
+- not yet implemented
+
+The run metadata should therefore be able to report something similar to:
+
+```yaml
+rules:
+  evaluated: 38
+  notYetImplemented: 21
+```
+
+The initial implementation does not need to expose every unimplemented rule in terminal output.
+
+However, it must not silently imply that the entire CP-AUTO-002 inventory has been checked.
+
+---
+
+# 21. Validator Identity
+
+Each finding should identify the validator that produced it.
+
+Examples:
+
+```text
+frontmatter
+module-family
+foundation-structure
+ot-structure
+style
+links
+consistency
+safety
+```
+
+This helps diagnose the QA system itself.
+
+It also allows later validators to be added without changing the finding model.
+
+---
+
+# 22. Versioning
+
+The output contract has a version.
+
+Initial version:
+
+```text
+1
+```
+
+This refers to the machine-readable QA result contract, not the CyberPivot application version.
+
+If the structure of JSON output changes in a breaking way, the contract version must change.
+
+Non-breaking additions may be introduced without changing the major contract version, provided consumers can safely ignore unknown fields.
+
+---
+
+# 23. CI / GitHub Behavior
+
+The output contract is designed for later GitHub integration.
+
+The intended behavior is:
+
+### Blocking
+
+A deterministic `HARD` rule producing `FAIL`:
+
+```text
+PR quality gate: FAILED
+```
+
+### Non-blocking warning
+
+A `WARNING` finding:
+
+```text
+PR quality gate: PASSED WITH WARNINGS
+```
+
+### Human review
+
+A `NEEDS_HUMAN_REVIEW` finding:
+
+```text
+PR quality gate: PASSED, HUMAN REVIEW REQUIRED
+```
+
+The exact GitHub presentation is CP-AUTO-010, not CP-AUTO-004.
+
+CP-AUTO-004 only defines what the QA engine must return so that GitHub can consume it later.
+
+---
+
+# 24. Relationship to CP-AUTO-003
+
+CP-AUTO-003 established three broad classes:
+
+### Deterministic QA
+
+Objective repository and syntax facts.
+
+These can produce blocking failures where the rule severity is `HARD`.
+
+### AI-assisted review
+
+Semantic quality checks.
+
+These should initially produce warnings or human-review findings rather than automatic blocking decisions.
+
+### Human review
+
+Final judgment for publication quality and exceptions.
+
+This contract preserves that separation through:
+
+- `severity`
+- `status`
+- `source`
+- `evidence`
+
+No validator should bypass that classification.
+
+---
+
+# 25. Examples by Rule Type
+
+## Example A: Missing frontmatter
+
+```text
+FAIL
+CP-FM-001
+HARD
+deterministic
+```
+
+Meaning:
+
+A required field is absent.
+
+This can block the quality gate.
+
+---
+
+## Example B: No em dash
+
+```text
+FAIL
+CP-STYLE-004
+HARD
+deterministic
+```
+
+Meaning:
+
+A prohibited em dash was detected.
+
+The finding should point to the affected line.
+
+---
+
+## Example C: URL cannot be reached
+
+```text
+WARNING
+CP-LINK-002
+WARNING
+deterministic
+```
+
+Meaning:
+
+The URL could not be verified as reachable.
+
+It does **not** mean the resource is inappropriate.
+
+Resource appropriateness belongs to later semantic/human review.
+
+---
+
+## Example D: Technical explanation
+
+```text
+NEEDS_HUMAN_REVIEW
+CP-TECH-001
+HUMAN
+ai_assisted
+```
+
+Meaning:
+
+The content requires technical verification.
+
+It does **not** mean the content is proven incorrect.
+
+---
+
+## Example E: Valid module relationship
+
+```text
+PASS
+CP-CONSIST-001
+HARD
+deterministic
+```
+
+Meaning:
+
+The relevant internal relationship passed validation.
+
+---
+
+# 26. What CP-AUTO-004 Does Not Define
+
+This document intentionally does not define:
+
+- the TypeScript implementation
+- the exact CLI command syntax
+- the MDX parser library
+- the YAML/frontmatter library
+- the GitHub Action implementation
+- the AI model/provider
+- prompts for AI review
+- automatic rewriting
+- automatic PR creation
+- automatic merging
+- execution of arbitrary security commands
+- a new content schema
+- a replacement for existing CyberPivot module structures
+
+Those decisions belong to later implementation tickets.
+
+---
+
+# 27. Acceptance Criteria
+
+CP-AUTO-004 is complete when:
+
+- [ ] The four result statuses are defined.
+- [ ] Rule severity is separated from result status.
+- [ ] Every finding has a stable CyberPivot rule ID.
+- [ ] Findings identify the affected repository file.
+- [ ] Findings support line/column location where available.
+- [ ] Findings contain evidence.
+- [ ] Findings contain actionable remediation guidance.
+- [ ] Findings identify deterministic vs AI-assisted vs human provenance.
+- [ ] Run-level summary counts are defined.
+- [ ] Run-level status precedence is defined.
+- [ ] Exit codes are defined.
+- [ ] Terminal output expectations are defined.
+- [ ] JSON output expectations are defined.
+- [ ] CI blocking behavior is defined at a contract level.
+- [ ] Contract versioning is defined.
+- [ ] The contract does not claim technical accuracy can be established by simple deterministic checks.
+- [ ] The contract does not introduce a new content schema.
+- [ ] The contract is sufficient for CP-AUTO-005 to implement the first deterministic validator.
+
+---
+
+# 28. Next Ticket
+
+**CP-AUTO-005 — MDX + Frontmatter Validator**
+
+The next implementation should use this contract to build the first real CyberPivot QA component.
+
+Scope should remain deliberately narrow:
+
+1. Discover the applicable content files.
+2. Parse MDX/frontmatter safely.
+3. Evaluate the selected CP-FILE and CP-FM rules from CP-AUTO-003.
+4. Produce the common QA result structure.
+5. Print useful terminal output.
+6. Return the defined exit code.
+7. Test against the existing Foundation and OT content.
+8. Do not introduce AI yet.
+
+The goal is to get the first boring, reliable validator working before adding semantic intelligence.

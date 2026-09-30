@@ -30,6 +30,26 @@ Read this alongside PRD.md and CLAUDE.md at the start of every session.
 
 ---
 
+## Current Content Architecture — As Implemented
+
+**Status:** The original module-library architecture above is a historical product decision. The repository architecture evolved during implementation and the current repository is the source of truth.
+
+**Current implementation:**
+- Foundation content lives under `content/foundations/`.
+- Role-path content lives under `content/paths/`.
+- The current repository uses TypeScript role definitions under `lib/roles/`, rather than the originally planned JSON role-definition structure.
+- Foundation registries/loaders live under `lib/foundations/`.
+- Cabinet functionality lives under `lib/cabinet/`.
+- `content/TEMPLATE.mdx` is a starting template, not a guarantee that every live module uses one identical structure.
+
+**Decision:** Content QA must validate the supported metadata, relationships, learning requirements, links, artifacts, and content standards rather than requiring every module to have identical headings or file structure.
+
+**Reason:** Foundation and role-path modules have evolved different practical structures. The platform should preserve useful differences while enforcing consistent learner outcomes and quality standards.
+
+**Date:** September 2026
+
+---
+
 ## Five Content Levels
 
 **Decision:** Introduction → Foundation → Role Paths → Specialist Modules → Topic Library (plus Tools Directory as V2)
@@ -429,6 +449,8 @@ Both roles command meaningful premiums over standard IT security roles due to th
 
 ## Module Content Structure — Confirmed
 
+**Status:** Historical implementation standard. The repository now contains multiple valid module structures, so this is not enforced as one exact heading sequence. See the current module content standard below.
+
 **Decision:** Every module follows this exact structure:
 1. Scenario — a real world situation using a real incident, not a hypothetical organisation
 2. Concept — concise plain language explanation. The why before the what.
@@ -437,6 +459,25 @@ Both roles command meaningful premiums over standard IT security roles due to th
 5. Cabinet artifact — something tangible produced by completing the module.
 **Reason:** This structure ensures every module produces real skill and a real output, not just knowledge.
 **Date:** June 2026
+
+---
+
+## Current Module Content Standard
+
+**Decision:** Every publishable module should, where applicable to its learning objective, provide these core outcomes:
+1. Context or scenario — place the learner in a realistic situation using approved fictional organizations and/or a clearly identified real-world incident.
+2. Concepts — explain the relevant concepts in plain, direct language and establish why they matter.
+3. Hands-on work — give the learner something practical to do, using a real tool, simulation, dataset, or other reproducible exercise where appropriate.
+4. Job context — explain what the work looks like in an actual practitioner environment.
+5. Cabinet artifact — produce a tangible piece of work when the module is intended to contribute to the learner portfolio.
+
+Modules may additionally include prerequisites, setup instructions, analysis tasks, answer guides, checks, troubleshooting, environment options, extended theory, or other sections where they improve the learning experience. Foundation and role-path modules may use different structures.
+
+**Decision:** Content QA should validate the required learning outcomes, metadata, links/resources, fictional-company rules, technical claims, and artifact requirements rather than enforcing one universal heading set.
+
+**Reason:** The live modules demonstrate that a useful module can have additional sections and different ordering while still following the platform's core teaching philosophy.
+
+**Date:** September 2026
 
 ---
 
@@ -649,7 +690,7 @@ Examples and scenario details used across modules more broadly should also rotat
 ## Tech Stack
 
 **Decision:** Next.js 14 + Tailwind + shadcn/ui + Supabase + pnpm
-**Reason:** Next.js is best in class for this content platform. Supabase handles auth, database, and realtime. All choices are free or have generous free tiers — aligns with open source ethos.
+**Reason:** Next.js is appropriate for this content platform. Supabase handles auth, database, and realtime. The stack was originally selected partly for its accessible/free-tier economics; the current product is a proprietary paid platform, so the old open-source-ethos rationale is historical rather than a current business-model requirement.
 **Date:** June 2026
 
 ---
@@ -664,7 +705,9 @@ Examples and scenario details used across modules more broadly should also rotat
 
 ## No Ads, No Paywalls, No Premium Tiers (Core Content)
 
-**Decision:** CyberPivot core content is free. No premium tier for learning content. No ads. Paid tier is for AI-powered tools only (CV builder).
+**Status:** Superseded by the Paid Platform Launch Model and the current product model below.
+
+**Historical decision:** CyberPivot core content was free. No premium tier for learning content. No ads. Paid tier was intended for AI-powered tools only (CV builder).
 **Reason:** The platform exists to help people get into cybersecurity regardless of financial situation. Paywalling content contradicts that mission.
 **Date:** June 2026
 
@@ -915,20 +958,23 @@ Reference: OWASP API Security Top 10 2023, APIsec University, FAPI specification
 
 ## Licensing Model
 
-**Decision:** Two-tier licensing approach.
-- Code: MIT licence. Fully open source. Anyone can fork, modify, and run their own instance.
-- Content: Creative Commons Attribution Non-Commercial 4.0 (CC BY-NC 4.0). Content is freely readable and shareable but cannot be used in commercial products or services without a licence from CyberPivot.
+**Status:** Superseded by the current platform and codebase licensing status below.
 
-**Reason:** Open source code builds community trust, attracts developer contributors, and is standard for developer-facing platforms in the security community. Proprietary content licence protects the commercial model while keeping content accessible for individual learners. Someone can fork the platform and run a community instance. They cannot build a competing commercial business using CyberPivot content without permission.
+**Historical decision:** Two-tier licensing approach.
+- Code: MIT licence. Fully open source.
+- Content: Creative Commons Attribution Non-Commercial 4.0 (CC BY-NC 4.0).
 
-The real competitive moat is not the licence. It is content quality, community, employer relationships, and brand. Those are not forkable.
+The historical reasoning was that open-source code could build trust and community contribution while proprietary content licensing protected the commercial model.
+
 **Date:** June 2026
 
 ---
 
 ## Business Model
 
-**Decision:** Freemium model with three revenue streams.
+**Status:** Superseded by the Paid Platform Launch Model and current product model below.
+
+**Historical decision:** Freemium model with three revenue streams.
 
 **Free forever (core mission):**
 - All learning content across all paths
@@ -1065,9 +1111,37 @@ Note: this entry was superseded by the Paid Platform Launch Model decision added
 
 ## Paid Platform Launch Model
 
+**Status:** Superseded in wording by the current product model below where commercial mechanics have changed or remain unconfirmed. The paid-platform decision itself remains current.
+
 **Decision:** CyberPivot will launch as a paid platform, not a free platform. The core access model is a subscription, monthly or annual with annual at a discount, covering access to role path content and the cabinet artifact system. Foundation modules remain free and ungated as a genuine taste of the platform before payment is required. Role path content sits behind the subscription paywall. A short free trial period, likely seven days or similar, will be offered at launch with card details required upfront rather than after the trial, consistent with standard subscription conversion practice. The open source status of the codebase is under review, the code may remain open source while the content itself stays proprietary and private, since the content is the core product. This decision supersedes all prior references to CyberPivot as a free platform with B2B and premium AI tool revenue.
 **Reason:** Building and maintaining high-quality, verified, hands-on cybersecurity content at this depth requires sustainable revenue. Charging from launch rather than transitioning from free to paid avoids the well-documented difficulty of converting a user base accustomed to free access. The platform's differentiation, real job-role content with verified labs and portfolio artifacts, justifies a subscription model.
 **Date:** July 2026
+
+---
+
+## Current Product Model — Paid Platform with Free Foundation
+
+**Decision:** CyberPivot is a paid cybersecurity learning platform. The core commercial product is subscription access to role-based learning paths and the Cabinet artifact system.
+
+- Foundation content remains free and ungated.
+- Selected introduction/sample content may be free where explicitly designated.
+- Role-path content is paid unless explicitly marked free.
+- The free experience is intentionally limited and is not the primary business model.
+- Pricing, trial length, and other commercial mechanics should not be inferred from historical decisions unless separately confirmed.
+
+**Reason:** The current product model is designed around sustainable delivery of verified, hands-on cybersecurity content rather than the earlier freemium/open-core model.
+
+**Date:** September 2026
+
+---
+
+## Current Platform and Codebase Licensing Status
+
+**Decision:** CyberPivot is no longer positioned or released as an open-source platform. The current product is a proprietary paid platform with selected learning content intentionally available for free.
+
+This supersedes the earlier MIT/CC BY-NC licensing model and earlier open-source positioning. Exact legal licensing language should be maintained in the appropriate legal/product documentation and must not be inferred from this decision log.
+
+**Date:** September 2026
 
 ---
 
