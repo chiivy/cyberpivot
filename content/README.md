@@ -139,3 +139,4 @@ CyberPivot is proprietary software. The exact legal licensing terms are maintain
 ---
 
 *Last updated: September 2026*
+QA gate test - temporary line.

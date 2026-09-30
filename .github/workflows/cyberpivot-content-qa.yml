@@ -67,7 +67,6 @@ jobs:
         with:
           # Align with @types/node ^20 used by this repository.
           node-version: 20
-          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -90,7 +89,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          pnpm cyberpivot qa --json > cyberpivot-qa-results.json
+          pnpm --silent cyberpivot qa --json > cyberpivot-qa-results.json
           QA_EXIT=$?
           set -e
           echo "exit_code=${QA_EXIT}" >> "${GITHUB_OUTPUT}"
